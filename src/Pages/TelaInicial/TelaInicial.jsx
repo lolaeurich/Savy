@@ -4,13 +4,10 @@ import local from "../../Assets/local.png";
 import lista from "../../Assets/lista.png";
 import conexao from "../../Assets/conexao.png";
 import cesta from "../../Assets/cesta.png";
-import flecha from "../../Assets/flecha-btn.png";
-import { SwipeableButton } from "react-swipeable-button";
+import SlideButton from 'react-slide-button';
 
 function TelaInicial () {
-    const onSuccess = () => {
-        console.log("Successfully Swiped!");
-      };
+    const [reset, setReset] = useState(0);
 
     return (
         <div className="tela-inicial-container">
@@ -51,14 +48,14 @@ function TelaInicial () {
                     </div>
                 </div>
             </div>
-            <div className="btn-cadastro">
-                <SwipeableButton
-                    onSuccess={onSuccess}
-                    text="Deslize para cadastrar!"
-                    text_unlocked="Quero começar a testar!"
-                    color="#16362d"
-                />
-            </div>
+            <SlideButton 
+            mainText="Deslize para cadastrar" 
+            overlayText="Quero começar a testar!" 
+            onSlideDone={function () {
+                console.log("Done!");
+            }} 
+            reset={reset}
+            />
         </div>
     )
 }

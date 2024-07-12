@@ -9,7 +9,7 @@
 }
 
 .tela-inicial-main {
-    width: 90%;
+    width: 85%;
     height: auto;
     display: flex;
     flex-direction: column;
@@ -126,129 +126,68 @@
     background-color: #B3B3B3; /* Cor do botão ao passar o mouse */
 }
 
+.slide-but {
+  border: 2px solid #444;
+  width: 80% !important;
+  border: none !important;
+  border-radius: 50px;
+  margin-top: 15%;
+  padding: 9px !important;
+  position: relative;
+  overflow: hidden;
+  background-color: #D9D9D9 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  user-select: none;
+  /* box-sizing: border-box; */
+}
 
+.slide-but .slide-overlay {
+  border-radius: 50px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  height: 100%;
+  width: 2rem;
+  background: #444;
+  transition: width 0.2s ease-out;
+  will-change: width;
+  overflow: hidden;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-.ReactSwipeButton {
-    float: left;
-    width: 100%;
-    height: 50px;
-    position: relative;
-  }
-  .ReactSwipeButton,
-  .ReactSwipeButton * {
-    -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none;   /* Chrome/Safari/Opera */
-    -khtml-user-select: none;    /* Konqueror */
-    -moz-user-select: none;      /* Firefox */
-    -ms-user-select: none;       /* Internet Explorer/Edge */
-    user-select: none;           /* Non-prefixed version, currently
-                                    not supported by any browser */
-  }
-  .rsbContainer{
-    float: left;
-    width: 100%;
-    height: 100%;
-    background: #eee;
-    border-radius: 50px;
-    position: relative;
-    /* box-shadow: inset 1px 1px 4px rgba(0,0,0,0.1); */
-    overflow: hidden;
-  }
-  .rsbContainerUnlocked{
-    width: 100% !important;
-    transition: 0.5s;
-    cursor: default;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .rsbContainerUnlocked .rsbcSlider{
-    left: 100%!important;
-    cursor: default;
-    pointer-events: none;
-  }
-  .rsbContainerUnlocked .rsbcSliderArrow {
-    transition: 0.5s;
-    margin-right: -60px;
-  }
-  .rsbContainerUnlocked .rsbcSliderCircle {
-    transition: 0.5s;
-    margin-right: -60px;
-  }
-  .rsbcSlider {
-    float: left;
-    width: 100%;
-    position: absolute;
-    height: 50px;
-    top:0;
-    left: 50px;
-    margin-left:-100%;
-    background: #333;
-    border-radius: 25px;
-    z-index: 10;
-    /* box-shadow: 1px 1px 5px rgba(0,0,0,0.3); */
-    cursor: pointer;
-  }
-  .rsbcSliderText{
-    position: absolute;
-    top:0;
-    left:0;
-    right:0;
-    line-height: 50px;
-    text-align: center;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    letter-spacing: 1px;
-    color: #fff;
-    font-size: 14px;
-  
-  }
-  .rsbcSliderArrow{
-    float: left;
-    position: absolute;
-    transform: rotate(45deg);
-    border: 2px solid #fff;
-    height: 8px;
-    width: 8px;
-    top:50%;
-    right: 22px;
-    margin-top: -6px;
-    border-left-color: transparent;
-    border-bottom-color: transparent;
-    transform-origin: center;
-    z-index: 10;
-  }
-  .rsbcSliderCircle {
-    position: absolute;
-    right: 0;
-    background: #444;
-    top:0;
-    height: 50px;
-    width: 50px;
-    border-radius: 100%;
-  }
-  .rsbcText {
-    float: left;
-    position: absolute;
-    top:0;
-    left:0;
-    right:0;
-    height: 50px;
-    line-height: 50px;
-    text-align: center;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-    letter-spacing: 1px;
-    font-size: 14px;
-    color: #000;
-  }
+.slide-but .slide-overlay .slide-caret-wrapper {
+  position: absolute;
+  max-width: 45px;
+  min-width: 0;
+  right: 0;
+  top: 50%;
+  height: 100%;
+  transform: translateY(-50%);
+  background: #3A7C22 !important;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  justify-content: center;
+}
 
-  /* @media (min-width: 1313px) {
-    .ReactSwipeButton {
-      width: 50%;    
-    }
-    .rsbContainer{
-      width: 120%;
-    }
-  } */
-
-
-
+.slide-but .slide-overlay .slide-overlay-txt {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  height: 100%;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+  background-color: #3A7C22 !important;
+}
