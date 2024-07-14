@@ -1,6 +1,6 @@
 .login-container {
     width: 100%;
-    height: 100vh;
+    height: auto;
     background-image: url("../../Assets/login-bg.png");
     background-position: right;
     background-repeat: no-repeat;
@@ -12,11 +12,12 @@
 
 .login-main {
     width: 100%;
-    height: 95vh;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center; 
+    padding-top: 5%;
 }
 
 .login-savvy-logo {
