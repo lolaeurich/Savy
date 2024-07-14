@@ -43,7 +43,7 @@
     color: gray;
     font-family: 'Montserrat', sans-serif;
     font-weight: 400;
-    margin-bottom: 8px; /* Adicione margem inferior para separação */
+    margin-bottom: 4px; /* Adicione margem inferior para separação */
 }
 
 .compras-inteligentes {
@@ -74,6 +74,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 35%;
+    text-align: center;
 }
 
 .cadastro-cep img {
@@ -84,7 +86,7 @@
 .cadastro-cep p {
     font-size: 12px;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 400;
+    font-weight: 600;
     color: gray;
 }
 
@@ -104,35 +106,20 @@
     font-weight: 500;
 }
 
-.btn-cadastro {
-    width: 90%;
-    height: 48px;
-    background-color: #D9D9D9;
-    border: none;
-    border-radius: 50px;
+.cadastro-cep2 {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    justify-content: flex-start; /* Alinha conteúdo à esquerda */
-    font-size: 14px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 500;
-    margin-top: 20%;
-    padding-left: 2px; /* Ajusta o espaçamento à esquerda para o texto */
-    position: relative;
-    cursor: pointer; /* Cursor de ponteiro para indicar interatividade */
-}
-
-.btn-cadastro:hover {
-    background-color: #B3B3B3; /* Cor do botão ao passar o mouse */
 }
 
 .slide-but {
   border: 2px solid #444;
   width: 80% !important;
-  height: 40px !important;
+  height: 45px !important;
   border: none !important;
   border-radius: 50px;
-  margin-top: 15%;
+  margin-top: 5% !important;
   padding: 0px !important;
   position: relative;
   overflow: hidden;

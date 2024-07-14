@@ -37,12 +37,12 @@ function TelaInicial () {
                 </div>
                 <h3 className="voce-so-precisa">E nós te entregamos:</h3>
                 <div className="container-entregamos">
-                    <div className="cadastro-cep">
+                    <div className="cadastro-cep2">
                         <img alt="" src={conexao} />
                         <p>Preço baixo e onde comprar</p>
                     </div>
                     <h3 className="entregamos-h3">ou</h3>
-                    <div className="cadastro-cep">
+                    <div className="cadastro-cep2">
                         <img alt="" src={cesta} />
                         <p>Melhor custo benefício em um só lugar</p>
                     </div>
