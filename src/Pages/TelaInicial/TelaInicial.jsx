@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import "./style.css";
 import local from "../../Assets/local.png";
 import lista from "../../Assets/lista.png";
@@ -8,6 +9,14 @@ import SlideButton from 'react-slide-button';
 
 function TelaInicial () {
     const [reset, setReset] = useState(0);
+    const navigate = useNavigate();
+
+    const handleSlideDone = () => {
+
+        setTimeout(() => {
+            navigate('/login');
+        }, 2000); 
+    };
 
     return (
         <div className="tela-inicial-container">
@@ -49,12 +58,10 @@ function TelaInicial () {
                 </div>
             </div>
             <SlideButton 
-            mainText="Deslize para cadastrar" 
-            overlayText="Quero começar a testar!" 
-            onSlideDone={function () {
-                console.log("Done!");
-            }} 
-            reset={reset}
+                mainText="Deslize para cadastrar" 
+                overlayText="Quero começar a testar!" 
+                onSlideDone={handleSlideDone} 
+                reset={reset}
             />
         </div>
     )
