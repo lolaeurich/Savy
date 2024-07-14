@@ -8,8 +8,6 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-top: 5%;
-    padding-bottom: 5%;
 }
 
 .login-main {
