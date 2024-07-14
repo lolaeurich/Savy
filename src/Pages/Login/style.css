@@ -12,10 +12,10 @@
 
 .login-main {
     width: 100%;
-    height: auto;
+    height: 95vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center; 
 }
 
