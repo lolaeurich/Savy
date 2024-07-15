@@ -165,8 +165,8 @@
     content: "";
     display: inline-block;
     position: relative;
-    width: 35px;
-    height: 17px;
+    width: 45px;
+    height: 25px;
     background-color: #fff;
     border: solid 1px #3A7C22;
     border-radius: 15px;
@@ -183,13 +183,13 @@
     content: "";
     position: absolute;
     display: inline-block;
-    width: 14px;
-    height: 14px;
+    width: 20px;
+    height: 20px;
     background-color: #3A7C22;
     border-radius: 21px;
     box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.4);
     left: 0px;
-    top: 0px;
+    top: 1px;
     -webkit-transition: left .3s ease, background .3s ease, box-shadow .1s ease;
     transition: left .3s ease, background .3s ease, box-shadow .1s ease;
 }
