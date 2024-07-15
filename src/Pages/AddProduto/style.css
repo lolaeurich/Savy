@@ -9,7 +9,7 @@
 }
 
 .add-produto-main {
-    position: relative; /* Garante que seja o contexto de empilhamento para seus filhos */
+    position: relative; 
     width: 100%;
     height: 100%;
     display: flex;

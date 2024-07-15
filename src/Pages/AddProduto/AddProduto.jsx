@@ -4,21 +4,8 @@ import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
 import QuantitySelector from "../../Components/Seletor/SeletorQuantidade";
-import QRCodeScannerComponent from "../../Components/BarcodeScanner/BarcodeScanner";
 
 function AddProduto() {
-    const [exibirScanner, setExibirScanner] = useState(false);
-    const [scannedCode, setScannedCode] = useState("");
-
-    const abrirCamera = () => {
-        setExibirScanner(true);
-    };
-
-    const handleQRCodeScanned = (code) => {
-        setScannedCode(code);
-        // Aqui você pode lidar com o código escaneado, por exemplo, atualizando o estado do seu componente
-        setExibirScanner(false); // Fechar o scanner após escanear
-    };
 
     return (
         <div className="add-produto-container">
@@ -45,7 +32,6 @@ function AddProduto() {
 
                         <div
                             className="camera-container"
-                            onClick={abrirCamera}
                         >
                             <img alt="" src={camera} />
                             <p>
@@ -132,18 +118,6 @@ function AddProduto() {
                     </div>
                 </div>
             </div>
-
-            {/* Renderizar o scanner de QR code se exibirScanner for true */}
-            {exibirScanner && (
-                <QRCodeScannerComponent onQRCodeScanned={handleQRCodeScanned} />
-            )}
-
-            {/* Mostrar o código escaneado, se houver */}
-            {scannedCode && (
-                <div className="scanned-code-container">
-                    <p>Código QR escaneado: {scannedCode}</p>
-                </div>
-            )}
         </div>
     );
 }
