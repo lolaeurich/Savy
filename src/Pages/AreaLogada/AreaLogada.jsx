@@ -16,6 +16,10 @@ function AreaLogada () {
         }, 1000); 
     };
 
+    const handleAddProduto = () => {
+        navigate("/addProduto");
+    };
+
     
     return (
         <div className="areaLogada-container">
@@ -50,7 +54,7 @@ function AreaLogada () {
 
                 <div className="container-meus-produtos">
                     <div className="meus-produtos-bar">
-                        <button className="meus-produtos-btn">Cadastrar produto<img alt="" src={cadastro} /></button>
+                        <button className="meus-produtos-btn" onClick={handleAddProduto}>Cadastrar produto<img alt="" src={cadastro} /></button>
                     </div>
 
                     <div className="lista-de-produtos">

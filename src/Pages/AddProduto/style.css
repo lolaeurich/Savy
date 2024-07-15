@@ -1,0 +1,296 @@
+.add-produto-container {
+    width: 100%;
+    height: 100vh;
+    background-color: #F7F6FB;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    padding-top: 10%;
+}
+
+.add-produto-main {
+    position: relative; /* Garante que seja o contexto de empilhamento para seus filhos */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    row-gap: 40px;
+}
+
+.add-produto-nav {
+    width: 85%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 10%;
+}
+
+.add-produto-nav h3 {
+    color: #919191;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+}
+
+.cart {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    background-color: #3A7C22;
+    border-radius: 50px;
+}
+
+.cart img {
+    width: 12px;
+    height: 12px;
+}
+
+.add-produto-nav p {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.cadastro-container {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+}
+
+.cadastro-nome {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.nome-produto {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    row-gap: 5px;
+}
+
+.nome-produto label {
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+.nome-produto input {
+    width: 200px;
+    height: 30px;
+    padding-inline: 5%;
+    background-color: transparent;
+    border: 1px solid #919191;
+    margin-top: 5px;
+}
+
+.camera-container {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.camera-container img {
+    width: 32px;
+    height: 32px;
+}
+
+.cadastro-container p {
+    font-size: 10px;
+    font-family: 'Montserrats', sans-serif;
+    font-weight: 400;
+    color: #919191;
+    margin-top: 5px;
+}
+
+.descricao-produto {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.descricao-produto label {
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+.descricao-produto input {
+    width: 260px;
+    height: 120px;
+    padding-inline: 5%;
+    background-color: transparent;
+    border: 1px solid #919191;
+    margin-top: 10px;
+}
+
+.container-categorias {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 20px;
+    row-gap: 25px;
+}
+
+.container-categorias h3 {
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+.custom-control-input {
+    display: none;
+}
+
+.custom-checkbox {
+    min-height: 1rem;
+    padding-left: 0;
+    margin-right: 0;
+    cursor: pointer;
+}
+
+.custom-checkbox .custom-control-indicator {
+    content: "";
+    display: inline-block;
+    position: relative;
+    width: 35px;
+    height: 17px;
+    background-color: #fff;
+    border: solid 1px #3A7C22;
+    border-radius: 15px;
+    margin-right: 10px;
+    -webkit-transition: background .3s ease;
+    transition: background .3s ease;
+    vertical-align: middle;
+    margin: 5px 16px;
+    box-shadow: none;
+    float: right;
+}
+
+.custom-checkbox .custom-control-indicator:after {
+    content: "";
+    position: absolute;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background-color: #3A7C22;
+    border-radius: 21px;
+    box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.4);
+    left: 0px;
+    top: 0px;
+    -webkit-transition: left .3s ease, background .3s ease, box-shadow .1s ease;
+    transition: left .3s ease, background .3s ease, box-shadow .1s ease;
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-indicator {
+    background-color: #3A7C22;
+    background-image: none;
+    box-shadow: none !important;
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-indicator:after {
+    background-color: #fff;
+    left: 18px;
+}
+
+.custom-checkbox .custom-control-input:focus ~ .custom-control-indicator {
+    box-shadow: none !important;
+}
+
+.container-categorias label {
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    color: #919191;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container-quantidade {
+    width: 100%;
+    display: flex;
+    padding-top: 25px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.container-quantidade h3 {
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+.procurar-outra-marca {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.procurar-outra-marca label {
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    color: #919191;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cadastrar-produtos-botoes {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding-top: 40px;
+}
+
+.btn-salvar {
+    width: 100px;
+    height: 25px;
+    background-color: #ff6000;
+    color: #3A7C22;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+}
+
+.btn-cancelar {
+    width: 100px;
+    height: 25px;
+    background-color: transparent;
+    color: #3A7C22;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    border: 1px solid #3A7C22;
+    border-radius: 10px;
+}
+
+.btn-lixo {
+    width: 35px;
+    height: 25px;
+    background-color: transparent;
+    color: #3A7C22;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    border: 1px solid #3A7C22;
+    border-radius: 10px;
+    padding-top: 2px;
+}
