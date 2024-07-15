@@ -3,7 +3,8 @@ import "./style.css";
 import flecha from "../../Assets/flecha-esquerda.png"
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
-import QuantitySelector from "../../Components/SeletorQuantidade";
+import QuantitySelector from "../../Components/Seletor/SeletorQuantidade";
+import { BarcodeScanner } from "react-barcode-scanner";
 
 function AddProduto () {
     return (
@@ -28,7 +29,7 @@ function AddProduto () {
                             </form>
                         </div>
 
-                        <div className="camera-container">
+                        <div className="camera-container" onClick={() => alert('Abrir câmera')}>
                             <img alt="" src={camera} />
                             <p>Aponte a câmera do seu celular para o código de barras do produto</p>
                         </div>
@@ -43,6 +44,9 @@ function AddProduto () {
                                 name="nome" />
                         </form>
                     </div>
+
+                    {/* Inclua o componente de scanner de código de barras */}
+                    <BarcodeScanner />
 
                     <div className="container-categorias">
                         <h3>Categoria do produto</h3>
