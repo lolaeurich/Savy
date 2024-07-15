@@ -10,7 +10,7 @@ function AddProduto () {
         <div className="add-produto-container">
             <div className="add-produto-main">
                 <div className="add-produto-nav">
-                    <div className="cart">
+                    <div className="cart2">
                         <img alt="" src={flecha}/>
                     </div> 
                     <h3>Cadastro de produto</h3>   
