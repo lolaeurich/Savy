@@ -11,7 +11,7 @@ const BarcodeScanner = ({ onQRCodeScanned }) => {
 
         const videoElement = document.getElementById("scanner-video");
 
-        if (videoElement) {
+        if (videoElement && stream) {
           videoElement.srcObject = stream;
 
           Quagga.init(
@@ -26,7 +26,7 @@ const BarcodeScanner = ({ onQRCodeScanned }) => {
             },
             (err) => {
               if (err) {
-                console.error(err);
+                console.error("Error initializing Quagga:", err);
                 return;
               }
               Quagga.start();
@@ -39,6 +39,8 @@ const BarcodeScanner = ({ onQRCodeScanned }) => {
               onQRCodeScanned(codeResult.code);
             }
           });
+        } else {
+          console.error("Video element or stream is not available.");
         }
       } catch (error) {
         console.error("Error accessing camera:", error);
