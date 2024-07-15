@@ -100,3 +100,72 @@
     font-family: 'Montserrat', sans-serif;
     font-weight: 500;
 }
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999; 
+}
+
+.popup-content {
+    width: 80%; 
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #F5F4F9;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); 
+}
+
+.popup-content img {
+    width: 95px;
+    height: 95px;
+}
+
+.erro-text {
+    
+}
+
+.erro-text h3 {
+    color: #3A7C22;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    padding-bottom: 20px;
+}
+
+.erro-text p {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #A9A9A9;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.popup-content button {
+    width: 90%;
+    padding: 10px 20px;
+    border: none;
+    background-color: #3A7C22;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.popup-content button:hover {
+    background-color: white;
+    color: #3A7C22;
+}
