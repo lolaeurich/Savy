@@ -10,9 +10,8 @@ function AreaLogada () {
     const navigate = useNavigate();
 
     const handleSlideDone = () => {
-
         setTimeout(() => {
-            navigate('/login');
+            navigate('/comparativo');
         }, 1000); 
     };
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import "./style.css";
 import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
@@ -7,12 +8,18 @@ import QuantitySelector from "../../Components/Seletor/SeletorQuantidade";
 
 function AddProduto() {
 
+    const navigate = useNavigate();
+
+    const handleVoltar = () => {
+        navigate("/areaLogada");
+    };
+
     return (
         <div className="add-produto-container">
             <div className="add-produto-main">
                 <div className="add-produto-nav">
                     <div className="cart2">
-                        <img alt="" src={flecha} />
+                        <img alt="" src={flecha} onClick={handleVoltar}/>
                     </div>
                     <h3>Cadastro de produto</h3>
                 </div>
