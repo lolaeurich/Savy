@@ -167,9 +167,9 @@ html, body {
   border-radius: 50px;
   position: absolute;
   left: 0;
-  top: 2px !important;
+  top: 1px !important;
   z-index: 1;
-  height: 90% !important;
+  height: 95% !important;
   width: 2rem;
   background: #444;
   transition: width 0.2s ease-out;
