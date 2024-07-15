@@ -1,32 +1,56 @@
-import React, { useState } from 'react';
-import { QrReader } from 'react-qr-reader';
+import React, { useRef, useEffect } from "react";
+import { Quagga } from "quagga";
 
-const BarcodeScannerComponent = () => {
-    const [result, setResult] = useState('');
+const QRCodeScannerComponent = ({ onQRCodeScanned }) => {
+    const videoRef = useRef(null);
 
-    const handleScan = (data) => {
-        if (data) {
-            setResult(data);
-            console.log('Código de barras detectado:', data);
-            // Aqui você pode manipular o código de barras detectado
-        }
-    };
+    useEffect(() => {
+        const initQuagga = async () => {
+            if (!videoRef.current) return;
 
-    const handleError = (err) => {
-        console.error('Erro ao acessar a câmera:', err);
-    };
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                });
 
-    return (
-        <div>
-            <QrReader
-                delay={300}
-                onError={handleError}
-                onScan={handleScan}
-                style={{ width: '100%' }}
-            />
-            <p>{result}</p>
-        </div>
-    );
+                videoRef.current.srcObject = stream;
+
+                Quagga.init({
+                    inputStream: {
+                        name: "Live",
+                        type: "LiveStream",
+                        target: videoRef.current,
+                    },
+                    decoder: {
+                        readers: ["ean_reader", "upc_reader"], // You can add more readers here
+                    },
+                }, function(err) {
+                    if (err) {
+                        console.error("Error initializing Quagga:", err);
+                        return;
+                    }
+                    console.log("Initialization finished. Ready to start");
+                    Quagga.start();
+                });
+
+                Quagga.onDetected(data => {
+                    onQRCodeScanned(data.codeResult.code);
+                });
+
+            } catch (err) {
+                console.error("Error accessing camera:", err);
+            }
+        };
+
+        initQuagga();
+
+        return () => {
+            Quagga.stop();
+        };
+
+    }, [onQRCodeScanned]);
+
+    return <video ref={videoRef} style={{ width: "100%", maxWidth: "600px" }} />;
 };
 
-export default BarcodeScannerComponent;
+export default QRCodeScannerComponent;

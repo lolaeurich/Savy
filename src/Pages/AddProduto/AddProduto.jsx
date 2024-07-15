@@ -4,13 +4,20 @@ import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
 import QuantitySelector from "../../Components/Seletor/SeletorQuantidade";
-import BarcodeScannerComponent from "../../Components/BarcodeScanner/BarcodeScanner";
+import QRCodeScannerComponent from "../../Components/BarcodeScanner/BarcodeScanner";
 
 function AddProduto() {
     const [exibirScanner, setExibirScanner] = useState(false);
+    const [scannedCode, setScannedCode] = useState("");
 
     const abrirCamera = () => {
         setExibirScanner(true);
+    };
+
+    const handleQRCodeScanned = (code) => {
+        setScannedCode(code);
+        // Aqui você pode lidar com o código escaneado, por exemplo, atualizando o estado do seu componente
+        setExibirScanner(false); // Fechar o scanner após escanear
     };
 
     return (
@@ -59,26 +66,43 @@ function AddProduto() {
                         </form>
                     </div>
 
-                    {/* Renderização condicional do scanner de código de barras */}
-                    {exibirScanner && <BarcodeScannerComponent />}
-
                     <div className="container-categorias">
                         <h3>Categoria do produto</h3>
-                        <label class="custom-control custom-checkbox"><span>Lorem Ipsum</span>
-                            <input type="checkbox" id="check-btn" class="custom-control-input"/>
-                            <span class="custom-control-indicator"></span>
+                        <label className="custom-control custom-checkbox">
+                            <span>Lorem Ipsum</span>
+                            <input
+                                type="checkbox"
+                                id="check-btn"
+                                className="custom-control-input"
+                            />
+                            <span className="custom-control-indicator"></span>
                         </label>
-                        <label class="custom-control custom-checkbox"><span>Lorem Ipsum</span>
-                            <input type="checkbox" id="check-btn" class="custom-control-input"/>
-                            <span class="custom-control-indicator"></span>
+                        <label className="custom-control custom-checkbox">
+                            <span>Lorem Ipsum</span>
+                            <input
+                                type="checkbox"
+                                id="check-btn"
+                                className="custom-control-input"
+                            />
+                            <span className="custom-control-indicator"></span>
                         </label>
-                        <label class="custom-control custom-checkbox"><span>Lorem Ipsum</span>
-                            <input type="checkbox" id="check-btn" class="custom-control-input"/>
-                            <span class="custom-control-indicator"></span>
+                        <label className="custom-control custom-checkbox">
+                            <span>Lorem Ipsum</span>
+                            <input
+                                type="checkbox"
+                                id="check-btn"
+                                className="custom-control-input"
+                            />
+                            <span className="custom-control-indicator"></span>
                         </label>
-                        <label class="custom-control custom-checkbox"><span>Lorem Ipsum</span>
-                            <input type="checkbox" id="check-btn" class="custom-control-input"/>
-                            <span class="custom-control-indicator"></span>
+                        <label className="custom-control custom-checkbox">
+                            <span>Lorem Ipsum</span>
+                            <input
+                                type="checkbox"
+                                id="check-btn"
+                                className="custom-control-input"
+                            />
+                            <span className="custom-control-indicator"></span>
                         </label>
                     </div>
 
@@ -108,6 +132,18 @@ function AddProduto() {
                     </div>
                 </div>
             </div>
+
+            {/* Renderizar o scanner de QR code se exibirScanner for true */}
+            {exibirScanner && (
+                <QRCodeScannerComponent onQRCodeScanned={handleQRCodeScanned} />
+            )}
+
+            {/* Mostrar o código escaneado, se houver */}
+            {scannedCode && (
+                <div className="scanned-code-container">
+                    <p>Código QR escaneado: {scannedCode}</p>
+                </div>
+            )}
         </div>
     );
 }
