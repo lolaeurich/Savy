@@ -11,7 +11,7 @@ function Login () {
 
         setTimeout(() => {
             navigate('/login');
-        }, 2000); 
+        }, 1000); 
     };
 
     return (
@@ -23,10 +23,8 @@ function Login () {
 
                  <div className="login-savvy-text">
                     <h3 className="bem-vindo">Seja bem-vindo!</h3>
-                    <h2 className="melhor-compra">Com o Savvy, você 
-                    <br />
-                    sempre faz a melhor compra!
-                    </h2>
+                    <h2 className="melhor-compra">Com o Savvy, você</h2> 
+                    <h2 className="melhor-compra">sempre faz a melhor compra!</h2>
                 </div> 
 
                 <div className="login-savvy-text2">
@@ -53,11 +51,11 @@ function Login () {
                 </form>
 
                 <SlideButton 
-                mainText="Deslize para cadastrar" 
-                overlayText="Começar a economizar!" 
-                onSlideDone={handleSlideDone} 
-                reset={reset}
-            />
+                    mainText="Deslize para cadastrar" 
+                    overlayText="Começar a economizar!" 
+                    onSlideDone={handleSlideDone} 
+                    reset={reset}
+                />
             </div>
         </div>
     )

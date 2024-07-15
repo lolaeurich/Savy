@@ -15,7 +15,7 @@ function TelaInicial () {
 
         setTimeout(() => {
             navigate('/login');
-        }, 2000); 
+        }, 1000); 
     };
 
     return (
@@ -26,14 +26,13 @@ function TelaInicial () {
                 </div>
                 <div className="savvy-text">
                     <h3 className="conheca-missao">Conheça mais sobre nossa missão</h3>
-                    <h2 className="compras-inteligentes">Compras inteligentes:
-                    <br />
-                    Menos gastos com mercado
-                    <br />
-                    Mais recursos para seus sonhos
-                    </h2>
+                    <h2 className="compras-inteligentes">Compras inteligentes:</h2>
+                    <h2 className="compras-inteligentes">Menos gastos com mercado</h2>
+                    <h2 className="compras-inteligentes">Mais recursos para seus sonhos</h2>
                 </div>
+
                 <h3 className="voce-so-precisa">Você só precisa:</h3>
+
                 <div className="container-precisa">
                     <div className="cadastro-cep">
                         <img alt="" src={local} />
@@ -44,7 +43,9 @@ function TelaInicial () {
                         <p>Cadastrar sua lista de compras</p>
                     </div>
                 </div>
+
                 <h3 className="voce-so-precisa">E nós te entregamos:</h3>
+
                 <div className="container-entregamos">
                     <div className="cadastro-cep2">
                         <img alt="" src={conexao} />
@@ -57,12 +58,14 @@ function TelaInicial () {
                     </div>
                 </div>
             </div>
+
             <SlideButton 
                 mainText="Deslize para cadastrar" 
                 overlayText="Quero começar a testar!" 
                 onSlideDone={handleSlideDone} 
                 reset={reset}
             />
+
         </div>
     )
 }

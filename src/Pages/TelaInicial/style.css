@@ -1,19 +1,48 @@
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+}
+  
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    font-family: 'Lato', sans-serif;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #A2A2A2;
+    border-radius: 20px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #fff;
+    transition: 0.3s;
+}
+
+.main-container {
+    background-color: #F2F3F7;
+}
+
+.barra {
+    display: none;
+}
+
 .tela-inicial-container {
     width: 100%;
-    height: auto;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    padding-bottom: 5%;
 }
 
 .tela-inicial-main {
     width: 85%;
-    height: auto;
+    height: 90%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-evenly;
     align-items: flex-start;
 }
 
@@ -43,7 +72,7 @@
     color: gray;
     font-family: 'Montserrat', sans-serif;
     font-weight: 400;
-    margin-bottom: 4px; /* Adicione margem inferior para separação */
+    margin-bottom: 4px; 
 }
 
 .compras-inteligentes {
@@ -51,7 +80,7 @@
     color: gray;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-    margin-top: 0; /* Remova margem superior padrão */
+    margin-top: 0; 
 }
 
 .voce-so-precisa {
@@ -97,6 +126,7 @@
     align-items: center;
     width: 100%;
     height: auto;
+    row-gap: 10px;
 }
 
 .entregamos-h3 {
@@ -113,13 +143,15 @@
     align-items: center;
 }
 
+
+/*Não retirar os !important. Sobreposição à folha de estilo da lib*/
 .slide-but {
-  border: 2px solid #444;
   width: 80% !important;
   height: 45px !important;
   border: none !important;
   border-radius: 50px;
-  margin-top: 5% !important;
+  margin-top: 1% !important;
+  margin-bottom: 2%;
   padding: 0px !important;
   position: relative;
   overflow: hidden;
@@ -129,16 +161,15 @@
   justify-content: center;
   cursor: default;
   user-select: none;
-  /* box-sizing: border-box; */
 }
 
 .slide-but .slide-overlay {
   border-radius: 50px;
   position: absolute;
   left: 0;
-  top: 0;
+  top: 2px;
   z-index: 1;
-  height: 100%;
+  height: 90% !important;
   width: 2rem;
   background: #444;
   transition: width 0.2s ease-out;

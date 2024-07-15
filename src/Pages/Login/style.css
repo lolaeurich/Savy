@@ -45,7 +45,7 @@
     color: gray;
     font-family: 'Montserrat', sans-serif;
     font-weight: 400;
-    margin-bottom: 4px; /* Adicione margem inferior para separação */
+    margin-bottom: 4px;
 }
 
 .melhor-compra {
@@ -53,7 +53,7 @@
     color: gray;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-    margin-top: 0; /* Remova margem superior padrão */
+    margin-top: 0;
 }
 
 .economizar {
@@ -61,7 +61,7 @@
     color: gray;
     font-family: 'Montserrat', sans-serif;
     font-weight: 400;
-    margin-bottom: 4px; /* Adicione margem inferior para separação */
+    margin-bottom: 4px; 
 }
 
 .digite-dados {
@@ -69,7 +69,7 @@
     color: gray;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600;
-    margin-top: 0; /* Remova margem superior padrão */
+    margin-top: 0;
 }
 
 .login-savvy-text2 {
