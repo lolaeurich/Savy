@@ -10,19 +10,20 @@ function Login() {
     const navigate = useNavigate();
 
     const handleSlideDone = () => {
-        // Simulando verificação de login
         const email = document.querySelector('input[name="email"]').value;
         const nome = document.querySelector('input[name="nome"]').value;
         const cep = document.querySelector('input[name="cep"]').value;
 
-        // Simulando login com valores estáticos
-        if (email === 'admin@admin.com.br') {
-            setTimeout(() => {
-                navigate('/areaLogada');
-            }, 1000);
-        } else {
+        // Verifica se o e-mail contém '@'
+        if (!email || !email.includes('@')) {
             setShowError(true);
+            return;
         }
+
+        // Simula login
+        setTimeout(() => {
+            navigate('/areaLogada');
+        }, 1000);
     };
 
     const handleTryAgain = () => {
