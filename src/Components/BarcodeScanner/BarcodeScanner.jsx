@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { BarcodeScanner } from 'react-barcode-scanner';
+import { QrReader } from 'react-qr-reader';
 
 const BarcodeScannerComponent = () => {
-    const [barcode, setBarcode] = useState('');
+    const [result, setResult] = useState('');
 
     const handleScan = (data) => {
-        setBarcode(data);
-        console.log('Código de barras detectado:', data);
+        if (data) {
+            setResult(data);
+            console.log('Código de barras detectado:', data);
+            // Aqui você pode manipular o código de barras detectado
+        }
     };
 
     const handleError = (err) => {
@@ -15,12 +18,13 @@ const BarcodeScannerComponent = () => {
 
     return (
         <div>
-            <BarcodeScanner
-                onScan={handleScan}
+            <QrReader
+                delay={300}
                 onError={handleError}
-                facingMode="environment"
+                onScan={handleScan}
+                style={{ width: '100%' }}
             />
-            <p>{barcode}</p>
+            <p>{result}</p>
         </div>
     );
 };

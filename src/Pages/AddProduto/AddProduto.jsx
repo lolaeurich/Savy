@@ -1,20 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.css";
-import flecha from "../../Assets/flecha-esquerda.png"
+import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
 import QuantitySelector from "../../Components/Seletor/SeletorQuantidade";
-import { BarcodeScanner } from "react-barcode-scanner";
+import BarcodeScannerComponent from "../../Components/BarcodeScanner/BarcodeScanner";
 
-function AddProduto () {
+function AddProduto() {
+    const [exibirScanner, setExibirScanner] = useState(false);
+
+    const abrirCamera = () => {
+        setExibirScanner(true);
+    };
+
     return (
         <div className="add-produto-container">
             <div className="add-produto-main">
                 <div className="add-produto-nav">
                     <div className="cart2">
-                        <img alt="" src={flecha}/>
-                    </div> 
-                    <h3>Cadastro de produto</h3>   
+                        <img alt="" src={flecha} />
+                    </div>
+                    <h3>Cadastro de produto</h3>
                 </div>
 
                 <div className="cadastro-container">
@@ -22,31 +28,39 @@ function AddProduto () {
                         <div className="nome-produto">
                             <form>
                                 <label>Nome ou código de barras</label>
-                                <input 
+                                <input
                                     type="text"
                                     placeholder="Digite aqui"
-                                    name="nome" />
+                                    name="nome"
+                                />
                             </form>
                         </div>
 
-                        <div className="camera-container" onClick={() => alert('Abrir câmera')}>
+                        <div
+                            className="camera-container"
+                            onClick={abrirCamera}
+                        >
                             <img alt="" src={camera} />
-                            <p>Aponte a câmera do seu celular para o código de barras do produto</p>
+                            <p>
+                                Aponte a câmera do seu celular para o código
+                                de barras do produto
+                            </p>
                         </div>
-                    </div>    
+                    </div>
 
                     <div className="descricao-produto">
                         <form>
                             <label>Descrição do produto</label>
-                            <input 
+                            <input
                                 type="text"
                                 placeholder="Digite aqui"
-                                name="nome" />
+                                name="nome"
+                            />
                         </form>
                     </div>
 
-                    {/* Inclua o componente de scanner de código de barras */}
-                    <BarcodeScanner />
+                    {/* Renderização condicional do scanner de código de barras */}
+                    {exibirScanner && <BarcodeScannerComponent />}
 
                     <div className="container-categorias">
                         <h3>Categoria do produto</h3>
@@ -70,25 +84,32 @@ function AddProduto () {
 
                     <div className="container-quantidade">
                         <h3>Quantidade:</h3>
-                        <QuantitySelector/>
+                        <QuantitySelector />
                     </div>
 
                     <div className="procurar-outra-marca">
-                        <label class="custom-control custom-checkbox"><span>Podemos procurar outra marca</span>
-                            <input type="checkbox" id="check-btn" class="custom-control-input"/>
-                            <span class="custom-control-indicator"></span>
+                        <label className="custom-control custom-checkbox">
+                            <span>Podemos procurar outra marca</span>
+                            <input
+                                type="checkbox"
+                                id="check-btn"
+                                className="custom-control-input"
+                            />
+                            <span className="custom-control-indicator"></span>
                         </label>
                     </div>
 
                     <div className="cadastrar-produtos-botoes">
                         <button className="btn-salvar">Salvar</button>
                         <button className="btn-cancelar">Cancelar</button>
-                        <button className="btn-lixo"><img alt="" src={lixo}/></button>
+                        <button className="btn-lixo">
+                            <img alt="" src={lixo} />
+                        </button>
                     </div>
-                </div>    
+                </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default AddProduto;
