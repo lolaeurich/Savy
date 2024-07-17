@@ -3,7 +3,6 @@ import "./style.css";
 import image from "../../Assets/image.png";
 
 function Pesquisa () {
-    const [expanded, setExpanded] = useState(false);
   const [isChecked, setIsChecked] = useState(false); // Estado para controlar o checkbox
 
   const handleCheckboxChange = () => {
