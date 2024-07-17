@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start; 
-    padding-top: 5%;
+    padding: 3%;
 }
 
 .comparativo-main {
@@ -50,7 +50,7 @@
 }
 
 .comparativo-cards {
-    width: 90%;
+    width: 95%;
     display: flex;
     flex-direction: column;
     row-gap: 15px;
@@ -59,7 +59,7 @@
 
 .card1, .card2, .card3 {
     width: 100%;
-    height: 170px;
+    height: 210px;
     border: 1px solid #ff6000;
     background-color: #fff;
     border-radius: 25px;
@@ -128,4 +128,101 @@
     border: 1px solid #3A7C22;
     border-radius: 10px;
 }
+
+.card2 h3 {
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: #3A7C22;
+}
+
+.lista-mercados {
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.mercado1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    width: 70px;
+    height: 90px;
+    background-color: #fff;
+    border-radius: 15px;
+    border: 1px solid #000;
+    padding: 1%
+}
+
+.mercado-distancia {
+    font-size: 8px;
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+    color: #919191;
+    align-self: end;
+}
+
+.mercado1 img {
+    width: 27px;
+    height: 25px;
+}
+
+.mercado-produtos {
+    font-size: 10px;
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+    color: #919191;
+}
+
+.mercado-economia {
+    width: 60px;
+    font-size: 10px;
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+    color: #919191;
+    background-color: transparent;
+    border: 1px solid #000;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.card3 h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #3A7C22;
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
+.card3 p {
+    font-size: 12px;
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+    color: #3A7C22;
+}
+
+.card3-icons {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.icon3, .icon4 {
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+}
+
+.icon3-img, .icon4-img {
+    width: 20px;
+    height: 20px;
+}
+
+.icon3-p, .icon4-p {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    font-family: 'Montserrat', sans-serif;
+    color: #ff6000 !important;
+}
+
 
