@@ -1,0 +1,53 @@
+.weight-selector {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100px;
+    height: 23px;
+    border-radius: 8px;
+    overflow: hidden;
+    column-gap: 3px;
+}
+
+.weight-button-less {
+    width: 20px; 
+    height: 20px;
+    background-color: #EBEBEB;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    border-radius: 5px;
+}
+
+.weight-button-plus {
+    width: 20px; 
+    height: 20px;
+    background-color: #3A7C22;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    border-radius: 5px;
+}
+
+.weight-button:hover {
+    background-color: #e0e0e0;
+}
+
+.weight-display {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: #333;
+}

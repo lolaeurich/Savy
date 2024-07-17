@@ -4,7 +4,7 @@ import "./style.css";
 import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
-import QuantitySelector from "../../Components/Seletor/SeletorQuantidade";
+import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 
 function AddProduto() {
 

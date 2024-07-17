@@ -1,0 +1,92 @@
+.pesquisa-container {
+    width: 100%;
+    height: 100vh;
+    background-color: #E5E5E5;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    align-items: center;
+    padding: 3% 3% 0% 3%;
+    row-gap: 15px;
+    overflow-y: scroll;
+}
+
+.pesquisa-container img {
+    width: 140px;
+    height: 140px;
+}
+
+.perguntas {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    row-gap: 10px;
+}
+
+.pergunta1 {
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    row-gap: 10px;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 5%;
+}
+
+.pergunta1 h3 {
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.pergunta1 p {
+    font-size: 12px;
+    font-weight: 400;
+    font-family: 'Montserrat', sans-serif;
+    color: #9F9FA6;
+}
+
+.resposta1, .resposta2, .resposta3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.resposta1 p, .resposta2 p, .resposta3 p{
+    display: flex;
+    width: 70%;
+    background-color: #F7F6FB;
+    border-radius: 10px;
+    color: #9F9FA6;
+    padding: 4px;
+}
+
+.card-content-checkbox {
+    margin-right: 10px;
+    position: relative; /* Posição relativa para alinhar o label */
+}
+
+.resposta1 input[type="checkbox"], .resposta2 input[type="checkbox"], .resposta3 input[type="checkbox"] {
+    display: none; /* Oculta o input original */
+}
+
+.resposta1 label, .resposta2 label, .resposta3 label {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #ccc;
+    border-radius: 50px;
+    cursor: pointer;
+    top: 50%;
+    left: 0;
+    background-color: #fff; /* Cor de fundo padrão */
+}
+
+.resposta1 input[type="checkbox"]:checked + label,
+.resposta2 input[type="checkbox"]:checked + label,
+.resposta3 input[type="checkbox"]:checked + label {
+    background-color: green; /* Cor de fundo quando o checkbox está marcado */
+    color: #fff;
+    border-radius: 50px;
+}   

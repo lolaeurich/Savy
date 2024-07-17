@@ -1,0 +1,17 @@
+.card-compraunica {
+    background-color: transparent;
+    border: none;
+    width: 95%;
+}
+
+.card-header-compraunica {
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.card-header-compraunica img {
+    width: 23px;
+    height: 17px;
+}

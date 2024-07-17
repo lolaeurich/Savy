@@ -1,5 +1,6 @@
 import React from "react";
 import "./style.css";
+import { useNavigate } from 'react-router-dom';
 import cart from "../../Assets/cart.png";
 import flecha from "../../Assets/flecha-esquerda.png";
 import mercado from "../../Assets/home.png";
@@ -7,6 +8,20 @@ import produtos from "../../Assets/produtos.png";
 import local from "../../Assets/local-cinza.png";
 
 function Comparativo () {
+    const navigate = useNavigate();
+
+    const handleListaMercados = () => {
+        navigate("/listaMercados");
+    };
+
+    const handleCompraUnica = () => {
+        navigate("/compraUnica");
+    };
+
+    const handleSobre = () => {
+        navigate("/sobreASavvy");
+    };
+
     return (
         <div className="comparativo-container">
             <div className="comparativo-main">
@@ -40,7 +55,7 @@ function Comparativo () {
                         </div>
 
                         <div className="card1-btns">
-                            <button className="ver-mercados">Ver supermercados</button>
+                            <button className="ver-mercados" onClick={handleListaMercados}>Ver supermercados</button>
                             <button className="custo">Custo R$ 00,00</button>
                         </div>
                     </div>
@@ -74,7 +89,7 @@ function Comparativo () {
                             </div>
                         </div>
                         <div className="card1-btns">
-                            <button className="ver-mercados">Ver supermercados</button>
+                            <button className="ver-mercados" onClick={handleCompraUnica}>Ver supermercados</button>
                             <button className="custo">Custo R$ 00,00</button>
                         </div>
                     </div>
@@ -94,7 +109,7 @@ function Comparativo () {
                                 </div>
                             </div>
                         <div className="card1-btns">
-                            <button className="ver-mercados">Ver supermercados</button>
+                            <button className="ver-mercados" onClick={handleSobre}>Saiba mais</button>
                             <button className="custo">Custo R$ 00,00</button>
                         </div>    
                     </div>

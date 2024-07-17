@@ -1,0 +1,74 @@
+.listamercados-container {
+    width: 100%;
+    height: 100vh;
+    background-color: #F7F6FB;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; 
+    padding: 3% 3% 0% 3%;
+}
+
+.listamercados-main {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    row-gap: 15px;
+}
+
+.listamercados-nav {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 5%;
+}
+
+.cart2 {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 35px;
+    height: 35px;
+    background-color: #3A7C22;
+    border-radius: 50px;
+}
+
+.cart img {
+    width: 12px;
+    height: 12px;
+}
+
+.listamercados-nav h3 {
+    color: #919191;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+}
+
+.listamercados-geral {
+    width: 110%;
+    height: 100%;
+    background-color: #E5E5E5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5% 3% 5% 3%;
+    overflow-y: scroll;
+  }
+
+.listamercados-geral-h3 {
+    width: 90%;
+    background-color: transparent;
+    border: 1px solid #3A7C22;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    color: #3A7C22;
+    padding: 2%;
+    text-align: center;
+}
