@@ -19,7 +19,8 @@ import axios from "axios";
 export function BarcodeDialog({ open, setOpen, setCode }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [productName, setProductName] = useState(""); // Novo estado para armazenar o nome do produto
+  const [productData, setProductData] = useState(null); // Novo estado para armazenar dados do produto
+  const [error, setError] = useState(null);
 
   const handleClose = () => {
     setOpen(false);
@@ -27,29 +28,31 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
 
   useEffect(() => {
     if (setCode) {
-      // Faça a requisição à API sempre que o código for definido
       const fetchProductData = async () => {
         try {
           const response = await axios.get(
-            `https://menorpreco.notaparana.pr.gov.br/api/v1/produtos`,
+            "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
             {
               params: {
-                local: "-25.54692,-49.18058", // Você pode ajustar isso conforme necessário
-                termo: setCode, // O código de barras lido
+                local: "-25.54692,-49.18058", // Coordenadas locais
                 raio: "20",
+                termo: setCode, // Código de barras lido
               },
             }
           );
 
+          // Verifica se a resposta contém produtos
           if (response.data && response.data.produtos && response.data.produtos.length > 0) {
-            // Supondo que a resposta contenha uma lista de produtos
-            setProductName(response.data.produtos[0].nome); // Pegue o nome do primeiro produto
+            setProductData(response.data.produtos[0]); // Armazena o primeiro produto
+            setError(null);
           } else {
-            setProductName("Produto não encontrado.");
+            setProductData(null);
+            setError("Produto não encontrado.");
           }
         } catch (error) {
           console.error("Erro ao buscar o produto:", error);
-          setProductName("Erro ao buscar o produto.");
+          setProductData(null);
+          setError("Erro ao buscar o produto.");
         }
       };
 
@@ -95,10 +98,19 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
         ) : (
           <>
             <BarcodeScanner setCode={setCode} open={open} setOpen={setOpen} />
-            {productName && (
-              <Typography>
-                Nome do Produto: {productName}
-              </Typography>
+            {productData ? (
+              <div>
+                <Typography variant="h6">Nome do Produto: {productData.desc}</Typography>
+                <Typography>Valor: R$ {productData.valor}</Typography>
+                <Typography>Data e Hora: {new Date(productData.datahora).toLocaleString()}</Typography>
+                <Typography>Distância: {productData.distkm} km</Typography>
+                <Typography>Estabelecimento: {productData.estabelecimento.nm_emp}</Typography>
+                <Typography>Endereço: {productData.estabelecimento.nm_logr}, {productData.estabelecimento.nr_logr}, {productData.estabelecimento.bairro}</Typography>
+              </div>
+            ) : error ? (
+              <Typography color="error">{error}</Typography>
+            ) : (
+              <Typography>Aguardando leitura do código de barras...</Typography>
             )}
           </>
         )}
