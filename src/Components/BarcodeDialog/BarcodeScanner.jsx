@@ -13,7 +13,6 @@ const classes = {
   loading: `${PREFIX}-loading`,
 };
 
-// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
 const Root = styled("div")({
   [`& .${classes.box}`]: {
     display: "block",
@@ -57,7 +56,7 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
         },
         locator: {
           halfSample: true,
-          patchSize: "large", // x-small, small, medium, large, x-large
+          patchSize: "large",
         },
         numOfWorkers: navigator.hardwareConcurrency,
         decoder: {
@@ -69,7 +68,8 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
       },
       (err) => {
         if (err) {
-          return console.log(err);
+          console.error(err);
+          return;
         }
         Quagga.start();
         return () => {
@@ -95,9 +95,7 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
             Number(drawingCanvas.getAttribute("height"))
           );
           result.boxes
-            .filter((box) => {
-              return box !== result.box;
-            })
+            .filter((box) => box !== result.box)
             .forEach((box) => {
               Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, {
                 color: "#E0E0E0",
@@ -124,9 +122,16 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
       }
     });
 
-    Quagga.onDetected((result) => {
-      setCode(result.codeResult.code);
+    Quagga.onDetected(async (result) => {
+      const barcodeValue = result.codeResult.code;
+
+      // Consulta a API para obter informações detalhadas
+      const productInfo = await fetchProductInfo(barcodeValue);
+
+      // Atualiza o estado com as informações do produto
+      setCode(productInfo);
       setOpen(false);
+      
       Quagga.offDetected();
       Quagga.offProcessed();
       Quagga.stop();
@@ -140,6 +145,24 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
       Quagga.stop();
     }
   }, [open]);
+
+  const fetchProductInfo = async (barcode) => {
+    try {
+      const response = await fetch(`https://api.example.com/products/${barcode}`);
+      const data = await response.json();
+      return {
+        code: data.code,
+        name: data.name,
+        description: data.description,
+        expirationDate: data.expirationDate,
+        manufacturingDate: data.manufacturingDate,
+        // Adicione mais campos conforme necessário
+      };
+    } catch (error) {
+      console.error("Erro ao buscar informações do produto:", error);
+      return {};
+    }
+  };
 
   return (
     <Root>
