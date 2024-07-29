@@ -5,13 +5,24 @@ import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
+import { BarcodeDialog, BarcodeScanner } from "../../Components/BarcodeDialog";
 
 function AddProduto() {
-
+    const [dialogOpen, setDialogOpen] = useState(false); // Estado para controlar o diálogo
+    const [code, setCode] = useState(""); // Estado para armazenar o código de barras
     const navigate = useNavigate();
 
     const handleVoltar = () => {
         navigate("/areaLogada");
+    };
+
+    const handleCameraClick = () => {
+        setDialogOpen(true); // Abre o diálogo quando a imagem da câmera é clicada
+    };
+
+    const handleCodeDetected = (code) => {
+        setCode(code);
+        setDialogOpen(false); // Fecha o diálogo quando um código é detectado
     };
 
     return (
@@ -19,7 +30,7 @@ function AddProduto() {
             <div className="add-produto-main">
                 <div className="add-produto-nav">
                     <div className="cart2">
-                        <img alt="" src={flecha} onClick={handleVoltar}/>
+                        <img alt="" src={flecha} onClick={handleVoltar} />
                     </div>
                     <h3>Cadastro de produto</h3>
                 </div>
@@ -33,12 +44,15 @@ function AddProduto() {
                                     type="text"
                                     placeholder="Digite aqui"
                                     name="nome"
+                                    value={code}
+                                    onChange={(e) => setCode(e.target.value)}
                                 />
                             </form>
                         </div>
 
                         <div
                             className="camera-container"
+                            onClick={handleCameraClick} // Abre o diálogo ao clicar
                         >
                             <img alt="" src={camera} />
                             <p>
@@ -125,6 +139,13 @@ function AddProduto() {
                     </div>
                 </div>
             </div>
+
+            {/* Adicione o BarcodeDialog aqui */}
+            <BarcodeDialog
+                open={dialogOpen}
+                setOpen={setDialogOpen}
+                setCode={handleCodeDetected}
+            />
         </div>
     );
 }
