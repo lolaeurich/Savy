@@ -19,7 +19,7 @@ import axios from "axios";
 export function BarcodeDialog({ open, setOpen, setCode }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [productData, setProductData] = useState(null); // Novo estado para armazenar dados do produto
+  const [productData, setProductData] = useState(null);
   const [error, setError] = useState(null);
 
   const handleClose = () => {
@@ -34,16 +34,15 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
             "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
             {
               params: {
-                local: "-25.54692,-49.18058", // Coordenadas locais
-                raio: "20",
-                termo: setCode, // Código de barras lido
+                gtin: setCode, // Código de barras lido
               },
             }
           );
 
-          // Verifica se a resposta contém produtos
-          if (response.data && response.data.produtos && response.data.produtos.length > 0) {
-            setProductData(response.data.produtos[0]); // Armazena o primeiro produto
+          // Encontrar o produto com o código de barras (se disponível)
+          const product = response.data.produtos.find(p => p.gtin === setCode);
+          if (product) {
+            setProductData(product);
             setError(null);
           } else {
             setProductData(null);
@@ -122,5 +121,5 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
 BarcodeDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
-  setCode: PropTypes.func.isRequired,
+  setCode: PropTypes.string, // Alterado para string porque setCode deve ser o código de barras
 };
