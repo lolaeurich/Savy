@@ -9,9 +9,8 @@ const PREFIX = "BarcodeScanner";
 
 const classes = {
   box: `${PREFIX}-box`,
-  formControl: `${PREFIX}-formControl`,
   loading: `${PREFIX}-loading`,
-  result: `${PREFIX}-result`, // Classe para o resultado da leitura
+  result: `${PREFIX}-result`,
 };
 
 const Root = styled("div")({
@@ -31,10 +30,6 @@ const Root = styled("div")({
     },
     marginBottom: 0,
   },
-  [`& .${classes.formControl}`]: {
-    width: 180,
-    margin: "8px 0 16px",
-  },
   [`& .${classes.loading}`]: {
     marginBottom: "32px",
   },
@@ -52,7 +47,6 @@ const Root = styled("div")({
 
 export function BarcodeScanner({ setCode, open, setOpen }) {
   const [loading, setLoading] = useState(true);
-  const [result, setResult] = useState(null); // Novo estado para armazenar o resultado
 
   useEffect(() => {
     Quagga.init(
@@ -136,7 +130,6 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
 
     Quagga.onDetected((result) => {
       const barcodeValue = result.codeResult.code;
-      setResult(barcodeValue); // Atualiza o estado com o valor do código de barras
       setCode(barcodeValue);
       setOpen(false);
       Quagga.offDetected();
@@ -163,11 +156,6 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
         maxHeight={loading ? "0px" : "800px"}
       />
       {loading && <Loading className={classes.loading} />}
-      {result && (
-        <Typography className={classes.result}>
-          Código Lido: {result}
-        </Typography>
-      )}
     </Root>
   );
 }
