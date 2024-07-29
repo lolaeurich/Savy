@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import PropTypes from "prop-types";
 import Quagga from "quagga";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import Loading from "../Loading/Loading";
 
 const PREFIX = "BarcodeScanner";
@@ -11,6 +11,7 @@ const classes = {
   box: `${PREFIX}-box`,
   formControl: `${PREFIX}-formControl`,
   loading: `${PREFIX}-loading`,
+  result: `${PREFIX}-result`, // Classe para o resultado da leitura
 };
 
 const Root = styled("div")({
@@ -37,10 +38,21 @@ const Root = styled("div")({
   [`& .${classes.loading}`]: {
     marginBottom: "32px",
   },
+  [`& .${classes.result}`]: {
+    position: "absolute",
+    bottom: "10px",
+    left: "10px",
+    padding: "5px",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    color: "white",
+    borderRadius: "3px",
+    fontSize: "16px",
+  },
 });
 
 export function BarcodeScanner({ setCode, open, setOpen }) {
   const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState(null); // Novo estado para armazenar o resultado
 
   useEffect(() => {
     Quagga.init(
@@ -122,16 +134,11 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
       }
     });
 
-    Quagga.onDetected(async (result) => {
+    Quagga.onDetected((result) => {
       const barcodeValue = result.codeResult.code;
-
-      // Consulta a API para obter informações detalhadas
-      const productInfo = await fetchProductInfo(barcodeValue);
-
-      // Atualiza o estado com as informações do produto
-      setCode(productInfo);
+      setResult(barcodeValue); // Atualiza o estado com o valor do código de barras
+      setCode(barcodeValue);
       setOpen(false);
-      
       Quagga.offDetected();
       Quagga.offProcessed();
       Quagga.stop();
@@ -146,24 +153,6 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
     }
   }, [open]);
 
-  const fetchProductInfo = async (barcode) => {
-    try {
-      const response = await fetch(`https://api.example.com/products/${barcode}`);
-      const data = await response.json();
-      return {
-        code: data.code,
-        name: data.name,
-        description: data.description,
-        expirationDate: data.expirationDate,
-        manufacturingDate: data.manufacturingDate,
-        // Adicione mais campos conforme necessário
-      };
-    } catch (error) {
-      console.error("Erro ao buscar informações do produto:", error);
-      return {};
-    }
-  };
-
   return (
     <Root>
       <Box
@@ -174,6 +163,11 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
         maxHeight={loading ? "0px" : "800px"}
       />
       {loading && <Loading className={classes.loading} />}
+      {result && (
+        <Typography className={classes.result}>
+          Código Lido: {result}
+        </Typography>
+      )}
     </Root>
   );
 }
