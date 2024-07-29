@@ -43,7 +43,7 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .savvy-logo {
@@ -51,6 +51,10 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.savvy-logo img {
+    width: 80%;
 }
 
 .tela-inicial-container h1 {
@@ -63,39 +67,37 @@ html, body {
 .savvy-text {
     display: flex;
     flex-direction: column;
+    text-align: center;
     width: 100%;
     height: auto;
 }
 
 .conheca-missao {
-    font-size: 16px;
-    color: gray;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 400;
-    margin-bottom: 4px; 
-}
-
-.compras-inteligentes {
     font-size: 20px;
-    color: gray;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    margin-top: 0; 
+    font-style: italic;
+    color: #000;
+    font-weight: bold;
+    margin-bottom: 4px; 
 }
 
 .voce-so-precisa {
     font-size: 18px;
-    color: gray;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
+    color: #000;
+    font-style: italic;
+    font-weight: bold;
 }
 
 .container-precisa {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-around;
-    width: 100%;
+    width: 110%;
     height: auto;
+    column-gap: 25px;
+}
+
+.container-precisa p {
+    font-weight: bold;
 }
 
 .cadastro-cep {
@@ -103,28 +105,27 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 35%;
+    width: 45%;
     text-align: center;
 }
 
 .cadastro-cep img {
-    width: 32px;
-    height: 32px;
+    width: 60px;
+    height: 60px;
 }
 
 .cadastro-cep p {
-    font-size: 12px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    color: gray;
+    font-size: 16px;
+    font-style: italic;
+    font-weight: bold;
+    color: #000;
 }
 
 .container-entregamos {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 110%;
     height: auto;
     row-gap: 10px;
 }
@@ -141,6 +142,21 @@ html, body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.cadastro-cep2 h5 {
+    font-size: 17px;
+}
+
+.cadastro-cep2 img {
+    width: 80px;
+    height: 80px;
+}
+
+.cadastro-cep2 p {
+    font-size: 14px;
+    width: 70%;
+    font-weight: 700;
 }
 
 

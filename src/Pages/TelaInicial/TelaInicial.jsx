@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./style.css";
-import local from "../../Assets/local.png";
-import lista from "../../Assets/lista.png";
+import here from "../../Assets/here.png";
+import lista from "../../Assets/lista1.png";
 import conexao from "../../Assets/conexao.png";
 import cesta from "../../Assets/cesta.png";
+import logo from "../../Assets/logo1.png";
+import intelig from "../../Assets/inteligencia.jpeg";
+import economia from "../../Assets/economia.jpeg";
+import controle from "../../Assets/controle.jpeg";
+
 import SlideButton from 'react-slide-button';
 
 function TelaInicial () {
@@ -22,39 +27,43 @@ function TelaInicial () {
         <div className="tela-inicial-container">
             <div className="tela-inicial-main">
                 <div className="savvy-logo">
-                     <h1>SAVVY</h1>
+                     <img alt="" src={logo}/>
                 </div>
                 <div className="savvy-text">
-                    <h3 className="conheca-missao">Conheça mais sobre nossa missão</h3>
-                    <h2 className="compras-inteligentes">Compras inteligentes:</h2>
-                    <h2 className="compras-inteligentes">Menos gastos com mercado</h2>
-                    <h2 className="compras-inteligentes">Mais recursos para seus sonhos</h2>
+                    <h3 className="conheca-missao">Sua melhor maneira de comprar</h3>
                 </div>
 
-                <h3 className="voce-so-precisa">Você só precisa:</h3>
+                <h3 className="voce-so-precisa">Cadastre:</h3>
 
                 <div className="container-precisa">
                     <div className="cadastro-cep">
-                        <img alt="" src={local} />
-                        <p>Cadastrar seu CEP</p>
+                        <img alt="" src={here} />
+                        <p>CEP</p>
                     </div>
+                    <p>e</p>
                     <div className="cadastro-cep">
                         <img alt="" src={lista} />
-                        <p>Cadastrar sua lista de compras</p>
+                        <p>Lista de compras</p>
                     </div>
                 </div>
 
-                <h3 className="voce-so-precisa">E nós te entregamos:</h3>
+                <h3 className="voce-so-precisa">Receba:</h3>
 
                 <div className="container-entregamos">
                     <div className="cadastro-cep2">
-                        <img alt="" src={conexao} />
-                        <p>Preço baixo e onde comprar</p>
+                        <h5>Economia</h5>
+                        <img alt="" src={economia} />
+                        <p>Encontre o menor preço de cada item.</p>
                     </div>
-                    <h3 className="entregamos-h3">ou</h3>
                     <div className="cadastro-cep2">
-                        <img alt="" src={cesta} />
-                        <p>Melhor custo benefício em um só lugar</p>
+                        <h5>Controle</h5>
+                        <img alt="" src={controle} />
+                        <p>Ache os menores preços no supermercado.</p>
+                    </div>
+                    <div className="cadastro-cep2">
+                        <h5>Inteligência</h5>
+                        <img alt="" src={intelig} />
+                        <p>Receba em casa pelo de menor preço.</p>
                     </div>
                 </div>
             </div>
