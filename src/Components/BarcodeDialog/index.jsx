@@ -44,14 +44,18 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
           if (product) {
             setProductData(product);
             setError(null);
+            // Atualiza o campo de código na página com a descrição do produto
+            window.dispatchEvent(new CustomEvent('productFound', { detail: product.desc }));
           } else {
             setProductData(null);
             setError("Produto não encontrado.");
+            window.dispatchEvent(new CustomEvent('productNotFound'));
           }
         } catch (error) {
           console.error("Erro ao buscar o produto:", error);
           setProductData(null);
           setError("Erro ao buscar o produto.");
+          window.dispatchEvent(new CustomEvent('productNotFound'));
         }
       };
 
