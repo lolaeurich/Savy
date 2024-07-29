@@ -34,7 +34,8 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
             "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
             {
               params: {
-                gtin: setCode, // Código de barras lido
+                termo: setCode, // Código de barras lido
+                local: "6gkzqf9vb" // Local exemplo, pode ser ajustado conforme necessário
               },
             }
           );
@@ -44,18 +45,18 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
           if (product) {
             setProductData(product);
             setError(null);
-            // Atualiza o campo de código na página com a descrição do produto
-            window.dispatchEvent(new CustomEvent('productFound', { detail: product.desc }));
+            // Atualizar o estado com a descrição do produto
+            setCode(product.desc);
           } else {
             setProductData(null);
             setError("Produto não encontrado.");
-            window.dispatchEvent(new CustomEvent('productNotFound'));
+            setCode(""); // Limpar o código se o produto não for encontrado
           }
         } catch (error) {
           console.error("Erro ao buscar o produto:", error);
           setProductData(null);
           setError("Erro ao buscar o produto.");
-          window.dispatchEvent(new CustomEvent('productNotFound'));
+          setCode(""); // Limpar o código em caso de erro
         }
       };
 
@@ -125,5 +126,5 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
 BarcodeDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
-  setCode: PropTypes.string, // Alterado para string porque setCode deve ser o código de barras
+  setCode: PropTypes.func.isRequired, // Alterado para func porque setCode é uma função
 };
