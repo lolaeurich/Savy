@@ -46,16 +46,16 @@ function AddProduto() {
   return (
     <div className="add-produto-container">
       <div className="add-produto-main">
-        <div className="add-produto-nav">
+        {/*<div className="add-produto-nav">
           <div className="cart2">
             <img alt="" src={flecha} onClick={handleVoltar} />
           </div>
           <h3>Cadastro de produto</h3>
-        </div>
+        </div>*/}
 
         <div className="cadastro-container">
           <div className="cadastro-nome">
-            <div className="nome-produto">
+            {/*<div className="nome-produto">
               <form>
                 <label>Nome ou código de barras</label>
                 <input
@@ -66,21 +66,21 @@ function AddProduto() {
                   onChange={(e) => setCode(e.target.value)}
                 />
               </form>
-            </div>
+            </div>*/}
 
             <div
               className="camera-container"
               onClick={handleCameraClick} // Abre o diálogo ao clicar
             >
-              <img alt="" src={camera} />
+              <img className="tilt-in-tr" alt="" src={camera} />
               <p>
-                Aponte a câmera do seu celular para o código
+                Clique no ícone acima e aponte a câmera do seu celular para o código
                 de barras do produto
               </p>
             </div>
           </div>
 
-          <div className="descricao-produto">
+         {/*} <div className="descricao-produto">
             <form>
               <label>Descrição do produto</label>
               <input
@@ -91,9 +91,9 @@ function AddProduto() {
                 readOnly
               />
             </form>
-          </div>
+          </div>*/}
 
-          <div className="container-categorias">
+          {/*<div className="container-categorias">
             <h3>Categoria do produto</h3>
             <label className="custom-control custom-checkbox">
               <span>Lorem Ipsum</span>
@@ -156,7 +156,7 @@ function AddProduto() {
             <button className="btn-lixo">
               <img alt="" src={lixo} />
             </button>
-          </div>
+          </div>*/}
         </div>
       </div>
 
