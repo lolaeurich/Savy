@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Dialog as DialogMui,
@@ -45,22 +45,20 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
           if (product) {
             setProductData(product);
             setError(null);
-            // Atualizar o estado com a descrição do produto
-            setCode(product.desc);
           } else {
             setProductData(null);
             setError("Produto não encontrado.");
-            setCode(""); // Limpar o código se o produto não for encontrado
           }
         } catch (error) {
           console.error("Erro ao buscar o produto:", error);
           setProductData(null);
           setError("Erro ao buscar o produto.");
-          setCode(""); // Limpar o código em caso de erro
         }
       };
 
-      fetchProductData();
+      if (setCode) {
+        fetchProductData();
+      }
     }
   }, [setCode]);
 
@@ -126,5 +124,5 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
 BarcodeDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   setOpen: PropTypes.func.isRequired,
-  setCode: PropTypes.func.isRequired, // Alterado para func porque setCode é uma função
+  setCode: PropTypes.func.isRequired,
 };
