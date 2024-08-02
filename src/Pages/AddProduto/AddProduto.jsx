@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./style.css";
-import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
-import lixo from "../../Assets/lixo.png";
-import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 import { BarcodeDialog } from "../../Components/BarcodeDialog";
 import Popup from "../../Components/PopUp/PopUp";
 
@@ -16,12 +13,12 @@ function AddProduto() {
 
     useEffect(() => {
         const handleProductFound = (event) => {
-            setCode(event.detail); // Atualiza o campo de texto com a descrição do produto
-            setPopupOpen(true); // Abre o popup quando o código é encontrado
+            setCode(event.detail); // Atualiza o código capturado
+            setPopupOpen(true); // Abre o popup somente após o código ser detectado
         };
 
         const handleProductNotFound = () => {
-            setCode(""); // Limpa o campo se o produto não for encontrado
+            setCode(""); // Limpa o código se o produto não for encontrado
         };
 
         window.addEventListener('productFound', handleProductFound);
@@ -44,7 +41,6 @@ function AddProduto() {
     const handleCodeDetected = (code) => {
         setCode(code);
         setDialogOpen(false); // Fecha o diálogo quando um código é detectado
-        setPopupOpen(true); // Abre o popup com o código detectado
     };
 
     const handleValidate = () => {
