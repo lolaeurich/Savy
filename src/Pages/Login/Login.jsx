@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import "./style.css";
 import erro from "../../Assets/erro-icon.png";
 import SlideButton from 'react-slide-button';
+import axios from 'axios';
 
 function Login() {
     const [reset, setReset] = useState(0);
@@ -20,10 +21,36 @@ function Login() {
             return;
         }
 
-        // Simula login
-        setTimeout(() => {
-            navigate('/areaLogada');
-        }, 1000);
+        // Dados para o registro
+        const data = {
+            email: email,
+            name: nome,
+            cep: cep
+        };
+
+        // Envia a solicitação de registro para a API
+        axios.post('https://savvy.belogic.com.br/api/first-registration', data)
+            .then(response => {
+                // Sucesso no registro
+                // Armazena o token de autenticação, se disponível
+                const token = response.data.token; // Ajuste conforme a estrutura da resposta da API
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                }
+
+                // Armazena o CEP no localStorage
+                localStorage.setItem('userCep', cep);
+
+                // Redireciona para a área logada após o registro
+                setTimeout(() => {
+                    navigate('/areaLogada');
+                }, 1000);
+            })
+            .catch(error => {
+                // Se houver erro na solicitação, mostre o erro
+                console.error('Erro ao registrar:', error);
+                setShowError(true);
+            });
     };
 
     const handleTryAgain = () => {
@@ -82,14 +109,14 @@ function Login() {
                         <img alt="" src={erro} />
                         <div className="erro-text">
                             <h3>Ops!!</h3>
-                            <p>Precisamos de um e-mail válido para liberar o seu acesso, tente novamente!</p>
+                            <p>Houve um erro ao tentar registrar. Verifique seus dados e tente novamente!</p>
                         </div>    
                         <button onClick={handleTryAgain}>Tentar Novamente</button>
                     </div>
                 </div>
             )}
         </div>
-    )
+    );
 }
 
 export default Login;
