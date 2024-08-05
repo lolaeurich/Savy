@@ -9,15 +9,33 @@ function Recuperar() {
     const [codigo, setCodigo] = useState('');
     const [reset, setReset] = useState(0);
     const [showError, setShowError] = useState(false);
+    const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
+    // Função para solicitar um novo código de verificação
     const handleSlideDoneEmail = () => {
+        if (!email || !email.includes('@') || !email.includes('.')) {
+            setShowError(true);
+            return;
+        }
 
-        setTimeout(() => {
-            navigate('/login');
-        }, 1000); 
+        // Dados para solicitar novo código
+        const data = { email };
+
+        // Envia a solicitação para o endpoint de login
+        axios.post('https://savvy.belogic.com.br/api/login', data)
+            .then(response => {
+                // Sucesso ao solicitar novo código
+                setSuccess(true);
+                setTimeout(() => navigate('/validacao'), 1000);
+            })
+            .catch(error => {
+                console.error('Erro ao solicitar novo código:', error.response ? error.response.data : error.message);
+                setShowError(true);
+            });
     };
 
+    // Função para validar o código de verificação
     const handleSlideDone = () => {
         // Verifica se o e-mail e o código de verificação são válidos
         if (!email || !email.includes('@') || !email.includes('.') || !codigo) {
@@ -28,7 +46,7 @@ function Recuperar() {
         // Dados para a validação
         const data = { email, code: codigo };
 
-        // Envia a solicitação de validação para a API
+        // Envia a solicitação de validação para o endpoint de validação
         axios.post('https://savvy.belogic.com.br/api/email-validate', data)
             .then(response => {
                 // Sucesso na validação
@@ -36,7 +54,7 @@ function Recuperar() {
                 if (token) {
                     localStorage.setItem('authToken', token);
                 }
-                setTimeout(() => navigate('/validacao'), 1000);
+                setTimeout(() => navigate('/areaLogada'), 1000);
             })
             .catch(error => {
                 console.error('Erro ao validar e-mail:', error.response ? error.response.data : error.message);
@@ -46,6 +64,7 @@ function Recuperar() {
 
     const handleTryAgain = () => {
         setShowError(false);
+        setSuccess(false);
         setReset(reset + 1);
     };
 
@@ -78,7 +97,7 @@ function Recuperar() {
                 </form>
 
                 <SlideButton
-                    mainText="Ir para a página de validação"
+                    mainText="Solicitar Novo Código"
                     overlayText=""
                     onSlideDone={handleSlideDoneEmail}
                     reset={reset}
@@ -91,9 +110,22 @@ function Recuperar() {
                         <img alt="Erro" src={erro} />
                         <div className="erro-text">
                             <h3>Ops!!</h3>
-                            <p>Houve um erro ao realizar a verificação. Confira seu e-mail e tente novamente!</p>
+                            <p>Houve um erro ao solicitar um novo código. Verifique seu e-mail e tente novamente!</p>
                         </div>
                         <button onClick={handleTryAgain}>Tentar Novamente</button>
+                    </div>
+                </div>
+            )}
+
+            {success && (
+                <div className="popup">
+                    <div className="popup-content">
+                        <img alt="Sucesso" src={erro} /> {/* Troque a imagem para um ícone de sucesso */}
+                        <div className="erro-text">
+                            <h3>Sucesso!</h3>
+                            <p>Um novo código foi enviado para o seu e-mail. Verifique sua caixa de entrada.</p>
+                        </div>
+                        <button onClick={() => navigate('/validacao')}>Ir para Validação</button>
                     </div>
                 </div>
             )}

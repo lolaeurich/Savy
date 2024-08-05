@@ -17,6 +17,10 @@ function Login() {
         navigate("/recuperar");
       };
 
+      const handleLogin = () => {
+        navigate("/validacao");
+      };
+
     const handleSlideDone = () => {
         // Verifica se o e-mail é válido
         if (!email || !email.includes('@') || !email.includes('.')) {
@@ -84,6 +88,7 @@ function Login() {
                 </form>
 
                 <p className="recuperar">Já tenho cadastro.<br/> <span onClick={handleRecuperar}>Solicitar novo código de acesso!</span></p>
+                <p className="recuperar">Tenho um código de acesso e lembro dele<br/> <span onClick={handleLogin}>Quero acessar agora!</span></p>
 
                 <SlideButton
                     mainText="Deslize para cadastrar"
