@@ -11,7 +11,7 @@
 .add-produto-main {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -93,8 +93,35 @@
     margin-top: 5px;
 }
 
+.campo-cep {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    row-gap: 5px;
+}
+
+.campo-cep form {
+    display: flex;
+    flex-direction: column;
+}
+
+.acmpo-cep label {
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+}
+
+.campo-cep input {
+    width: 200px;
+    height: 35px;
+    padding-inline: 5%;
+    background-color: transparent;
+    border: 1px solid #919191;
+    margin-top: 5px;
+}
 .camera-container {
-    width: 50%;
+    width: 30%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -103,8 +130,8 @@
 }
 
 .tilt-in-tr {
-    width: 52px;
-    height: 52px;
+    width: 32px;
+    height: 32px;
         -webkit-animation: tilt-in-tr 0.65s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
                 animation: tilt-in-tr 0.65s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 }
@@ -145,10 +172,19 @@
       opacity: 1;
     }
   }
+
+  .nome-produto button {
+    background-color: #3A7C22;
+    color: #fff;
+    padding: 4%;
+    border-radius: 15px;
+    border: none;
+    margin-top: 5%;
+  }
   
 
 .cadastro-container p {
-    font-size: 14px;
+    font-size: 12px;
     font-family: 'Montserrats', sans-serif;
     font-weight: 400;
     color: #919191;

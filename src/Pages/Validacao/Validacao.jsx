@@ -5,7 +5,7 @@ import erro from "../../Assets/erro-icon.png";
 import SlideButton from 'react-slide-button';
 import axios from 'axios';
 
-function Login() {
+function Validacao() {
     const [reset, setReset] = useState(0);
     const [showError, setShowError] = useState(false);
     const navigate = useNavigate();
@@ -32,12 +32,23 @@ function Login() {
         axios.post('https://savvy.belogic.com.br/api/first-registration', data)
             .then(response => {
                 // Sucesso no registro
+                // Armazena o token de autenticação, se disponível
+                const token = response.data.token; // Ajuste conforme a estrutura da resposta da API
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                }
+
+                // Armazena o CEP no localStorage
+                localStorage.setItem('userCep', cep);
+
+                // Redireciona para a área logada após o registro
                 setTimeout(() => {
-                    navigate('/validacao');
+                    navigate('/areaLogada');
                 }, 1000);
             })
             .catch(error => {
                 // Se houver erro na solicitação, mostre o erro
+                console.error('Erro ao registrar:', error);
                 setShowError(true);
             });
     };
@@ -61,30 +72,19 @@ function Login() {
                 </div>
 
                 <div className="login-savvy-text2">
-                    <h3 className="economizar">Comece a economizar</h3>
-                    <h2 className="digite-dados">Digite seus dados abaixo:</h2>
+                    <h2 className="digite-dados" style={{textAlign: "center", color: "#3A7C22"}}>Verifique seu e-mail e cole abaixo o código de verificação recebido:</h2>
                 </div>
 
                 <form className="login-form">
                     <input
                         type="text"
-                        placeholder="E-mail"
-                        name="email"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Nome"
-                        name="nome"
-                    />
-                    <input
-                        type="text"
-                        placeholder="CEP"
-                        name="cep"
+                        placeholder="Código de verificação"
+                        name="cod"
                     />
                 </form>
 
                 <SlideButton
-                    mainText="Deslize para cadastrar"
+                    mainText="Deslize para validar"
                     overlayText="Começar a economizar!"
                     onSlideDone={handleSlideDone}
                     reset={reset}
@@ -98,7 +98,7 @@ function Login() {
                         <img alt="" src={erro} />
                         <div className="erro-text">
                             <h3>Ops!!</h3>
-                            <p>Houve um erro ao tentar registrar. Verifique seus dados e tente novamente!</p>
+                            <p>Houve um erro ao realizar a verificação. Confira seu código e tente novamente!</p>
                         </div>    
                         <button onClick={handleTryAgain}>Tentar Novamente</button>
                     </div>
@@ -108,4 +108,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default Validacao;
