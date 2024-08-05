@@ -6,56 +6,41 @@ import SlideButton from 'react-slide-button';
 import axios from 'axios';
 
 function Validacao() {
+    const [email, setEmail] = useState('');
+    const [codigo, setCodigo] = useState('');
     const [reset, setReset] = useState(0);
     const [showError, setShowError] = useState(false);
     const navigate = useNavigate();
 
     const handleSlideDone = () => {
-        const email = document.querySelector('input[name="email"]').value;
-        const nome = document.querySelector('input[name="nome"]').value;
-        const cep = document.querySelector('input[name="cep"]').value;
-
-        // Verifica se o e-mail contém '@'
-        if (!email || !email.includes('@')) {
+        // Verifica se o e-mail e o código de verificação são válidos
+        if (!email || !email.includes('@') || !email.includes('.') || !codigo) {
             setShowError(true);
             return;
         }
 
-        // Dados para o registro
-        const data = {
-            email: email,
-            name: nome,
-            cep: cep
-        };
+        // Dados para a validação
+        const data = { email, code: codigo };
 
-        // Envia a solicitação de registro para a API
-        axios.post('https://savvy.belogic.com.br/api/first-registration', data)
+        // Envia a solicitação de validação para a API
+        axios.post('https://savvy.belogic.com.br/api/email-validate', data)
             .then(response => {
-                // Sucesso no registro
-                // Armazena o token de autenticação, se disponível
+                // Sucesso na validação
                 const token = response.data.token; // Ajuste conforme a estrutura da resposta da API
                 if (token) {
                     localStorage.setItem('authToken', token);
                 }
-
-                // Armazena o CEP no localStorage
-                localStorage.setItem('userCep', cep);
-
-                // Redireciona para a área logada após o registro
-                setTimeout(() => {
-                    navigate('/areaLogada');
-                }, 1000);
+                setTimeout(() => navigate('/areaLogada'), 1000);
             })
             .catch(error => {
-                // Se houver erro na solicitação, mostre o erro
-                console.error('Erro ao registrar:', error);
+                console.error('Erro ao validar e-mail:', error.response ? error.response.data : error.message);
                 setShowError(true);
             });
     };
 
     const handleTryAgain = () => {
-        setShowError(false); 
-        setReset(reset + 1); 
+        setShowError(false);
+        setReset(reset + 1);
     };
 
     return (
@@ -72,14 +57,23 @@ function Validacao() {
                 </div>
 
                 <div className="login-savvy-text2">
-                    <h2 className="digite-dados" style={{textAlign: "center", color: "#3A7C22"}}>Verifique seu e-mail e cole abaixo o código de verificação recebido:</h2>
+                    <h2 className="digite-dados" style={{ textAlign: "center", color: "#3A7C22" }}>
+                        Verifique seu e-mail e cole abaixo o código de verificação recebido:
+                    </h2>
                 </div>
 
                 <form className="login-form">
                     <input
                         type="text"
+                        placeholder="E-mail"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                    />
+                    <input
+                        type="text"
                         placeholder="Código de verificação"
-                        name="cod"
+                        value={codigo}
+                        onChange={e => setCodigo(e.target.value)}
                     />
                 </form>
 
@@ -91,15 +85,14 @@ function Validacao() {
                 />
             </div>
 
-            {/* Modal de erro */}
             {showError && (
                 <div className="popup">
                     <div className="popup-content">
-                        <img alt="" src={erro} />
+                        <img alt="Erro" src={erro} />
                         <div className="erro-text">
                             <h3>Ops!!</h3>
                             <p>Houve um erro ao realizar a verificação. Confira seu código e tente novamente!</p>
-                        </div>    
+                        </div>
                         <button onClick={handleTryAgain}>Tentar Novamente</button>
                     </div>
                 </div>

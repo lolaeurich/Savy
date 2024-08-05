@@ -159,19 +159,19 @@ function AddProduto() {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                 />
-                <button type="button" onClick={() => fetchProductData(code)}>
-                  Buscar Produto
-                </button>
               </form>
+              <button type="button" onClick={() => fetchProductData(code)}>
+                  Buscar Produto
+              </button>
             </div>
 
-            <div className="camera-container" onClick={handleCameraClick}>
+            {/*<div className="camera-container" onClick={handleCameraClick}>
               <img className="tilt-in-tr" alt="" src={camera} />
               <p>
                 Aponte a câmera do seu celular para o código
                 de barras do produto
               </p>
-            </div>
+            </div>*/}
           </div>
 
           <div className="campo-cep">

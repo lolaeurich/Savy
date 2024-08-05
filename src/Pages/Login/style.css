@@ -137,6 +137,22 @@
     
 }
 
+.recuperar {
+    font-size: 14px;
+    text-align: center;
+    color: gray;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    margin-bottom: 4px; 
+    width: 90%;
+}
+
+.recuperar span {
+    color: #3A7C22;
+    text-decoration: underline;
+    font-weight: 700;
+}
+
 .erro-text h3 {
     color: #3A7C22;
     font-size: 20px;

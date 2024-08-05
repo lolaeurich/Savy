@@ -10,6 +10,7 @@ import ListaCompras from "./Pages/ListaCompras/ListaCompras";
 import Sobre from "./Pages/Sobre/Sobre";
 import Pesquisa from "./Pages/Pesquisa/Pesquisa";
 import Validacao from "./Pages/Validacao/Validacao";
+import Recuperar from "./Pages/Recuperar/Recuperar";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
      <Route path="/sobreASavvy" element={<Sobre />}/>
      <Route path="/pesquisa" element={<Pesquisa />}/>
      <Route path="/validacao" element={<Validacao />}/>
+     <Route path="/recuperar" element={<Recuperar />}/>
     </Routes>
   );
 }

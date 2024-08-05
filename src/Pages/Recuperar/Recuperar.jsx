@@ -1,40 +1,45 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import "./style.css";
 import erro from "../../Assets/erro-icon.png";
 import SlideButton from 'react-slide-button';
 import axios from 'axios';
 
-function Login() {
+function Recuperar() {
     const [email, setEmail] = useState('');
-    const [nome, setNome] = useState('');
-    const [cep, setCep] = useState('');
+    const [codigo, setCodigo] = useState('');
     const [reset, setReset] = useState(0);
     const [showError, setShowError] = useState(false);
     const navigate = useNavigate();
 
-    const handleRecuperar = () => {
-        navigate("/recuperar");
-      };
+    const handleSlideDoneEmail = () => {
+
+        setTimeout(() => {
+            navigate('/login');
+        }, 1000); 
+    };
 
     const handleSlideDone = () => {
-        // Verifica se o e-mail é válido
-        if (!email || !email.includes('@') || !email.includes('.')) {
+        // Verifica se o e-mail e o código de verificação são válidos
+        if (!email || !email.includes('@') || !email.includes('.') || !codigo) {
             setShowError(true);
             return;
         }
 
-        // Dados para o registro
-        const data = { email, name: nome, cep };
+        // Dados para a validação
+        const data = { email, code: codigo };
 
-        // Envia a solicitação de registro para a API
-        axios.post('https://savvy.belogic.com.br/api/first-registration', data)
+        // Envia a solicitação de validação para a API
+        axios.post('https://savvy.belogic.com.br/api/email-validate', data)
             .then(response => {
-                // Sucesso no registro
+                // Sucesso na validação
+                const token = response.data.token; // Ajuste conforme a estrutura da resposta da API
+                if (token) {
+                    localStorage.setItem('authToken', token);
+                }
                 setTimeout(() => navigate('/validacao'), 1000);
             })
             .catch(error => {
-                console.error('Erro ao registrar:', error.response ? error.response.data : error.message);
+                console.error('Erro ao validar e-mail:', error.response ? error.response.data : error.message);
                 setShowError(true);
             });
     };
@@ -58,8 +63,9 @@ function Login() {
                 </div>
 
                 <div className="login-savvy-text2">
-                    <h3 className="economizar">Comece a economizar</h3>
-                    <h2 className="digite-dados">Digite seus dados abaixo:</h2>
+                    <h2 className="digite-dados" style={{ textAlign: "center", color: "#3A7C22" }}>
+                        Informe seu e-mail para receber um novo código de verificação:
+                    </h2>
                 </div>
 
                 <form className="login-form">
@@ -69,26 +75,12 @@ function Login() {
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                     />
-                    <input
-                        type="text"
-                        placeholder="Nome"
-                        value={nome}
-                        onChange={e => setNome(e.target.value)}
-                    />
-                    <input
-                        type="text"
-                        placeholder="CEP"
-                        value={cep}
-                        onChange={e => setCep(e.target.value)}
-                    />
                 </form>
 
-                <p className="recuperar">Já tenho cadastro.<br/> <span onClick={handleRecuperar}>Solicitar novo código de acesso!</span></p>
-
                 <SlideButton
-                    mainText="Deslize para cadastrar"
-                    overlayText="Começar a economizar!"
-                    onSlideDone={handleSlideDone}
+                    mainText="Ir para a página de validação"
+                    overlayText=""
+                    onSlideDone={handleSlideDoneEmail}
                     reset={reset}
                 />
             </div>
@@ -99,7 +91,7 @@ function Login() {
                         <img alt="Erro" src={erro} />
                         <div className="erro-text">
                             <h3>Ops!!</h3>
-                            <p>Houve um erro ao tentar registrar. Verifique seus dados e tente novamente!</p>
+                            <p>Houve um erro ao realizar a verificação. Confira seu e-mail e tente novamente!</p>
                         </div>
                         <button onClick={handleTryAgain}>Tentar Novamente</button>
                     </div>
@@ -109,4 +101,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default Recuperar;

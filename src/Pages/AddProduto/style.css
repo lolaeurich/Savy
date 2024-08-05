@@ -66,14 +66,13 @@
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
 .nome-produto {
-    width: 70%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     row-gap: 5px;
 }
@@ -86,7 +85,7 @@
 
 .nome-produto input {
     width: 200px;
-    height: 35px;
+    height: 38px;
     padding-inline: 5%;
     background-color: transparent;
     border: 1px solid #919191;
@@ -114,7 +113,7 @@
 
 .campo-cep input {
     width: 200px;
-    height: 35px;
+    height: 38px;
     padding-inline: 5%;
     background-color: transparent;
     border: 1px solid #919191;
@@ -176,10 +175,12 @@
   .nome-produto button {
     background-color: #3A7C22;
     color: #fff;
-    padding: 4%;
+    padding: 2%;
     border-radius: 15px;
     border: none;
+    width: 150px;
     margin-top: 5%;
+    font-size: 12px;
   }
   
 
