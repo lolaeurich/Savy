@@ -1,3 +1,5 @@
+// src/pages/AddProduto/index.js
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -14,7 +16,7 @@ function AddProduto() {
   const [cep, setCep] = useState(""); 
   const [productData, setProductData] = useState(null);
   const [error, setError] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState([]);
+  const [anotherBrand, setAnotherBrand] = useState(false); // Estado para 'Outra marca'
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -115,25 +117,32 @@ function AddProduto() {
       setError("Nenhum produto encontrado para salvar.");
       return;
     }
-
+  
+    // Defina a categoria fixamente como 4
     const data = {
       name: productData.desc,
       barcode: code,
       description: productData.desc,
-      another_brand: false,
-      categories: selectedCategory.length > 0 ? selectedCategory : [1] // Default category for testing
+      another_brand: anotherBrand,
+      categories: [1] // Categoria fixada como 4
     };
-
+  
     try {
-      await axios.post("https://savvy.belogic.com.br/api/products", data, {
+      const token = localStorage.getItem('authToken');
+      const response = await axios.post("https://savvy-api.belogic.com.br/api/products", data, {
         headers: {
-          'Authorization': `4|sZHt07fjczMbeGxqfX7l985XH56ieSHllWgxKkLq5d37b93c` // Substitua pelo token real
+          'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
         }
       });
+      console.log('Produto salvo com sucesso:', response.data);
+
+      // Emite um evento para notificar que um novo produto foi adicionado
+      window.dispatchEvent(new CustomEvent('produtoAdicionado', { detail: response.data }));
+
       navigate('/areaLogada');
     } catch (error) {
-      console.error("Erro ao salvar o produto:", error);
-      setError("Erro ao salvar o produto.");
+      console.error("Erro ao salvar o produto:", error.response ? error.response.data : error.message);
+      setError(error.response ? error.response.data.message : "Erro ao salvar o produto.");
     }
   };
 
@@ -208,8 +217,7 @@ function AddProduto() {
                 type="checkbox"
                 id="check-btn"
                 className="custom-control-input"
-                onChange={() => setSelectedCategory(prev => prev.includes(4) ? prev.filter(c => c !== 4) : [...prev, 4])}
-                checked={selectedCategory.includes(4)}
+                disabled // Desativado porque a categoria é fixada como 4
               />
               <span className="custom-control-indicator"></span>
             </label>
@@ -220,8 +228,7 @@ function AddProduto() {
                 type="checkbox"
                 id="check-btn"
                 className="custom-control-input"
-                onChange={() => setSelectedCategory(prev => prev.includes(5) ? prev.filter(c => c !== 5) : [...prev, 5])}
-                checked={selectedCategory.includes(5)}
+                disabled // Desativado porque a categoria é fixada como 4
               />
               <span className="custom-control-indicator"></span>
             </label>
@@ -232,8 +239,7 @@ function AddProduto() {
                 type="checkbox"
                 id="check-btn"
                 className="custom-control-input"
-                onChange={() => setSelectedCategory(prev => prev.includes(6) ? prev.filter(c => c !== 6) : [...prev, 6])}
-                checked={selectedCategory.includes(6)}
+                disabled // Desativado porque a categoria é fixada como 4
               />
               <span className="custom-control-indicator"></span>
             </label>
@@ -252,6 +258,8 @@ function AddProduto() {
                 type="checkbox"
                 id="check-btn"
                 className="custom-control-input"
+                checked={anotherBrand}
+                onChange={() => setAnotherBrand(prev => !prev)}
               />
               <span className="custom-control-indicator"></span>
             </label>
@@ -264,14 +272,14 @@ function AddProduto() {
               <img alt="" src={lixo} />
             </button>
           </div>
+
+          {error && <p className="error-message">{error}</p>}
         </div>
       </div>
 
-      <BarcodeDialog
-        open={dialogOpen}
-        setOpen={setDialogOpen}
-        setCode={handleCodeDetected}
-      />
+      {dialogOpen && (
+        <BarcodeDialog onCodeDetected={handleCodeDetected} onClose={() => setDialogOpen(false)} />
+      )}
     </div>
   );
 }

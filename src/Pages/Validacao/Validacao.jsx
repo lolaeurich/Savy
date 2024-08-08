@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./style.css";
 import erro from "../../Assets/erro-icon.png";
-import SlideButton from 'react-slide-button';
 import axios from 'axios';
 
 function Validacao() {
@@ -11,6 +10,14 @@ function Validacao() {
     const [reset, setReset] = useState(0);
     const [showError, setShowError] = useState(false);
     const navigate = useNavigate();
+
+    const handleRecuperar = () => {
+        navigate("/recuperar");
+    };
+
+    const handleLogin = () => {
+        navigate("/login");
+    };
 
     const handleSlideDone = () => {
         // Verifica se o e-mail e o código de verificação são válidos
@@ -28,7 +35,7 @@ function Validacao() {
                 // Sucesso na validação
                 const token = response.data.token; // Ajuste conforme a estrutura da resposta da API
                 if (token) {
-                    localStorage.setItem('authToken', token);
+                    localStorage.setItem('authToken', token); // Armazena o token
                 }
                 setTimeout(() => navigate('/areaLogada'), 1000);
             })
@@ -58,7 +65,7 @@ function Validacao() {
 
                 <div className="login-savvy-text2">
                     <h2 className="digite-dados" style={{ textAlign: "center", color: "#3A7C22" }}>
-                        Verifique seu e-mail e cole abaixo o código de verificação recebido:
+                        Informe seu e-mail e seu código de verificação para acessar a plataforma:
                     </h2>
                 </div>
 
@@ -77,12 +84,13 @@ function Validacao() {
                     />
                 </form>
 
-                <SlideButton
-                    mainText="Deslize para validar"
-                    overlayText="Começar a economizar!"
-                    onSlideDone={handleSlideDone}
-                    reset={reset}
-                />
+                <p className="recuperar">Esqueci meu código de acesso.<br /> <span onClick={handleRecuperar}>Solicitar novo código!</span></p>
+                <p className="recuperar">Ainda não possuo cadastro.<br /> <span onClick={handleLogin}>Quero me inscrever agora!</span></p>
+
+                <button
+                    className="slide-button"
+                    onClick={handleSlideDone}
+                >Começar a economizar!</button>
             </div>
 
             {showError && (

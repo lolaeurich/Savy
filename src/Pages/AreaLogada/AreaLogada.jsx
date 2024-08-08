@@ -3,17 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import "./style.css";
 import cart from "../../Assets/cart.png";
 import cadastro from "../../Assets/cadastro.png";
-import SlideButton from 'react-slide-button';
 import axios from 'axios';
-import AddProdutoCard from '../../Components/AddProdutoCard/AddProdutoCard'; // Certifique-se de importar o componente correto
+import AddProdutoCard from '../../Components/AddProdutoCard/AddProdutoCard';
 
 function AreaLogada() {
-    const [reset, setReset] = useState(0);
     const [cep, setCep] = useState('');
     const [cidade, setCidade] = useState('Lorem Ipsun');
-    const [produtos, setProdutos] = useState([]); // Estado para armazenar os produtos
-    const [isEditing, setIsEditing] = useState(false); // Estado para controlar o modo de edição
-    const [novoCep, setNovoCep] = useState(''); // Estado para o novo CEP
+    const [produtos, setProdutos] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [novoCep, setNovoCep] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,7 +20,6 @@ function AreaLogada() {
             setCep(storedCep);
             fetchCidade(storedCep);
         }
-
         fetchProdutos();
     }, []);
 
@@ -49,7 +46,7 @@ function AreaLogada() {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            console.log(response.data); // Verifique a estrutura da resposta
+            console.log(response.data);
             setProdutos(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
@@ -57,9 +54,7 @@ function AreaLogada() {
     };
 
     const handleSlideDone = () => {
-        setTimeout(() => {
-            navigate('/comparativo');
-        }, 1000);
+        navigate("/comparativo");
     };
 
     const handleAddProduto = () => {
@@ -68,12 +63,11 @@ function AreaLogada() {
 
     const handleEditCep = () => {
         setIsEditing(true);
-        setNovoCep(cep); // Define o CEP atual no campo de edição
+        setNovoCep(cep);
     };
 
     const handleSaveCep = async () => {
         if (novoCep === cep) {
-            // Se o novo CEP é igual ao atual, não faça nada
             setIsEditing(false);
             return;
         }
@@ -90,7 +84,7 @@ function AreaLogada() {
 
     const handleCancelEdit = () => {
         setIsEditing(false);
-        setNovoCep(cep); // Restaura o CEP original se a edição for cancelada
+        setNovoCep(cep);
     };
 
     const addProduto = (produto) => {
@@ -98,12 +92,10 @@ function AreaLogada() {
     };
 
     useEffect(() => {
-        // Adiciona um listener para detectar alterações na navegação para garantir que a lista de produtos seja atualizada
-        const handleProdutoAdicionado = (produto) => {
-            addProduto(produto);
+        const handleProdutoAdicionado = (event) => {
+            addProduto(event.detail);
         };
 
-        // Verifica se o produto foi adicionado e atualiza a lista de produtos
         window.addEventListener('produtoAdicionado', handleProdutoAdicionado);
 
         return () => {
@@ -117,7 +109,7 @@ function AreaLogada() {
                 <div className="areaLogada-nav">
                     <h3>Minha lista de compras</h3>
                     <div className="cart">
-                        <img alt="" src={cart} />
+                        <img alt="Cart Icon" src={cart} />
                         <p>{produtos.length}</p>
                     </div>    
                 </div>
@@ -132,8 +124,10 @@ function AreaLogada() {
                                     onChange={e => setNovoCep(e.target.value)}
                                     placeholder="Digite o novo CEP"
                                 />
-                                <button onClick={handleSaveCep}>Salvar</button>
-                                <button onClick={handleCancelEdit}>Cancelar</button>
+                                <div style={{ display: "flex", columnGap: "5px" }}>
+                                    <h4 onClick={handleSaveCep}>Salvar</h4>
+                                    <h4 onClick={handleCancelEdit} style={{ width: "80px" }}>Cancelar</h4>
+                                </div>
                             </div>
                         ) : (
                             <div>
@@ -161,23 +155,24 @@ function AreaLogada() {
 
                 <div className="container-meus-produtos">
                     <div className="meus-produtos-bar">
-                        <button className="meus-produtos-btn" onClick={handleAddProduto}>Cadastrar produto<img alt="" src={cadastro} /></button>
+                        <button className="meus-produtos-btn" onClick={handleAddProduto}>
+                            Cadastrar produto
+                            <img alt="Cadastro Icon" src={cadastro} />
+                        </button>
                     </div>
 
                     <div className="lista-de-produtos">
-                        {produtos.map((produto, index) => (
-                            <AddProdutoCard key={index} produto={produto} />
+                        {produtos.map(produto => (
+                            <AddProdutoCard key={produto.id} produto={produto} />
                         ))}
                     </div>
                 </div>
 
                 <div className="consultar-preco-btn">
-                    <SlideButton
-                        mainText=""
-                        overlayText="Consultar preço!"
-                        onSlideDone={handleSlideDone}
-                        reset={reset}
-                    />
+                    <button
+                        className="slide-button"
+                        onClick={handleSlideDone}
+                    >Consultar preço</button>
                 </div>
             </div>
         </div>

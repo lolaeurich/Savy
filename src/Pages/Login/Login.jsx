@@ -107,12 +107,10 @@ function Login() {
                 <p className="recuperar">Já tenho cadastro.<br /> <span onClick={handleRecuperar}>Solicitar novo código de acesso!</span></p>
                 <p className="recuperar">Tenho um código de acesso e lembro dele<br /> <span onClick={handleLogin}>Quero acessar agora!</span></p>
 
-                <SlideButton
-                    mainText="Deslize para cadastrar"
-                    overlayText="Começar a economizar!"
-                    onSlideDone={handleSlideDone}
-                    reset={reset}
-                />
+                <button
+                    className="slide-button"
+                    onClick={handleSlideDone}
+                >Começar a economizar!</button>
             </div>
 
             {showError && (

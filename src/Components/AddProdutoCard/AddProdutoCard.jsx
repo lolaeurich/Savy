@@ -5,13 +5,13 @@ import WeightSelector from "../SeletorPeso/SeletorPeso";
 function AddProdutoCard({ produto }) { // Recebe o produto como prop
     const [expanded, setExpanded] = useState(false);
     const [isChecked, setIsChecked] = useState(false);
-  
+
     const handleCheckboxChange = () => {
         setIsChecked(!isChecked);
     };
-  
+
     const toggleExpansion = () => {
-      setExpanded(!expanded);
+        setExpanded(!expanded);
     };
 
     return (
@@ -21,9 +21,9 @@ function AddProdutoCard({ produto }) { // Recebe o produto como prop
                 type="checkbox"
                 checked={isChecked}
                 onChange={handleCheckboxChange}
-                id="produtoCheckbox"
+                id={`produtoCheckbox-${produto.barcode}`} // Garantir que a id seja única
             />
-            <label htmlFor="produtoCheckbox"></label>
+            <label htmlFor={`produtoCheckbox-${produto.barcode}`}></label>
             <div className='card-content-sessao2'>
                 <div className='card-content-titulo'>
                     <img alt='' src={produto.image || produto} /> {/* Atualize com a imagem do produto */}

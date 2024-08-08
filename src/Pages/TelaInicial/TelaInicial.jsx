@@ -10,17 +10,14 @@ import intelig from "../../Assets/inteligencia.jpeg";
 import economia from "../../Assets/economia.jpeg";
 import controle from "../../Assets/controle.jpeg";
 
-import SlideButton from 'react-slide-button';
 
 function TelaInicial () {
     const [reset, setReset] = useState(0);
     const navigate = useNavigate();
 
-    const handleSlideDone = () => {
 
-        setTimeout(() => {
-            navigate('/login');
-        }, 1000); 
+    const handleValidacao = () => {
+        navigate("/validacao");
     };
 
     return (
@@ -68,12 +65,11 @@ function TelaInicial () {
                 </div>
             </div>
 
-            <SlideButton 
-                mainText="Deslize para cadastrar" 
-                overlayText="Quero começar a testar!" 
-                onSlideDone={handleSlideDone} 
+            <button
+                className="slide-button"
+                onClick={handleValidacao}
                 reset={reset}
-            />
+            >Quero começar a economizar</button>
 
         </div>
     )
