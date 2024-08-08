@@ -83,6 +83,13 @@
 .areaLogada-endereco h4 {
     font-size: 12px;
     font-family: 'Montserrat', sans-serif;
+    background: green;
+    color: #fff;
+    width: 60px;
+    text-align: center;
+    border-radius: 10px;
+    padding: 2%;
+    margin-top: 4%;
 }
 
 .dados-compras {

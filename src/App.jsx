@@ -1,3 +1,4 @@
+import React from "react";
 import { Route, Routes } from "react-router-dom";
 import TelaInicial from "./Pages/TelaInicial/TelaInicial";
 import Login from "./Pages/Login/Login";
@@ -11,24 +12,27 @@ import Sobre from "./Pages/Sobre/Sobre";
 import Pesquisa from "./Pages/Pesquisa/Pesquisa";
 import Validacao from "./Pages/Validacao/Validacao";
 import Recuperar from "./Pages/Recuperar/Recuperar";
+import { CartProvider } from "./Context/CartContext";
 
 const App = () => {
   return (
-    <Routes>
-     <Route path="/" element={<TelaInicial />}/>
-     <Route path="/login" element={<Login />}/>
-     <Route path="/areaLogada" element={<AreaLogada />}/>
-     <Route path="/addProduto" element={<AddProduto />}/>
-     <Route path="/comparativo" element={<Comparativo />}/>
-     <Route path="/listaMercados" element={<ListaMercados />}/>
-     <Route path="/compraUnica" element={<CompraUnica />}/>
-     <Route path="/listaCompras" element={<ListaCompras />}/>
-     <Route path="/sobreASavvy" element={<Sobre />}/>
-     <Route path="/pesquisa" element={<Pesquisa />}/>
-     <Route path="/validacao" element={<Validacao />}/>
-     <Route path="/recuperar" element={<Recuperar />}/>
-    </Routes>
+    <CartProvider>
+      <Routes>
+        <Route path="/" element={<TelaInicial />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/areaLogada" element={<AreaLogada />} />
+        <Route path="/addProduto" element={<AddProduto />} />
+        <Route path="/comparativo" element={<Comparativo />} />
+        <Route path="/listaMercados" element={<ListaMercados />} />
+        <Route path="/compraUnica" element={<CompraUnica />} />
+        <Route path="/listaCompras" element={<ListaCompras />} />
+        <Route path="/sobreASavvy" element={<Sobre />} />
+        <Route path="/pesquisa" element={<Pesquisa />} />
+        <Route path="/validacao" element={<Validacao />} />
+        <Route path="/recuperar" element={<Recuperar />} />
+      </Routes>
+    </CartProvider>
   );
 }
 
-export default App 
+export default App;

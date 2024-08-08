@@ -1,14 +1,15 @@
 import React from "react";
 import "./style.css";
 import { useNavigate } from 'react-router-dom';
+import { useCart } from "../../Context/CartContext";
 import cart from "../../Assets/cart.png";
 import flecha from "../../Assets/flecha-esquerda.png";
 import mercado from "../../Assets/home.png";
 import produtos from "../../Assets/produtos.png";
-import local from "../../Assets/local-cinza.png";
 
-function Comparativo () {
+function Comparativo() {
     const navigate = useNavigate();
+    const { cartItems } = useCart(); // Acesse os itens do carrinho
 
     const handleListaMercados = () => {
         navigate("/listaMercados");
@@ -22,19 +23,23 @@ function Comparativo () {
         navigate("/sobreASavvy");
     };
 
+    const handleVoltar = () => {
+        navigate("/areaLogada");
+    };
+
     return (
         <div className="comparativo-container">
             <div className="comparativo-main">
                 <div className="comparativo-nav">
                     <div className="cart2">
-                        <img alt="" src={flecha} />
+                        <img alt="" src={flecha} onClick={handleVoltar}/>
                     </div>
 
                     <h3>Menor preço</h3>
 
                     <div className="cart">
                         <img alt="" src={cart} />
-                        <p>xx</p>
+                        <p>{cartItems.length}</p> {/* Exibe a quantidade de itens no carrinho */}
                     </div>    
                 </div>
 
@@ -95,7 +100,7 @@ function Comparativo () {
                     </div>
 
                     <div className="card3">
-                        <h3>Savvyr</h3>
+                        <h3>Savvy</h3>
                         <p>Inteligência, qualidade e conveniência na sua porta</p>
                             <div className="card3-icons">
                                 <div className="icon3">
@@ -116,7 +121,7 @@ function Comparativo () {
                 </div>    
             </div>    
         </div>
-    )
+    );
 }
 
 export default Comparativo;

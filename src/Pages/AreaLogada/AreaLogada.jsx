@@ -12,6 +12,8 @@ function AreaLogada() {
     const [cep, setCep] = useState('');
     const [cidade, setCidade] = useState('Lorem Ipsun');
     const [produtos, setProdutos] = useState([]); // Estado para armazenar os produtos
+    const [isEditing, setIsEditing] = useState(false); // Estado para controlar o modo de edição
+    const [novoCep, setNovoCep] = useState(''); // Estado para o novo CEP
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,12 +23,6 @@ function AreaLogada() {
             fetchCidade(storedCep);
         }
 
-        // Simular recuperação de produtos (substitua com chamada à API real se necessário)
-        const fetchProdutos = async () => {
-            // Substitua pelo endpoint real
-            const response = await axios.get('https://savvy-api.belogic.com.br/api/products');
-            setProdutos(response.data);
-        };
         fetchProdutos();
     }, []);
 
@@ -40,6 +36,26 @@ function AreaLogada() {
         }
     };
 
+    const fetchProdutos = async () => {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            console.error('Token de autenticação não encontrado.');
+            return;
+        }
+
+        try {
+            const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            console.log(response.data); // Verifique a estrutura da resposta
+            setProdutos(Array.isArray(response.data) ? response.data : []);
+        } catch (error) {
+            console.error('Erro ao buscar produtos:', error);
+        }
+    };
+
     const handleSlideDone = () => {
         setTimeout(() => {
             navigate('/comparativo');
@@ -50,10 +66,50 @@ function AreaLogada() {
         navigate("/addProduto");
     };
 
-    // Função para adicionar um produto ao estado
-    const addProduto = (produto) => {
-        setProdutos([...produtos, produto]);
+    const handleEditCep = () => {
+        setIsEditing(true);
+        setNovoCep(cep); // Define o CEP atual no campo de edição
     };
+
+    const handleSaveCep = async () => {
+        if (novoCep === cep) {
+            // Se o novo CEP é igual ao atual, não faça nada
+            setIsEditing(false);
+            return;
+        }
+
+        try {
+            await fetchCidade(novoCep);
+            setCep(novoCep);
+            localStorage.setItem('userCep', novoCep);
+            setIsEditing(false);
+        } catch (error) {
+            console.error('Erro ao salvar o novo CEP:', error);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditing(false);
+        setNovoCep(cep); // Restaura o CEP original se a edição for cancelada
+    };
+
+    const addProduto = (produto) => {
+        setProdutos(prevProdutos => [...prevProdutos, produto]);
+    };
+
+    useEffect(() => {
+        // Adiciona um listener para detectar alterações na navegação para garantir que a lista de produtos seja atualizada
+        const handleProdutoAdicionado = (produto) => {
+            addProduto(produto);
+        };
+
+        // Verifica se o produto foi adicionado e atualiza a lista de produtos
+        window.addEventListener('produtoAdicionado', handleProdutoAdicionado);
+
+        return () => {
+            window.removeEventListener('produtoAdicionado', handleProdutoAdicionado);
+        };
+    }, []);
 
     return (
         <div className="areaLogada-container">
@@ -68,10 +124,27 @@ function AreaLogada() {
 
                 <div className="areaLogada-dados">
                     <div className="areaLogada-endereco">
-                        <p>Buscas realizadas para o CEP:<span> {cep || '00000-000'}</span></p>
-                        <p>Cidade:<span> {cidade}</span></p>
+                        {isEditing ? (
+                            <div>
+                                <input
+                                    type="text"
+                                    value={novoCep}
+                                    onChange={e => setNovoCep(e.target.value)}
+                                    placeholder="Digite o novo CEP"
+                                />
+                                <button onClick={handleSaveCep}>Salvar</button>
+                                <button onClick={handleCancelEdit}>Cancelar</button>
+                            </div>
+                        ) : (
+                            <div>
+                                <p>Buscas realizadas para o CEP:<span> {cep || '00000-000'}</span></p>
+                                <p>Cidade:<span> {cidade}</span></p>
+                                <div>
+                                    <h4 onClick={handleEditCep}>Editar</h4>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <h4>Editar</h4>
                 </div>
 
                 <div className="dados-compras">
