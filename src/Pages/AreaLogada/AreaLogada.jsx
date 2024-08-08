@@ -4,7 +4,8 @@ import "./style.css";
 import cart from "../../Assets/cart.png";
 import cadastro from "../../Assets/cadastro.png";
 import axios from 'axios';
-import AddProdutoCard from '../../Components/AddProdutoCard/AddProdutoCard';
+import WeightSelector from "../../Components/SeletorPeso/SeletorPeso";
+import produtoImg from "../../Assets/produto-imagem.png"; // Imagem padrão do produto
 
 function AreaLogada() {
     const [cep, setCep] = useState('');
@@ -43,11 +44,11 @@ function AreaLogada() {
         try {
             const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
                 }
             });
             console.log(response.data);
-            setProdutos(Array.isArray(response.data) ? response.data : []);
+            setProdutos(Array.isArray(response.data.data) ? response.data.data : []);
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
         }
@@ -87,21 +88,11 @@ function AreaLogada() {
         setNovoCep(cep);
     };
 
-    const addProduto = (produto) => {
-        setProdutos(prevProdutos => [...prevProdutos, produto]);
+    const handleCheckboxChange = (barcode) => {
+        setProdutos(prevProdutos =>
+            prevProdutos.map(prod => prod.barcode === barcode ? { ...prod, isChecked: !prod.isChecked } : prod)
+        );
     };
-
-    useEffect(() => {
-        const handleProdutoAdicionado = (event) => {
-            addProduto(event.detail);
-        };
-
-        window.addEventListener('produtoAdicionado', handleProdutoAdicionado);
-
-        return () => {
-            window.removeEventListener('produtoAdicionado', handleProdutoAdicionado);
-        };
-    }, []);
 
     return (
         <div className="areaLogada-container">
@@ -163,7 +154,29 @@ function AreaLogada() {
 
                     <div className="lista-de-produtos">
                         {produtos.map(produto => (
-                            <AddProdutoCard key={produto.id} produto={produto} />
+                            <div className="card-content-produtos" key={produto.barcode}>
+                                <input
+                                    className='checkbox-mercado'
+                                    type="checkbox"
+                                    checked={produto.isChecked || false}
+                                    onChange={() => handleCheckboxChange(produto.barcode)}
+                                    id={`produtoCheckbox-${produto.barcode}`} // Garantir que a id seja única
+                                />
+                                <label htmlFor={`produtoCheckbox-${produto.barcode}`}></label>
+                                <div className='card-content-sessao2'>
+                                    <div className='card-content-titulo'>
+                                        <img alt='Produto' src={produto.image || produtoImg} /> {/* Usa a imagem do produto ou uma imagem padrão */}
+                                        <div className='produto-nome-lista'>
+                                            <h3 className='produto-nome-h3'>{produto.name}</h3>
+                                            <p className='codigo-de-barras'>{produto.barcode}</p>
+                                        </div>
+                                    </div>
+                                    <div className='card-content-quantidade'>
+                                        <h3 className='card-content-quantidade-h3'>Quantidade</h3>
+                                        <WeightSelector />
+                                    </div>
+                                </div> 
+                            </div>
                         ))}
                     </div>
                 </div>

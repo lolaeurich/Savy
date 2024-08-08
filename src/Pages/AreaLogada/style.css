@@ -80,6 +80,15 @@
     font-family: 'Montserrat', sans-serif;
 }
 
+.lista-de-produtos {
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+    margin-top: 5%;
+    max-height: 500px; /* Ajuste a altura máxima conforme necessário */
+    overflow-y: auto; 
+}
+
 .areaLogada-endereco h4 {
     font-size: 12px;
     font-family: 'Montserrat', sans-serif;
