@@ -12,7 +12,7 @@ import './style.css';
 
 function AddProduto() {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [code, setCode] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // Alterado de 'code' para 'searchTerm'
   const [cep, setCep] = useState(""); 
   const [productData, setProductData] = useState(null);
   const [error, setError] = useState(null);
@@ -26,12 +26,12 @@ function AddProduto() {
     }
 
     const handleProductFound = (event) => {
-      setCode(event.detail);
+      setSearchTerm(event.detail);
       fetchProductData(event.detail);
     };
 
     const handleProductNotFound = () => {
-      setCode("");
+      setSearchTerm("");
       setProductData(null);
     };
 
@@ -53,7 +53,7 @@ function AddProduto() {
   };
 
   const handleCodeDetected = (code) => {
-    setCode(code);
+    setSearchTerm(code);
     setDialogOpen(false);
     fetchProductData(code);
   };
@@ -72,7 +72,7 @@ function AddProduto() {
     }
   };
 
-  const fetchProductData = async (barcode) => {
+  const fetchProductData = async (searchTerm) => {
     if (!cep) {
       setError("CEP não fornecido.");
       return;
@@ -90,14 +90,14 @@ function AddProduto() {
         "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
         {
           params: {
-            termo: barcode,
+            termo: searchTerm,
             local: `${latitude},${longitude}`,
             raio: 20,
           },
         }
       );
 
-      const product = response.data.produtos.find(p => p.gtin === barcode);
+      const product = response.data.produtos.find(p => p.gtin === searchTerm || p.desc.toLowerCase().includes(searchTerm.toLowerCase()));
       if (product) {
         setProductData(product);
         setError(null);
@@ -121,7 +121,7 @@ function AddProduto() {
     // Defina a categoria fixamente como 4
     const data = {
       name: productData.desc,
-      barcode: code,
+      barcode: searchTerm,
       description: productData.desc,
       another_brand: anotherBrand,
       categories: [1] // Categoria fixada como 4
@@ -160,16 +160,16 @@ function AddProduto() {
           <div className="cadastro-nome">
             <div className="nome-produto">
               <form>
-                <label>Código de barras</label>
+                <label>Termo ou Código de barras</label>
                 <input
                   type="text"
                   placeholder="Digite aqui"
                   name="nome"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  value={searchTerm} // Alterado de 'code' para 'searchTerm'
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </form>
-              <button type="button" onClick={() => fetchProductData(code)}>
+              <button type="button" onClick={() => fetchProductData(searchTerm)}>
                   Buscar Produto
               </button>
             </div>

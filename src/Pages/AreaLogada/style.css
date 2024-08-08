@@ -87,6 +87,7 @@
     margin-top: 5%;
     max-height: 500px; /* Ajuste a altura máxima conforme necessário */
     overflow-y: auto; 
+    margin-bottom: 20%;
 }
 
 .areaLogada-endereco h4 {
