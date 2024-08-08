@@ -1,5 +1,3 @@
-// src/pages/AddProduto/index.js
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -12,11 +10,11 @@ import './style.css';
 
 function AddProduto() {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); // Alterado de 'code' para 'searchTerm'
+  const [searchTerm, setSearchTerm] = useState("");
   const [cep, setCep] = useState(""); 
   const [productData, setProductData] = useState(null);
   const [error, setError] = useState(null);
-  const [anotherBrand, setAnotherBrand] = useState(false); // Estado para 'Outra marca'
+  const [anotherBrand, setAnotherBrand] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,12 +58,21 @@ function AddProduto() {
 
   const fetchCoordinatesFromCep = async (cep) => {
     try {
-      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-      const { uf, localidade } = response.data;
-      return {
-        latitude: -25.54692, // Coordenadas fixas para simplificação
-        longitude: -49.18058,
-      };
+      const response = await axios.get(`https://cep.awesomeapi.com.br/json/${cep}`);
+      console.log("Resposta da API AwesomeAPI:", response.data);
+      
+      const { lat, lng } = response.data;
+      
+      if (lat && lng) {
+        console.log(`Coordenadas obtidas: Latitude ${lat}, Longitude ${lng}`);
+        return {
+          latitude: lat,
+          longitude: lng,
+        };
+      } else {
+        console.error("Coordenadas não encontradas na resposta.");
+        return null;
+      }
     } catch (error) {
       console.error("Erro ao obter coordenadas:", error);
       return null;
@@ -118,13 +125,12 @@ function AddProduto() {
       return;
     }
   
-    // Defina a categoria fixamente como 4
     const data = {
       name: productData.desc,
       barcode: searchTerm,
       description: productData.desc,
       another_brand: anotherBrand,
-      categories: [1] // Categoria fixada como 4
+      categories: [1]
     };
   
     try {
@@ -136,7 +142,6 @@ function AddProduto() {
       });
       console.log('Produto salvo com sucesso:', response.data);
 
-      // Emite um evento para notificar que um novo produto foi adicionado
       window.dispatchEvent(new CustomEvent('produtoAdicionado', { detail: response.data }));
 
       navigate('/areaLogada');
@@ -165,7 +170,7 @@ function AddProduto() {
                   type="text"
                   placeholder="Digite aqui"
                   name="nome"
-                  value={searchTerm} // Alterado de 'code' para 'searchTerm'
+                  value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </form>
@@ -173,14 +178,6 @@ function AddProduto() {
                   Buscar Produto
               </button>
             </div>
-
-            {/*<div className="camera-container" onClick={handleCameraClick}>
-              <img className="tilt-in-tr" alt="" src={camera} />
-              <p>
-                Aponte a câmera do seu celular para o código
-                de barras do produto
-              </p>
-            </div>*/}
           </div>
 
           <div className="campo-cep">
@@ -217,7 +214,7 @@ function AddProduto() {
                 type="checkbox"
                 id="check-btn"
                 className="custom-control-input"
-                disabled // Desativado porque a categoria é fixada como 4
+                disabled
               />
               <span className="custom-control-indicator"></span>
             </label>
@@ -228,7 +225,7 @@ function AddProduto() {
                 type="checkbox"
                 id="check-btn"
                 className="custom-control-input"
-                disabled // Desativado porque a categoria é fixada como 4
+                disabled
               />
               <span className="custom-control-indicator"></span>
             </label>
@@ -239,11 +236,10 @@ function AddProduto() {
                 type="checkbox"
                 id="check-btn"
                 className="custom-control-input"
-                disabled // Desativado porque a categoria é fixada como 4
+                disabled
               />
               <span className="custom-control-indicator"></span>
             </label>
-            {/* Outras categorias */}
           </div>
 
           <div className="container-quantidade">

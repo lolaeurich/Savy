@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./style.css";
 import erro from "../../Assets/erro-icon.png";
-import SlideButton from 'react-slide-button';
 import axios from 'axios';
 
 function Login() {

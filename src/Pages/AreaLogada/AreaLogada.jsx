@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./style.css";
 import cart from "../../Assets/cart.png";
+import lixo from "../../Assets/lixo.png";
 import cadastro from "../../Assets/cadastro.png";
 import axios from 'axios';
 import WeightSelector from "../../Components/SeletorPeso/SeletorPeso";
@@ -94,6 +95,24 @@ function AreaLogada() {
         );
     };
 
+    const handleDelete = async (productId) => {
+        try {
+            const token = localStorage.getItem('authToken');
+            const response = await axios.delete(`https://savvy-api.belogic.com.br/api/products/${productId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            console.log('Produto excluído com sucesso:', response.data);
+            // Atualiza o estado para remover o produto excluído
+            setProdutos(prevProdutos => prevProdutos.filter(produto => produto.id !== productId));
+        } catch (error) {
+            console.error('Erro ao excluir o produto:', error.response ? error.response.data : error.message);
+        }
+    };
+
+
     return (
         <div className="areaLogada-container">
             <div className="areaLogada-main">
@@ -171,9 +190,17 @@ function AreaLogada() {
                                             <p className='codigo-de-barras'>{produto.barcode}</p>
                                         </div>
                                     </div>
-                                    <div className='card-content-quantidade'>
-                                        <h3 className='card-content-quantidade-h3'>Quantidade</h3>
-                                        <WeightSelector />
+                                    <div className="card-content-card">
+                                        <div className='card-content-quantidade'>
+                                            <h3 className='card-content-quantidade-h3'>Quantidade</h3>
+                                            <WeightSelector />
+                                        </div>
+                                        <img 
+                                            className="lixo" 
+                                            alt="Excluir Produto" 
+                                            src={lixo}
+                                            onClick={() => handleDelete(produto.id)} // Passa o ID do produto para a função de exclusão
+                                        />
                                     </div>
                                 </div> 
                             </div>
