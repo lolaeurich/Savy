@@ -24,7 +24,7 @@ function AreaLogada() {
         // Simular recuperação de produtos (substitua com chamada à API real se necessário)
         const fetchProdutos = async () => {
             // Substitua pelo endpoint real
-            const response = await axios.get('https://savvy.belogic.com.br/api/products');
+            const response = await axios.get('https://savvy-api.belogic.com.br/api/products');
             setProdutos(response.data);
         };
         fetchProdutos();

@@ -11,20 +11,29 @@ function Login() {
     const [cep, setCep] = useState('');
     const [reset, setReset] = useState(0);
     const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     const handleRecuperar = () => {
         navigate("/recuperar");
-      };
+    };
 
-      const handleLogin = () => {
+    const handleLogin = () => {
         navigate("/validacao");
-      };
+    };
 
     const handleSlideDone = () => {
         // Verifica se o e-mail é válido
         if (!email || !email.includes('@') || !email.includes('.')) {
             setShowError(true);
+            setErrorMessage("Por favor, insira um e-mail válido.");
+            return;
+        }
+
+        // Verifica se o nome e o CEP são válidos
+        if (!nome || !cep) {
+            setShowError(true);
+            setErrorMessage("Nome e CEP são obrigatórios.");
             return;
         }
 
@@ -32,7 +41,7 @@ function Login() {
         const data = { email, name: nome, cep };
 
         // Envia a solicitação de registro para a API
-        axios.post('https://savvy.belogic.com.br/api/first-registration', data)
+        axios.post('https://savvy-api.belogic.com.br/api/first-registration', data)
             .then(response => {
                 // Sucesso no registro
                 setTimeout(() => navigate('/validacao'), 1000);
@@ -40,6 +49,14 @@ function Login() {
             .catch(error => {
                 console.error('Erro ao registrar:', error.response ? error.response.data : error.message);
                 setShowError(true);
+
+                // Exibe mensagem de erro específica
+                if (error.response && error.response.data && error.response.data.errors) {
+                    const errors = error.response.data.errors;
+                    setErrorMessage(errors.email ? errors.email[0] : errors.message || "Houve um erro ao tentar registrar.");
+                } else {
+                    setErrorMessage("Houve um erro ao tentar registrar. Verifique seus dados e tente novamente!");
+                }
             });
     };
 
@@ -87,8 +104,8 @@ function Login() {
                     />
                 </form>
 
-                <p className="recuperar">Já tenho cadastro.<br/> <span onClick={handleRecuperar}>Solicitar novo código de acesso!</span></p>
-                <p className="recuperar">Tenho um código de acesso e lembro dele<br/> <span onClick={handleLogin}>Quero acessar agora!</span></p>
+                <p className="recuperar">Já tenho cadastro.<br /> <span onClick={handleRecuperar}>Solicitar novo código de acesso!</span></p>
+                <p className="recuperar">Tenho um código de acesso e lembro dele<br /> <span onClick={handleLogin}>Quero acessar agora!</span></p>
 
                 <SlideButton
                     mainText="Deslize para cadastrar"
@@ -104,7 +121,7 @@ function Login() {
                         <img alt="Erro" src={erro} />
                         <div className="erro-text">
                             <h3>Ops!!</h3>
-                            <p>Houve um erro ao tentar registrar. Verifique seus dados e tente novamente!</p>
+                            <p>{errorMessage}</p>
                         </div>
                         <button onClick={handleTryAgain}>Tentar Novamente</button>
                     </div>

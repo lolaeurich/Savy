@@ -23,7 +23,7 @@ function Validacao() {
         const data = { email, code: codigo };
 
         // Envia a solicitação de validação para a API
-        axios.post('https://savvy.belogic.com.br/api/email-validate', data)
+        axios.post('https://savvy-api.belogic.com.br/api/email-validate', data)
             .then(response => {
                 // Sucesso na validação
                 const token = response.data.token; // Ajuste conforme a estrutura da resposta da API
