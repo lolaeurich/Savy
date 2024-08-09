@@ -14,6 +14,7 @@ function AreaLogada() {
     const [produtos, setProdutos] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [novoCep, setNovoCep] = useState('');
+    const [priceInfo, setPriceInfo] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -48,15 +49,74 @@ function AreaLogada() {
                     'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
                 }
             });
-            console.log(response.data);
             setProdutos(Array.isArray(response.data.data) ? response.data.data : []);
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
         }
     };
 
-    const handleSlideDone = () => {
-        navigate("/comparativo");
+    const fetchCoordinatesFromCep = async (cep) => {
+        try {
+            const response = await axios.get(`https://cep.awesomeapi.com.br/json/${cep}`);
+            const { lat, lng } = response.data;
+
+            if (lat && lng) {
+                return {
+                    latitude: lat,
+                    longitude: lng,
+                };
+            } else {
+                console.error("Coordenadas não encontradas.");
+                return null;
+            }
+        } catch (error) {
+            console.error("Erro ao obter coordenadas:", error);
+            return null;
+        }
+    };
+
+    const fetchPriceFromApi = async (productName) => {
+        try {
+            const coordinates = await fetchCoordinatesFromCep(cep);
+            if (!coordinates) {
+                console.error("Não foi possível obter as coordenadas.");
+                return null;
+            }
+
+            const { latitude, longitude } = coordinates;
+            const encodedProductName = encodeURIComponent(productName);
+            const encodedLatitude = encodeURIComponent(latitude);
+            const encodedLongitude = encodeURIComponent(longitude);
+            const searchUrl = `https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=${encodedLatitude}%2C${encodedLongitude}&termo=${encodedProductName}&raio=20`;
+
+            console.log(`Consultando preços na URL: ${searchUrl}`);
+            const response = await axios.get(searchUrl);
+            return response.data.total;
+        } catch (error) {
+            console.error("Erro ao buscar o preço:", error);
+            return null;
+        }
+    };
+
+    const handleSlideDone = async () => {
+        const selectedProducts = produtos.filter(produto => produto.isChecked);
+        const updatedPriceInfo = {};
+
+        console.log("Produtos selecionados:", selectedProducts);
+
+        for (const produto of selectedProducts) {
+            const totalMarkets = await fetchPriceFromApi(produto.name);
+            if (totalMarkets !== null) {
+                updatedPriceInfo[produto.id] = `Produto disponível em ${totalMarkets} mercados`;
+            } else {
+                updatedPriceInfo[produto.id] = "Erro ao consultar o preço";
+            }
+        }
+
+        setPriceInfo(updatedPriceInfo);
+
+        // Passa os produtos selecionados e os preços para a página de comparativo
+        navigate("/comparativo", { state: { selectedProducts, priceInfo: updatedPriceInfo } });
     };
 
     const handleAddProduto = () => {
@@ -105,13 +165,11 @@ function AreaLogada() {
             });
 
             console.log('Produto excluído com sucesso:', response.data);
-            // Atualiza o estado para remover o produto excluído
             setProdutos(prevProdutos => prevProdutos.filter(produto => produto.id !== productId));
         } catch (error) {
             console.error('Erro ao excluir o produto:', error.response ? error.response.data : error.message);
         }
     };
-
 
     return (
         <div className="areaLogada-container">
@@ -121,7 +179,7 @@ function AreaLogada() {
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />
                         <p>{produtos.length}</p>
-                    </div>    
+                    </div>
                 </div>
 
                 <div className="areaLogada-dados">
@@ -195,22 +253,21 @@ function AreaLogada() {
                                             <h3 className='card-content-quantidade-h3'>Quantidade</h3>
                                             <WeightSelector />
                                         </div>
-                                        <img 
-                                            className="lixo" 
-                                            alt="Excluir Produto" 
+                                        <img
+                                            className='lixo-img'
                                             src={lixo}
-                                            onClick={() => handleDelete(produto.id)} // Passa o ID do produto para a função de exclusão
+                                            alt="Excluir"
+                                            onClick={() => handleDelete(produto.id)}
                                         />
                                     </div>
-                                </div> 
+                                </div>
                             </div>
                         ))}
                     </div>
                 </div>
-
                 <div className="consultar-preco-btn">
                     <button
-                        className="slide-button"
+                        className="slide-button2"
                         onClick={handleSlideDone}
                     >Consultar preço</button>
                 </div>

@@ -48,7 +48,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-inline: 5%;
+    padding-inline: 5px;
 }
 
 .card-content-quantidade2 {
@@ -247,5 +247,26 @@
 .slide-but {
     background-color: #fff !important;
   }
+
+  .slide-button2 {
+    width: 80% !important;
+    height: 45px !important;
+    border: none !important;
+    border-radius: 50px;
+    margin-top: 0% !important;
+    margin-bottom: 15%;
+    padding: 0px !important;
+    position: relative;
+    overflow: hidden;
+    background-color: #3A7C22 !important;
+    color: #fff;
+    font-size: large;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    box-shadow: 6px 6px 5px rgba(0, 0, 0, 0.2);
+  }
+  
   
 
