@@ -53,7 +53,7 @@ function Comparativo() {
     };
 
     const handleListaMercados = () => {
-        navigate("/listaMercados");
+        navigate("/listaMercados", { state: { mercados: location.state.allMarkets } });
     };
 
     const handleCompraUnica = () => {

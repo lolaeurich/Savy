@@ -7,6 +7,7 @@ import flecha2 from "../../Assets/flecha-direita.png";
 import cart from "../../Assets/cart.png";
 import produtoImg from "../../Assets/produto-imagem.png"; // Imagem padrão do produto
 import WeightSelector from "../../Components/SeletorPeso/SeletorPeso";
+import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 
 function ListaMercados() {
     const location = useLocation();
@@ -16,10 +17,9 @@ function ListaMercados() {
 
     // UseEffect para receber os mercados da página anterior
     useEffect(() => {
-        if (location.state && location.state.selectedProducts) {
-            const allMarkets = location.state.selectedProducts.flatMap(product => product.mercados || []);
-            setMercados(allMarkets);
-            console.log("Mercados recebidos:", allMarkets); // Verifique se os dados estão sendo recebidos corretamente
+        if (location.state && location.state.mercados) {
+            setMercados(location.state.mercados);
+            console.log("Mercados recebidos:", location.state.mercados); // Verifique se os dados estão sendo recebidos corretamente
         } else {
             console.error("Nenhum dado recebido da página anterior.");
         }
@@ -70,43 +70,6 @@ function ListaMercados() {
                 <div className="listamercados-geral">
                     <h3 className="listamercados-geral-h3">Preço baixo e onde comprar</h3>
 
-                    {/* Card fixo */}
-                    <div className="card">
-                        <div className="card-header" onClick={() => toggleExpansion('fixo')}>
-                            <img className={`arrow ${expandedIndex === 'fixo' ? 'arrow-up' : 'arrow-down'}`} src={flecha2} alt="Seta" />
-                            <div className="card-mercado-text">
-                                <h2 className="card-title">{cardFixo.name}</h2>
-                                <p>{cardFixo.distance}</p>
-                            </div>
-                            <button className="custo">{cardFixo.cost}</button>
-                        </div>
-                        {expandedIndex === 'fixo' && (
-                            <div className="card-content">
-                                <input
-                                    className='checkbox-mercado'
-                                    type="checkbox"
-                                    id="produtoCheckboxFixo"
-                                    onChange={() => handleCheckboxChange('fixo')}
-                                />
-                                <label htmlFor="produtoCheckboxFixo"></label>
-                                <div className='card-content-sessao1'>
-                                    <div className='card-content-titulo'>
-                                        <img alt='Produto' src={produtoImg} />
-                                        <div className='produto-nome'>
-                                            <h3 className='produto-nome-h3'>{cardFixo.product}</h3>
-                                            <p className='codigo-de-barras'>{cardFixo.barcode}</p>
-                                        </div>
-                                    </div>
-                                    <div className='card-content-quantidade'>
-                                        <h3 className='card-content-quantidade-h3'>Quantidade</h3>
-                                        <WeightSelector />
-                                    </div>
-                                </div>
-                                <p className='card-content-valor'>{cardFixo.value}</p>
-                            </div>
-                        )}
-                    </div>
-
                     {/* Cards dinâmicos */}
                     {mercados.map((mercado, index) => (
                         <div className="card" key={index}>
@@ -114,9 +77,9 @@ function ListaMercados() {
                                 <img className={`arrow ${expandedIndex === index ? 'arrow-up' : 'arrow-down'}`} src={flecha2} alt="Seta" />
                                 <div className="card-mercado-text">
                                     <h2 className="card-title">{mercado.nomeDoMercado || 'Mercado Desconhecido'}</h2>
-                                    <p>{mercado.distancia}</p>
+                                    <p>Distância: {mercado.distancia} km</p>
                                 </div>
-                                <button className="custo">{mercado.custo}</button>
+                                <button className="custo">R$ {mercado.custo}</button>
                             </div>
                             {expandedIndex === index && (
                                 <div className="card-content">
@@ -137,10 +100,10 @@ function ListaMercados() {
                                         </div>
                                         <div className='card-content-quantidade'>
                                             <h3 className='card-content-quantidade-h3'>Quantidade</h3>
-                                            <WeightSelector />
+                                            <QuantitySelector />
                                         </div>
                                     </div>
-                                    <p className='card-content-valor'>{mercado.custo}</p>
+                                    <p className='card-content-valor'>R$ {mercado.custo}</p>
                                 </div>
                             )}
                         </div>

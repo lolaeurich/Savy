@@ -20,6 +20,7 @@
   .card-mercado-text {
     display: flex;
     flex-direction: column;
+    padding-inline: 3%;
   }
   
   .card-title {
@@ -48,6 +49,7 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
+    column-gap: 3%;
   }
 
   .card-content-titulo {

@@ -19,7 +19,7 @@ function AreaLogada() {
     const [marketInfo, setMarketInfo] = useState({});
     const allowedSupermarkets = ["Guanabara", "Condor", "VERDE MAIS VILA IZABEL", "Angeloni", "Atacadão", "Atacadao", "Carrefour", 
         "Muffato", "Festval", "Pao de Açúcar", "GPA", "Walmart", "Big", "Sonda", "BH", "Zaffari", "Jacomar", "Casa Fiesta", "Harri",
-        "Goias", "Planalto", "bozlatto", "Sierra", "Tissi", "Cial Beal", "Bissoto", "Carlos", "SUPERMERCADOS", "mercado", "supermercados"
+        "Goias", "Planalto", "bozlatto", "Sierra", "Tissi", "Cial Beal", "Bissoto", "Carlos"
     ];
     const navigate = useNavigate();
 
@@ -129,6 +129,7 @@ function AreaLogada() {
     const handleSlideDone = async () => {
         const selectedProducts = produtos.filter(produto => produto.isChecked);
         const updatedPriceInfo = {};
+        const allMarkets = [];
     
         console.log("Produtos selecionados:", selectedProducts);
     
@@ -136,6 +137,7 @@ function AreaLogada() {
             const filteredMarkets = await fetchPriceFromApi(produto.name);
             if (filteredMarkets.length > 0) {
                 updatedPriceInfo[produto.id] = `Produto disponível em ${filteredMarkets.length} mercados`;
+                allMarkets.push(...filteredMarkets); // Adiciona os mercados encontrados para o array allMarkets
             } else {
                 updatedPriceInfo[produto.id] = "Nenhum mercado encontrado";
             }
@@ -143,9 +145,10 @@ function AreaLogada() {
     
         setPriceInfo(updatedPriceInfo);
     
-        // Passa os produtos selecionados e os preços para a página de comparativo
-        navigate("/comparativo", { state: { selectedProducts, priceInfo: updatedPriceInfo } });
+        // Passa os produtos selecionados, os preços e os mercados para a página de comparativo
+        navigate("/comparativo", { state: { selectedProducts, priceInfo: updatedPriceInfo, allMarkets } });
     };
+    
     
 
     const handleAddProduto = () => {
