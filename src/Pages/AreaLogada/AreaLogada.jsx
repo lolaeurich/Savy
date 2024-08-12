@@ -88,40 +88,42 @@ function AreaLogada() {
                 console.error("Não foi possível obter as coordenadas.");
                 return { filteredMarkets: [], minPrice: null };
             }
-    
+        
             const { latitude, longitude } = coordinates;
             const encodedProductName = encodeURIComponent(productName);
             const encodedLatitude = encodeURIComponent(latitude);
             const encodedLongitude = encodeURIComponent(longitude);
             const searchUrl = `https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=${encodedLatitude}%2C${encodedLongitude}&termo=${encodedProductName}&raio=20`;
-    
+        
             console.log(`Consultando preços na URL: ${searchUrl}`);
             const response = await axios.get(searchUrl);
             const produtos = response.data.produtos;
-    
+        
             console.log("Produtos retornados da API:", produtos);
-    
+        
             const filteredMarkets = produtos
                 .filter(produto => {
-                    const supermercadoNome = produto.estabelecimento.nm_emp.toLowerCase();
-                    return allowedSupermarkets.some(supermarket => supermercadoNome.includes(supermarket.toLowerCase()));
+                    const supermercadoNome = produto.estabelecimento.nm_emp?.trim().toLowerCase();
+                    const nomeDoMercado = produto.estabelecimento.nm_fan?.trim();
+                    return supermercadoNome && nomeDoMercado && allowedSupermarkets.some(supermarket => supermercadoNome.includes(supermarket.toLowerCase()));
                 })
                 .map(produto => ({
                     nomeDoMercado: produto.estabelecimento.nm_fan,
                     distancia: produto.distkm,
                     custo: produto.valor,
                     produto: productName,
-                    codigoDeBarras: produto.ncm
+                    codigoDeBarras: produto.ncm,
+                    logradouro: produto.estabelecimento.nm_logr, // Adiciona nm_logr
+                    numero: produto.estabelecimento.nr_logr  // Adiciona nr_logr
                 }));
-    
+        
             console.log("Mercados filtrados para o produto", productName, ":", filteredMarkets);
             console.log("Número de mercados encontrados para o produto", productName, ":", filteredMarkets.length);
-    
-            // Encontrar o menor valor
+        
             const minPrice = filteredMarkets.length > 0 
                 ? Math.min(...filteredMarkets.map(market => market.custo)) 
                 : null;
-    
+        
             return { filteredMarkets, minPrice };
         } catch (error) {
             console.error("Erro ao buscar o preço:", error);
@@ -135,7 +137,7 @@ function AreaLogada() {
         const selectedProducts = produtos.filter(produto => produto.isChecked);
         const updatedPriceInfo = {};
         const allMarkets = [];
-        let overallMinPrice = null; // Para manter o menor preço global
+        let totalMinPrice = 0; // Variável para armazenar a soma dos menores preços
     
         console.log("Produtos selecionados:", selectedProducts);
     
@@ -148,27 +150,23 @@ function AreaLogada() {
                 updatedPriceInfo[produto.id] = "Nenhum mercado encontrado";
             }
     
-            // Atualiza o menor preço global
             if (minPrice !== null) {
-                if (overallMinPrice === null || minPrice < overallMinPrice) {
-                    overallMinPrice = minPrice;
-                }
+                totalMinPrice += minPrice; // Soma o menor preço do produto atual
             }
         }
     
         setPriceInfo(updatedPriceInfo);
     
-        // Passa os produtos selecionados, os preços, os mercados e o menor preço para a página de comparativo
+        // Passa os produtos selecionados, os preços, os mercados e o custo total para a página de comparativo
         navigate("/comparativo", { 
             state: { 
                 selectedProducts, 
                 priceInfo: updatedPriceInfo, 
                 allMarkets, 
-                overallMinPrice // Passa o menor preço global
+                totalMinPrice // Passa a soma dos menores preços
             } 
         });
     };
-    
     
     
 
@@ -206,7 +204,7 @@ function AreaLogada() {
         setProdutos(prevProdutos =>
             prevProdutos.map(prod => prod.barcode === barcode ? { ...prod, isChecked: !prod.isChecked } : prod)
         );
-    };
+    };    
 
     const handleDelete = async (productId) => {
         try {
@@ -283,40 +281,41 @@ function AreaLogada() {
                     </div>
 
                     <div className="lista-de-produtos">
-                        {produtos.map(produto => (
-                            <div className="card-content-produtos" key={produto.barcode}>
-                                <input
-                                    className='checkbox-mercado'
-                                    type="checkbox"
-                                    checked={produto.isChecked || false}
-                                    onChange={() => handleCheckboxChange(produto.barcode)}
-                                    id={`produtoCheckbox-${produto.barcode}`} // Garantir que a id seja única
-                                />
-                                <label htmlFor={`produtoCheckbox-${produto.barcode}`}></label>
-                                <div className='card-content-sessao2'>
-                                    <div className='card-content-titulo'>
-                                        <img alt='Produto' src={produto.image || produtoImg} /> {/* Usa a imagem do produto ou uma imagem padrão */}
-                                        <div className='produto-nome-lista'>
-                                            <h3 className='produto-nome-h3'>{produto.name}</h3>
-                                            <p className='codigo-de-barras'>{produto.barcode}</p>
-                                        </div>
-                                    </div>
-                                    <div className="card-content-card">
-                                        <div className='card-content-quantidade'>
-                                            <h3 className='card-content-quantidade-h3'>Quantidade</h3>
-                                            <QuantitySelector />
-                                        </div>
-                                        <img
-                                            className='lixo-img'
-                                            src={lixo}
-                                            alt="Excluir"
-                                            onClick={() => handleDelete(produto.id)}
-                                        />
+                    {produtos.map(produto => (
+                        <div className="card-content-produtos" key={produto.barcode}>
+                            <input
+                                className='checkbox-mercado'
+                                type="checkbox"
+                                checked={produto.isChecked || false}
+                                onChange={() => handleCheckboxChange(produto.barcode)}
+                                id={`produtoCheckbox-${produto.barcode}`} // Garantir que a id seja única
+                            />
+                            <label htmlFor={`produtoCheckbox-${produto.barcode}`}></label>
+                            <div className='card-content-sessao2'>
+                                <div className='card-content-titulo'>
+                                    <img alt='Produto' src={produto.image || produtoImg} /> {/* Usa a imagem do produto ou uma imagem padrão */}
+                                    <div className='produto-nome-lista'>
+                                        <h3 className='produto-nome-h3'>{produto.name}</h3>
+                                        <p className='codigo-de-barras'>{produto.barcode}</p>
                                     </div>
                                 </div>
+                                <div className="card-content-card">
+                                    <div className='card-content-quantidade'>
+                                        <h3 className='card-content-quantidade-h3'>Quantidade</h3>
+                                        <QuantitySelector />
+                                    </div>
+                                    <img
+                                        className='lixo-img'
+                                        src={lixo}
+                                        alt="Excluir"
+                                        onClick={() => handleDelete(produto.id)}
+                                    />
+                                </div>
                             </div>
-                        ))}
-                    </div>
+                        </div>
+                    ))}
+                </div>
+
                 </div>
                 <div className="consultar-preco-btn">
                     <button

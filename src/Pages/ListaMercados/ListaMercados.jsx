@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import "./style.css";
 import "../../Components/Mercados/style.css";
 import flecha from "../../Assets/flecha-esquerda.png";
 import flecha2 from "../../Assets/flecha-direita.png";
 import cart from "../../Assets/cart.png";
 import produtoImg from "../../Assets/produto-imagem.png"; // Imagem padrão do produto
-import WeightSelector from "../../Components/SeletorPeso/SeletorPeso";
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 
 function ListaMercados() {
@@ -14,6 +14,7 @@ function ListaMercados() {
     const navigate = useNavigate();
     const [mercados, setMercados] = useState([]); // Estado para os mercados
     const [expandedIndex, setExpandedIndex] = useState(null); // Estado para controlar qual card está expandido
+    const [produtoCount, setProdutoCount] = useState(0); // Contador de produtos do carrinho
 
     // UseEffect para receber os mercados da página anterior
     useEffect(() => {
@@ -24,6 +25,36 @@ function ListaMercados() {
             console.error("Nenhum dado recebido da página anterior.");
         }
     }, [location.state]);
+
+    // UseEffect para buscar a lista de produtos da API e atualizar o contador
+    useEffect(() => {
+        const fetchProdutoCount = async () => {
+            try {
+                const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
+                    headers: {
+                        'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
+                    }
+                });
+
+                // Log da resposta para verificar sua estrutura
+                console.log('Resposta da API:', response.data);
+
+                // Verificar se `response.data.data` é um array
+                const items = response.data.data; // Ajustado para acessar o array correto
+                if (Array.isArray(items)) {
+                    setProdutoCount(items.length);
+                } else {
+                    console.error('Resposta da API não contém um array de itens:', items);
+                    setProdutoCount(0); // Define como 0 caso não seja um array
+                }
+            } catch (error) {
+                console.error('Erro ao buscar produtos:', error);
+                setProdutoCount(0); // Define como 0 em caso de erro
+            }
+        };
+
+        fetchProdutoCount();
+    }, []);
 
     // Função para lidar com mudanças no checkbox
     const handleCheckboxChange = (index) => {
@@ -41,16 +72,6 @@ function ListaMercados() {
         navigate("/comparativo");
     };
 
-    // Card fixo para visualização
-    const cardFixo = {
-        name: "Mercado Fixo",
-        distance: "2 km",
-        cost: "R$ 5,00",
-        product: "Produto Exemplo",
-        barcode: "1234567890123", // Código de barras fictício
-        value: "R$ 10,00",
-    };
-
     return (
         <div className="listamercados-container">
             <div className="listamercados-main">
@@ -63,7 +84,7 @@ function ListaMercados() {
 
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />
-                        <p>{mercados.length + 1}</p> {/* Incluindo o card fixo */}
+                        <p>{produtoCount}</p> {/* Mostrando a quantidade de produtos do carrinho */}
                     </div>
                 </div>
 
@@ -78,6 +99,7 @@ function ListaMercados() {
                                 <div className="card-mercado-text">
                                     <h2 className="card-title">{mercado.nomeDoMercado || 'Mercado Desconhecido'}</h2>
                                     <p>Distância: {mercado.distancia} km</p>
+                                    <p>Endereço: {mercado.logradouro}, {mercado.numero}</p>
                                 </div>
                                 <button className="custo">R$ {mercado.custo}</button>
                             </div>

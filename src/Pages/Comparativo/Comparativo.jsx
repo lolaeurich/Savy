@@ -10,12 +10,18 @@ import produtos1 from "../../Assets/produtos.png";
 function Comparativo() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [mercadoCount, setMercadoCount] = useState(0); 
-    const [produtoCount, setProdutoCount] = useState(0); 
+    const [mercadoCount, setMercadoCount] = useState(0);
+    const [produtoCount, setProdutoCount] = useState(0);
     const [produtos, setProdutos] = useState([]);
     const [cep, setCep] = useState('');
     const [coordenadas, setCoordenadas] = useState('');
-    const [menorCusto, setMenorCusto] = useState(null);
+    const [custoTotal, setCustoTotal] = useState(0);
+    const [melhorMercado, setMelhorMercado] = useState({
+        nome: 'Não disponível',
+        distancia: 'Não disponível',
+        quantidadeProdutos: 0,
+        custo: Infinity
+    });
 
     useEffect(() => {
         const storedCep = localStorage.getItem('userCep');
@@ -27,7 +33,8 @@ function Comparativo() {
 
     useEffect(() => {
         if (location.state) {
-            const { selectedProducts, priceInfo, allMarkets, overallMinPrice } = location.state;
+            const { selectedProducts, priceInfo, allMarkets, totalMinPrice } = location.state;
+
             if (selectedProducts && selectedProducts.length > 0) {
                 setProdutos(selectedProducts);
                 setProdutoCount(selectedProducts.length);
@@ -38,9 +45,10 @@ function Comparativo() {
                 }, 0);
 
                 setMercadoCount(totalMercados);
+                setCustoTotal(totalMinPrice);
 
-                // Atualiza o menor custo com o valor global
-                setMenorCusto(overallMinPrice !== null ? overallMinPrice.toFixed(2) : '00,00');
+                // Encontra o mercado com o melhor custo-benefício
+                encontrarMelhorMercado(allMarkets, selectedProducts);
             }
         }
     }, [location.state]);
@@ -53,6 +61,44 @@ function Comparativo() {
         } catch (error) {
             console.error('Erro ao buscar as coordenadas:', error);
         }
+    };
+
+    const encontrarMelhorMercado = (allMarkets, selectedProducts) => {
+        let melhorMercado = {
+            nome: 'Não disponível',
+            distancia: 'Não disponível',
+            quantidadeProdutos: 0,
+            custo: Infinity
+        };
+
+        allMarkets.forEach(market => {
+            const produtosNoMercado = market.produtos || [];
+
+            // Verifica se todos os produtos selecionados estão no mercado
+            const todosProdutosPresentes = selectedProducts.every(produto => 
+                produtosNoMercado.some(p => p.id === produto.id)
+            );
+
+            if (todosProdutosPresentes) {
+                // Calcula o custo total dos produtos no mercado
+                const custoTotalMercado = selectedProducts.reduce((total, produto) => {
+                    const produtoNoMercado = produtosNoMercado.find(p => p.id === produto.id);
+                    return total + (produtoNoMercado ? produtoNoMercado.preco : 0);
+                }, 0);
+
+                // Atualiza o melhor mercado se o custo for menor
+                if (custoTotalMercado < melhorMercado.custo) {
+                    melhorMercado = {
+                        nome: market.nome || 'Não disponível',
+                        distancia: market.distancia || 'Não disponível',
+                        quantidadeProdutos: selectedProducts.length,
+                        custo: custoTotalMercado
+                    };
+                }
+            }
+        });
+
+        setMelhorMercado(melhorMercado);
     };
 
     const handleListaMercados = () => {
@@ -105,7 +151,7 @@ function Comparativo() {
 
                         <div className="card1-btns">
                             <button className="ver-mercados" onClick={handleListaMercados}>Ver supermercados</button>
-                            <button className="custo">Custo R$ {menorCusto}</button>
+                            <button className="custo">Custo R$ {custoTotal.toFixed(2)}</button>
                         </div>
                     </div>
 
@@ -113,15 +159,15 @@ function Comparativo() {
                         <h3>Melhor custo-benefício em um só lugar</h3>
                         <div className="lista-mercados">
                             <div className="mercado1">
-                                <p className="mercado-distancia">100 M</p>
+                                <p className="mercado-distancia">{melhorMercado.distancia}</p>
                                 <img alt="Mercado Icon" src={mercado} />
-                                <p className="mercado-produtos">XX produtos</p>
-                                <p className="mercado-economia">R$ 00.00</p>
+                                <p className="mercado-produtos">{melhorMercado.quantidadeProdutos} produtos</p>
+                                <p className="mercado-economia">R$ {melhorMercado.custo.toFixed(2)}</p>
                             </div>
                         </div>
                         <div className="card1-btns">
                             <button className="ver-mercados" onClick={handleCompraUnica}>Ver supermercados</button>
-                            <button className="custo">Custo R$ 00,00</button>
+                            <button className="custo">Custo R$ {melhorMercado.custo.toFixed(2)}</button>
                         </div>
                     </div>
 
