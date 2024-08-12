@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import erro from "../../Assets/erro-icon.png";
+import happy from "../../Assets/happy.png";
 import SlideButton from 'react-slide-button';
 import axios from 'axios';
 
@@ -27,7 +28,7 @@ function Recuperar() {
             .then(response => {
                 // Sucesso ao solicitar novo código
                 setSuccess(true);
-                setTimeout(() => navigate('/validacao'), 1000);
+                setTimeout(() => navigate('/validacao'), 3000);
             })
             .catch(error => {
                 console.error('Erro ao solicitar novo código:', error.response ? error.response.data : error.message);
@@ -54,7 +55,7 @@ function Recuperar() {
                 if (token) {
                     localStorage.setItem('authToken', token);
                 }
-                setTimeout(() => navigate('/areaLogada'), 1000);
+                setTimeout(() => navigate('/areaLogada'), 2000);
             })
             .catch(error => {
                 console.error('Erro ao validar e-mail:', error.response ? error.response.data : error.message);
@@ -96,12 +97,10 @@ function Recuperar() {
                     />
                 </form>
 
-                <SlideButton
-                    mainText="Solicitar Novo Código"
-                    overlayText=""
-                    onSlideDone={handleSlideDoneEmail}
-                    reset={reset}
-                />
+                <button
+                    className="slide-button"
+                    onClick={handleSlideDoneEmail}
+                >Solicitar novo código</button>
             </div>
 
             {showError && (
@@ -120,7 +119,7 @@ function Recuperar() {
             {success && (
                 <div className="popup">
                     <div className="popup-content">
-                        <img alt="Sucesso" src={erro} /> {/* Troque a imagem para um ícone de sucesso */}
+                        <img alt="Sucesso" src={happy} />
                         <div className="erro-text">
                             <h3>Sucesso!</h3>
                             <p>Um novo código foi enviado para o seu e-mail. Verifique sua caixa de entrada.</p>

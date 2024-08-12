@@ -86,7 +86,7 @@ function AreaLogada() {
             const coordinates = await fetchCoordinatesFromCep(cep);
             if (!coordinates) {
                 console.error("Não foi possível obter as coordenadas.");
-                return [];
+                return { filteredMarkets: [], minPrice: null };
             }
     
             const { latitude, longitude } = coordinates;
@@ -101,7 +101,6 @@ function AreaLogada() {
     
             console.log("Produtos retornados da API:", produtos);
     
-            // Filtra os produtos para encontrar os que estão em supermercados permitidos
             const filteredMarkets = produtos
                 .filter(produto => {
                     const supermercadoNome = produto.estabelecimento.nm_emp.toLowerCase();
@@ -118,36 +117,58 @@ function AreaLogada() {
             console.log("Mercados filtrados para o produto", productName, ":", filteredMarkets);
             console.log("Número de mercados encontrados para o produto", productName, ":", filteredMarkets.length);
     
-            return filteredMarkets; // Retorna a lista de mercados filtrados
+            // Encontrar o menor valor
+            const minPrice = filteredMarkets.length > 0 
+                ? Math.min(...filteredMarkets.map(market => market.custo)) 
+                : null;
+    
+            return { filteredMarkets, minPrice };
         } catch (error) {
             console.error("Erro ao buscar o preço:", error);
-            return [];
+            return { filteredMarkets: [], minPrice: null };
         }
     };
+    
     
 
     const handleSlideDone = async () => {
         const selectedProducts = produtos.filter(produto => produto.isChecked);
         const updatedPriceInfo = {};
         const allMarkets = [];
+        let overallMinPrice = null; // Para manter o menor preço global
     
         console.log("Produtos selecionados:", selectedProducts);
     
         for (const produto of selectedProducts) {
-            const filteredMarkets = await fetchPriceFromApi(produto.name);
+            const { filteredMarkets, minPrice } = await fetchPriceFromApi(produto.name);
             if (filteredMarkets.length > 0) {
                 updatedPriceInfo[produto.id] = `Produto disponível em ${filteredMarkets.length} mercados`;
-                allMarkets.push(...filteredMarkets); // Adiciona os mercados encontrados para o array allMarkets
+                allMarkets.push(...filteredMarkets); // Adiciona os mercados encontrados ao array allMarkets
             } else {
                 updatedPriceInfo[produto.id] = "Nenhum mercado encontrado";
+            }
+    
+            // Atualiza o menor preço global
+            if (minPrice !== null) {
+                if (overallMinPrice === null || minPrice < overallMinPrice) {
+                    overallMinPrice = minPrice;
+                }
             }
         }
     
         setPriceInfo(updatedPriceInfo);
     
-        // Passa os produtos selecionados, os preços e os mercados para a página de comparativo
-        navigate("/comparativo", { state: { selectedProducts, priceInfo: updatedPriceInfo, allMarkets } });
+        // Passa os produtos selecionados, os preços, os mercados e o menor preço para a página de comparativo
+        navigate("/comparativo", { 
+            state: { 
+                selectedProducts, 
+                priceInfo: updatedPriceInfo, 
+                allMarkets, 
+                overallMinPrice // Passa o menor preço global
+            } 
+        });
     };
+    
     
     
 

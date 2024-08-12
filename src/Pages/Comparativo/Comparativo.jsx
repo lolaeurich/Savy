@@ -10,11 +10,12 @@ import produtos1 from "../../Assets/produtos.png";
 function Comparativo() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [mercadoCount, setMercadoCount] = useState(0); // Para armazenar o número de mercados
-    const [produtoCount, setProdutoCount] = useState(0); // Para armazenar o número de produtos
+    const [mercadoCount, setMercadoCount] = useState(0); 
+    const [produtoCount, setProdutoCount] = useState(0); 
     const [produtos, setProdutos] = useState([]);
     const [cep, setCep] = useState('');
     const [coordenadas, setCoordenadas] = useState('');
+    const [menorCusto, setMenorCusto] = useState(null);
 
     useEffect(() => {
         const storedCep = localStorage.getItem('userCep');
@@ -26,18 +27,20 @@ function Comparativo() {
 
     useEffect(() => {
         if (location.state) {
-            const { selectedProducts, priceInfo } = location.state;
+            const { selectedProducts, priceInfo, allMarkets, overallMinPrice } = location.state;
             if (selectedProducts && selectedProducts.length > 0) {
                 setProdutos(selectedProducts);
                 setProdutoCount(selectedProducts.length);
 
-                // Acessa o número total de mercados disponíveis para os produtos
                 const totalMercados = Object.values(priceInfo).reduce((acc, info) => {
                     const match = info.match(/em (\d+) mercados/);
                     return match ? acc + parseInt(match[1], 10) : acc;
                 }, 0);
 
                 setMercadoCount(totalMercados);
+
+                // Atualiza o menor custo com o valor global
+                setMenorCusto(overallMinPrice !== null ? overallMinPrice.toFixed(2) : '00,00');
             }
         }
     }, [location.state]);
@@ -80,7 +83,7 @@ function Comparativo() {
 
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />
-                        <p>{produtoCount}</p> {/* Exibe a quantidade de produtos no carrinho */}
+                        <p>{produtoCount}</p>
                     </div>
                 </div>
 
@@ -91,26 +94,24 @@ function Comparativo() {
                         <div className="card1-icons">
                             <div className="icon1">
                                 <img alt="Mercado Icon" src={mercado} />
-                                <p>{mercadoCount} supermercados</p> {/* Exibe o número total de mercados */}
+                                <p>{mercadoCount} supermercados</p>
                             </div>
 
                             <div className="icon2">
                                 <img alt="Produtos Icon" src={produtos1} />
-                                <p>{produtoCount} produtos</p> {/* Exibe o número total de produtos */}
+                                <p>{produtoCount} produtos</p>
                             </div>
                         </div>
 
                         <div className="card1-btns">
                             <button className="ver-mercados" onClick={handleListaMercados}>Ver supermercados</button>
-                            <button className="custo">Custo R$ 00,00</button>
+                            <button className="custo">Custo R$ {menorCusto}</button>
                         </div>
                     </div>
 
                     <div className="card2">
                         <h3>Melhor custo-benefício em um só lugar</h3>
                         <div className="lista-mercados">
-                            {/* Aqui você pode adicionar elementos de lista de mercados com base nas informações obtidas */}
-                            {/* Exemplo: */}
                             <div className="mercado1">
                                 <p className="mercado-distancia">100 M</p>
                                 <img alt="Mercado Icon" src={mercado} />
@@ -134,7 +135,7 @@ function Comparativo() {
                             </div>
 
                             <div className="icon4">
-                                <img className="icon4-img" alt="Todos os produtos" src={produtos} />
+                                <img className="icon4-img" alt="Todos os produtos" src={produtos1} />
                                 <p className="icon4-p">Todos os produtos</p>
                             </div>
                         </div>
