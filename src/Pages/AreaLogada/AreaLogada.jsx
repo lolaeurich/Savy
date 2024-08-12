@@ -7,6 +7,7 @@ import cadastro from "../../Assets/cadastro.png";
 import axios from 'axios';
 import WeightSelector from "../../Components/SeletorPeso/SeletorPeso";
 import produtoImg from "../../Assets/produto-imagem.png"; // Imagem padrão do produto
+import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 
 function AreaLogada() {
     const [cep, setCep] = useState('');
@@ -15,6 +16,11 @@ function AreaLogada() {
     const [isEditing, setIsEditing] = useState(false);
     const [novoCep, setNovoCep] = useState('');
     const [priceInfo, setPriceInfo] = useState({});
+    const [marketInfo, setMarketInfo] = useState({});
+    const allowedSupermarkets = ["Guanabara", "Condor", "VERDE MAIS VILA IZABEL", "Angeloni", "Atacadão", "Atacadao", "Carrefour", 
+        "Muffato", "Festval", "Pao de Açúcar", "GPA", "Walmart", "Big", "Sonda", "BH", "Zaffari", "Jacomar", "Casa Fiesta", "Harri",
+        "Goias", "Planalto", "bozlatto", "Sierra", "Tissi", "Cial Beal", "Bissoto", "Carlos", "SUPERMERCADOS", "mercado", "supermercados"
+    ];
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -80,44 +86,67 @@ function AreaLogada() {
             const coordinates = await fetchCoordinatesFromCep(cep);
             if (!coordinates) {
                 console.error("Não foi possível obter as coordenadas.");
-                return null;
+                return [];
             }
-
+    
             const { latitude, longitude } = coordinates;
             const encodedProductName = encodeURIComponent(productName);
             const encodedLatitude = encodeURIComponent(latitude);
             const encodedLongitude = encodeURIComponent(longitude);
             const searchUrl = `https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=${encodedLatitude}%2C${encodedLongitude}&termo=${encodedProductName}&raio=20`;
-
+    
             console.log(`Consultando preços na URL: ${searchUrl}`);
             const response = await axios.get(searchUrl);
-            return response.data.total;
+            const produtos = response.data.produtos;
+    
+            console.log("Produtos retornados da API:", produtos);
+    
+            // Filtra os produtos para encontrar os que estão em supermercados permitidos
+            const filteredMarkets = produtos
+                .filter(produto => {
+                    const supermercadoNome = produto.estabelecimento.nm_emp.toLowerCase();
+                    return allowedSupermarkets.some(supermarket => supermercadoNome.includes(supermarket.toLowerCase()));
+                })
+                .map(produto => ({
+                    nomeDoMercado: produto.estabelecimento.nm_fan,
+                    distancia: produto.distkm,
+                    custo: produto.valor,
+                    produto: productName,
+                    codigoDeBarras: produto.ncm
+                }));
+    
+            console.log("Mercados filtrados para o produto", productName, ":", filteredMarkets);
+            console.log("Número de mercados encontrados para o produto", productName, ":", filteredMarkets.length);
+    
+            return filteredMarkets; // Retorna a lista de mercados filtrados
         } catch (error) {
             console.error("Erro ao buscar o preço:", error);
-            return null;
+            return [];
         }
     };
+    
 
     const handleSlideDone = async () => {
         const selectedProducts = produtos.filter(produto => produto.isChecked);
         const updatedPriceInfo = {};
-
+    
         console.log("Produtos selecionados:", selectedProducts);
-
+    
         for (const produto of selectedProducts) {
-            const totalMarkets = await fetchPriceFromApi(produto.name);
-            if (totalMarkets !== null) {
-                updatedPriceInfo[produto.id] = `Produto disponível em ${totalMarkets} mercados`;
+            const filteredMarkets = await fetchPriceFromApi(produto.name);
+            if (filteredMarkets.length > 0) {
+                updatedPriceInfo[produto.id] = `Produto disponível em ${filteredMarkets.length} mercados`;
             } else {
-                updatedPriceInfo[produto.id] = "Erro ao consultar o preço";
+                updatedPriceInfo[produto.id] = "Nenhum mercado encontrado";
             }
         }
-
+    
         setPriceInfo(updatedPriceInfo);
-
+    
         // Passa os produtos selecionados e os preços para a página de comparativo
         navigate("/comparativo", { state: { selectedProducts, priceInfo: updatedPriceInfo } });
     };
+    
 
     const handleAddProduto = () => {
         navigate("/addProduto");
@@ -160,7 +189,7 @@ function AreaLogada() {
             const token = localStorage.getItem('authToken');
             const response = await axios.delete(`https://savvy-api.belogic.com.br/api/products/${productId}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
                 }
             });
 
@@ -216,7 +245,7 @@ function AreaLogada() {
                     </div>
 
                     <div className="reais-economizados">
-                        <h1>XX</h1>
+                        <h1>0</h1>
                         <p>Reais economizados</p>
                     </div>
                 </div>
@@ -251,7 +280,7 @@ function AreaLogada() {
                                     <div className="card-content-card">
                                         <div className='card-content-quantidade'>
                                             <h3 className='card-content-quantidade-h3'>Quantidade</h3>
-                                            <WeightSelector />
+                                            <QuantitySelector />
                                         </div>
                                         <img
                                             className='lixo-img'
