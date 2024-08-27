@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import "./style.css";
 import cart from "../../Assets/cart.png";
 import lixo from "../../Assets/lixo.png";
 import cadastro from "../../Assets/cadastro.png";
-import axios from 'axios';
-import WeightSelector from "../../Components/SeletorPeso/SeletorPeso";
 import produtoImg from "../../Assets/produto-imagem.png"; // Imagem padrão do produto
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
+
+// Adicione a lista de supermercados permitidos aqui
+const allowedSupermarkets = [
+    "Guanabara", "Condor", "VERDE MAIS VILA IZABEL", "Angeloni", "Atacadão", "Atacadao", "Carrefour", 
+    "Muffato", "Festval", "Pao de Açúcar", "GPA", "Walmart", "Big", "Sonda", "BH", "Zaffari", "Jacomar",
+    "Casa Fiesta", "Harri", "Goias", "Planalto", "bozlatto", "Sierra", "Tissi", "Cial Beal", "Bissoto", 
+    "Carlos"
+];
 
 function AreaLogada() {
     const [cep, setCep] = useState('');
@@ -15,12 +22,8 @@ function AreaLogada() {
     const [produtos, setProdutos] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [novoCep, setNovoCep] = useState('');
-    const [priceInfo, setPriceInfo] = useState({});
-    const [marketInfo, setMarketInfo] = useState({});
-    const allowedSupermarkets = ["Guanabara", "Condor", "VERDE MAIS VILA IZABEL", "Angeloni", "Atacadão", "Atacadao", "Carrefour", 
-        "Muffato", "Festval", "Pao de Açúcar", "GPA", "Walmart", "Big", "Sonda", "BH", "Zaffari", "Jacomar", "Casa Fiesta", "Harri",
-        "Goias", "Planalto", "bozlatto", "Sierra", "Tissi", "Cial Beal", "Bissoto", "Carlos"
-    ];
+    const [priceInfo, setPriceInfo] = useState({}); // Adicionando estado priceInfo
+    const [selectedProductsCount, setSelectedProductsCount] = useState(0); // Contador de produtos selecionados
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -31,6 +34,12 @@ function AreaLogada() {
         }
         fetchProdutos();
     }, []);
+
+    useEffect(() => {
+        // Atualiza a contagem de produtos selecionados sempre que a lista de produtos mudar
+        const count = produtos.filter(produto => produto.isChecked).length;
+        setSelectedProductsCount(count);
+    }, [produtos]);
 
     const fetchCidade = async (cep) => {
         try {
@@ -113,8 +122,8 @@ function AreaLogada() {
                     custo: produto.valor,
                     produto: productName,
                     codigoDeBarras: produto.ncm,
-                    logradouro: produto.estabelecimento.nm_logr, // Adiciona nm_logr
-                    numero: produto.estabelecimento.nr_logr  // Adiciona nr_logr
+                    logradouro: produto.estabelecimento.nm_logr,
+                    numero: produto.estabelecimento.nr_logr
                 }));
         
             console.log("Mercados filtrados para o produto", productName, ":", filteredMarkets);
@@ -130,8 +139,6 @@ function AreaLogada() {
             return { filteredMarkets: [], minPrice: null };
         }
     };
-    
-    
 
     const handleSlideDone = async () => {
         const selectedProducts = produtos.filter(produto => produto.isChecked);
@@ -155,7 +162,7 @@ function AreaLogada() {
             }
         }
     
-        setPriceInfo(updatedPriceInfo);
+        setPriceInfo(updatedPriceInfo); // Atualiza o estado priceInfo
     
         // Passa os produtos selecionados, os preços, os mercados e o custo total para a página de comparativo
         navigate("/comparativo", { 
@@ -167,8 +174,6 @@ function AreaLogada() {
             } 
         });
     };
-    
-    
 
     const handleAddProduto = () => {
         navigate("/addProduto");
@@ -204,7 +209,7 @@ function AreaLogada() {
         setProdutos(prevProdutos =>
             prevProdutos.map(prod => prod.barcode === barcode ? { ...prod, isChecked: !prod.isChecked } : prod)
         );
-    };    
+    };
 
     const handleDelete = async (productId) => {
         try {
@@ -226,10 +231,10 @@ function AreaLogada() {
         <div className="areaLogada-container">
             <div className="areaLogada-main">
                 <div className="areaLogada-nav">
-                    <h3>Minha lista de compras</h3>
+                    <h3>Minha lista de produtos</h3>
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />
-                        <p>{produtos.length}</p>
+                        <p>{selectedProductsCount}</p> {/* Mostra o número de produtos selecionados */}
                     </div>
                 </div>
 
@@ -281,42 +286,42 @@ function AreaLogada() {
                     </div>
 
                     <div className="lista-de-produtos">
-                    {produtos.map(produto => (
-                        <div className="card-content-produtos" key={produto.barcode}>
-                            <input
-                                className='checkbox-mercado'
-                                type="checkbox"
-                                checked={produto.isChecked || false}
-                                onChange={() => handleCheckboxChange(produto.barcode)}
-                                id={`produtoCheckbox-${produto.barcode}`} // Garantir que a id seja única
-                            />
-                            <label htmlFor={`produtoCheckbox-${produto.barcode}`}></label>
-                            <div className='card-content-sessao2'>
-                                <div className='card-content-titulo'>
-                                    <img alt='Produto' src={produto.image || produtoImg} /> {/* Usa a imagem do produto ou uma imagem padrão */}
-                                    <div className='produto-nome-lista'>
-                                        <h3 className='produto-nome-h3'>{produto.name}</h3>
-                                        <p className='codigo-de-barras'>{produto.barcode}</p>
+                        {produtos.map(produto => (
+                            <div className="card-content-produtos" key={produto.barcode}>
+                                <input
+                                    className='checkbox-mercado'
+                                    type="checkbox"
+                                    checked={produto.isChecked || false}
+                                    onChange={() => handleCheckboxChange(produto.barcode)}
+                                    id={`produtoCheckbox-${produto.barcode}`} // Garantir que a id seja única
+                                />
+                                <label htmlFor={`produtoCheckbox-${produto.barcode}`}></label>
+                                <div className='card-content-sessao2'>
+                                    <div className='card-content-titulo'>
+                                        <img alt='Produto' src={produto.image || produtoImg} /> {/* Usa a imagem do produto ou uma imagem padrão */}
+                                        <div className='produto-nome-lista'>
+                                            <h3 className='produto-nome-h3'>{produto.name}</h3>
+                                            <p className='codigo-de-barras'>{produto.barcode}</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="card-content-card">
-                                    <div className='card-content-quantidade'>
-                                        <h3 className='card-content-quantidade-h3'>Quantidade</h3>
-                                        <QuantitySelector />
+                                    <div className="card-content-card">
+                                        <div className='card-content-quantidade'>
+                                            <h3 className='card-content-quantidade-h3'>Quantidade</h3>
+                                            <QuantitySelector />
+                                        </div>
+                                        <img
+                                            className='lixo-img'
+                                            src={lixo}
+                                            alt="Excluir"
+                                            onClick={() => handleDelete(produto.id)}
+                                        />
                                     </div>
-                                    <img
-                                        className='lixo-img'
-                                        src={lixo}
-                                        alt="Excluir"
-                                        onClick={() => handleDelete(produto.id)}
-                                    />
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
 
-                </div>
                 <div className="consultar-preco-btn">
                     <button
                         className="slide-button2"

@@ -19,12 +19,28 @@ function ListaMercados() {
     // UseEffect para receber os mercados da página anterior
     useEffect(() => {
         if (location.state && location.state.mercados) {
-            setMercados(location.state.mercados);
-            console.log("Mercados recebidos:", location.state.mercados); // Verifique se os dados estão sendo recebidos corretamente
+            const filteredMercados = filterFirstProductPerType(location.state.mercados);
+            setMercados(filteredMercados);
+            console.log("Mercados recebidos e filtrados:", filteredMercados); // Verifique se os dados estão sendo recebidos corretamente
         } else {
             console.error("Nenhum dado recebido da página anterior.");
         }
     }, [location.state]);
+
+    // Função para filtrar o primeiro item de cada produto
+    const filterFirstProductPerType = (mercados) => {
+        const seenProducts = new Set();
+        const filtered = [];
+
+        mercados.forEach((mercado) => {
+            if (!seenProducts.has(mercado.produto)) {
+                seenProducts.add(mercado.produto);
+                filtered.push(mercado);
+            }
+        });
+
+        return filtered;
+    };
 
     // UseEffect para buscar a lista de produtos da API e atualizar o contador
     useEffect(() => {
