@@ -15,6 +15,7 @@ function ListaMercados() {
     const [mercados, setMercados] = useState([]); // Estado para os mercados
     const [expandedIndex, setExpandedIndex] = useState(null); // Estado para controlar qual card está expandido
     const [produtoCount, setProdutoCount] = useState(0); // Contador de produtos do carrinho
+    const cardCount = mercados.length;
 
     // UseEffect para receber os mercados da página anterior
     useEffect(() => {
@@ -100,7 +101,7 @@ function ListaMercados() {
 
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />
-                        <p>{produtoCount}</p> {/* Mostrando a quantidade de produtos do carrinho */}
+                        <p>{cardCount}</p> {/* Mostrando a quantidade de produtos do carrinho */}
                     </div>
                 </div>
 

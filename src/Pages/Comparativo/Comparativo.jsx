@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import "./style.css";
+import './style.css';
 import cart from "../../Assets/cart.png";
 import flecha from "../../Assets/flecha-esquerda.png";
 import mercado from "../../Assets/home.png";
 import produtos1 from "../../Assets/produtos.png";
 
 function Comparativo() {
-    const navigate = useNavigate();
     const location = useLocation();
+    const navigate = useNavigate();
     const [mercadoCount, setMercadoCount] = useState(0);
     const [produtoCount, setProdutoCount] = useState(0);
+    const [selectedProductsCount, setSelectedProductsCount] = useState(0); // Adicionado para armazenar a contagem de produtos selecionados
     const [produtos, setProdutos] = useState([]);
     const [cep, setCep] = useState('');
     const [coordenadas, setCoordenadas] = useState('');
@@ -33,11 +34,12 @@ function Comparativo() {
 
     useEffect(() => {
         if (location.state) {
-            const { selectedProducts, priceInfo, allMarkets, totalMinPrice } = location.state;
+            const { selectedProducts, priceInfo, allMarkets, totalMinPrice, selectedProductsCount } = location.state;
 
             if (selectedProducts && selectedProducts.length > 0) {
                 setProdutos(selectedProducts);
                 setProdutoCount(selectedProducts.length);
+                setSelectedProductsCount(selectedProductsCount); // Atualiza a contagem de produtos selecionados
 
                 const totalMercados = Object.values(priceInfo).reduce((acc, info) => {
                     const match = info.match(/em (\d+) mercados/);
@@ -47,7 +49,6 @@ function Comparativo() {
                 setMercadoCount(totalMercados);
                 setCustoTotal(totalMinPrice);
 
-                // Encontra o mercado com o melhor custo-benefício
                 encontrarMelhorMercado(allMarkets, selectedProducts);
             }
         }
@@ -74,22 +75,19 @@ function Comparativo() {
         allMarkets.forEach(market => {
             const produtosNoMercado = market.produtos || [];
 
-            // Verifica se todos os produtos selecionados estão no mercado
             const todosProdutosPresentes = selectedProducts.every(produto => 
                 produtosNoMercado.some(p => p.id === produto.id)
             );
 
             if (todosProdutosPresentes) {
-                // Calcula o custo total dos produtos no mercado
                 const custoTotalMercado = selectedProducts.reduce((total, produto) => {
                     const produtoNoMercado = produtosNoMercado.find(p => p.id === produto.id);
                     return total + (produtoNoMercado ? produtoNoMercado.preco : 0);
                 }, 0);
 
-                // Atualiza o melhor mercado se o custo for menor
                 if (custoTotalMercado < melhorMercado.custo) {
                     melhorMercado = {
-                        nome: market.nome || 'Não disponível',
+                        nome: market.nomeDoMercado || 'Não disponível',
                         distancia: market.distancia || 'Não disponível',
                         quantidadeProdutos: selectedProducts.length,
                         custo: custoTotalMercado
@@ -102,7 +100,12 @@ function Comparativo() {
     };
 
     const handleListaMercados = () => {
-        navigate("/listaMercados", { state: { mercados: location.state.allMarkets } });
+        navigate("/listaMercados", { 
+            state: { 
+                mercados: location.state.allMarkets,
+                selectedProductsCount // Passa a contagem de produtos selecionados
+            } 
+        });
     };
 
     const handleCompraUnica = () => {
@@ -124,31 +127,26 @@ function Comparativo() {
                     <div className="cart2">
                         <img alt="Voltar" src={flecha} onClick={handleVoltar} />
                     </div>
-
                     <h3>Menor preço</h3>
-
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />
-                        <p>{produtoCount}</p>
+                        <p>{selectedProductsCount}</p> {/* Exibe a contagem de produtos selecionados */}
                     </div>
                 </div>
-
+                
                 <div className="comparativo-cards">
                     <div className="card1">
                         <h3>Preço baixo e onde comprar</h3>
-
                         <div className="card1-icons">
                             <div className="icon1">
                                 <img alt="Mercado Icon" src={mercado} />
                                 <p>{mercadoCount} supermercados</p>
                             </div>
-
                             <div className="icon2">
                                 <img alt="Produtos Icon" src={produtos1} />
                                 <p>{produtoCount} produtos</p>
                             </div>
                         </div>
-
                         <div className="card1-btns">
                             <button className="ver-mercados" onClick={handleListaMercados}>Ver supermercados</button>
                             <button className="custo">Custo R$ {custoTotal.toFixed(2)}</button>
@@ -179,7 +177,6 @@ function Comparativo() {
                                 <img className="icon3-img" alt="Receba em casa" src={mercado} />
                                 <p className="icon3-p">Receba em casa</p>
                             </div>
-
                             <div className="icon4">
                                 <img className="icon4-img" alt="Todos os produtos" src={produtos1} />
                                 <p className="icon4-p">Todos os produtos</p>

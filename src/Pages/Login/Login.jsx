@@ -13,6 +13,14 @@ function Login() {
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
+    // Mapeamento de mensagens de erro
+    const errorMessages = {
+        "this email already exists": "Este e-mail já está cadastrado.",
+        "required": "Este campo é obrigatório.",
+        "invalid email": "E-mail inválido.",
+        // Adicione mais mensagens conforme necessário
+    };
+
     const handleRecuperar = () => {
         navigate("/recuperar");
     };
@@ -49,13 +57,17 @@ function Login() {
                 console.error('Erro ao registrar:', error.response ? error.response.data : error.message);
                 setShowError(true);
 
-                // Exibe mensagem de erro específica
+                let errorMsg = "Houve um erro ao tentar registrar. Verifique seus dados e tente novamente!";
+                
                 if (error.response && error.response.data && error.response.data.errors) {
                     const errors = error.response.data.errors;
-                    setErrorMessage(errors.email ? errors.email[0] : errors.message || "Houve um erro ao tentar registrar.");
-                } else {
-                    setErrorMessage("Houve um erro ao tentar registrar. Verifique seus dados e tente novamente!");
+                    const apiError = errors.email ? errors.email[0] : errors.message;
+
+                    // Verifica se a mensagem de erro está no mapeamento e usa a tradução
+                    errorMsg = errorMessages[apiError.toLowerCase()] || "Houve um erro ao tentar registrar. Verifique seus dados e tente novamente!";
                 }
+
+                setErrorMessage(errorMsg);
             });
     };
 

@@ -144,7 +144,7 @@ function AreaLogada() {
         const selectedProducts = produtos.filter(produto => produto.isChecked);
         const updatedPriceInfo = {};
         const allMarkets = [];
-        let totalMinPrice = 0; // Variável para armazenar a soma dos menores preços
+        let totalMinPrice = 0;
     
         console.log("Produtos selecionados:", selectedProducts);
     
@@ -152,28 +152,29 @@ function AreaLogada() {
             const { filteredMarkets, minPrice } = await fetchPriceFromApi(produto.name);
             if (filteredMarkets.length > 0) {
                 updatedPriceInfo[produto.id] = `Produto disponível em ${filteredMarkets.length} mercados`;
-                allMarkets.push(...filteredMarkets); // Adiciona os mercados encontrados ao array allMarkets
+                allMarkets.push(...filteredMarkets);
             } else {
                 updatedPriceInfo[produto.id] = "Nenhum mercado encontrado";
             }
     
             if (minPrice !== null) {
-                totalMinPrice += minPrice; // Soma o menor preço do produto atual
+                totalMinPrice += minPrice;
             }
         }
     
-        setPriceInfo(updatedPriceInfo); // Atualiza o estado priceInfo
+        setPriceInfo(updatedPriceInfo);
     
-        // Passa os produtos selecionados, os preços, os mercados e o custo total para a página de comparativo
         navigate("/comparativo", { 
             state: { 
                 selectedProducts, 
                 priceInfo: updatedPriceInfo, 
                 allMarkets, 
-                totalMinPrice // Passa a soma dos menores preços
+                totalMinPrice,
+                selectedProductsCount // Passa o contador de produtos selecionados
             } 
         });
     };
+    
 
     const handleAddProduto = () => {
         navigate("/addProduto");
