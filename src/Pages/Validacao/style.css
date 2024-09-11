@@ -1,0 +1,19 @@
+.logins {
+    display: flex;
+    width: 80%;
+}
+
+.recuperar {
+    font-size: 14px;
+    font-weight: 600;
+    color: #3A7C22;
+    font-family: 'Montserrat Alternates', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logins img {
+    width: 20px;
+    height: 20px;
+}

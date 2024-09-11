@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
+import "./style.css";
 import erro from "../../Assets/erro-icon.png";
 import happy from "../../Assets/happy.png";
 import SlideButton from 'react-slide-button';
@@ -71,15 +72,17 @@ function Recuperar() {
 
     return (
         <div className="login-container">
-            <div className="login-main">
-                <div className="login-savvy-logo">
+            <div className="login-main-recuperar">
+                <div className="login-savvy-logo-recuperar">
                     <h1>SAVVY</h1>
                 </div>
 
+                    <h2 className="login-esqueci">Esqueci a senha</h2>
+
                 <div className="login-savvy-text">
                     <h3 className="bem-vindo">Seja bem-vindo!</h3>
-                    <h2 className="melhor-compra">Com o Savvy, você</h2>
-                    <h2 className="melhor-compra">sempre faz a melhor compra!</h2>
+                    <h2 className="melhor-compra">Com Savvy, você</h2>
+                    <h2 className="melhor-compra">sempre tem a melhor opção!</h2>
                 </div>
 
                 <div className="login-savvy-text2">
@@ -100,7 +103,7 @@ function Recuperar() {
                 <button
                     className="slide-button"
                     onClick={handleSlideDoneEmail}
-                >Solicitar novo código</button>
+                >Solicitar nova senha</button>
             </div>
 
             {showError && (

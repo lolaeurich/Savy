@@ -70,6 +70,10 @@ function AreaLogada() {
         }
     };
 
+    useEffect(() => {
+        localStorage.setItem('produtos', JSON.stringify(produtos));
+    }, [produtos]);
+
     const fetchCoordinatesFromCep = async (cep) => {
         try {
             const response = await axios.get(`https://cep.awesomeapi.com.br/json/${cep}`);
@@ -239,7 +243,7 @@ function AreaLogada() {
                     </div>
                 </div>
 
-                <div className="areaLogada-dados">
+                {/*<div className="areaLogada-dados">
                     <div className="areaLogada-endereco">
                         {isEditing ? (
                             <div>
@@ -264,9 +268,9 @@ function AreaLogada() {
                             </div>
                         )}
                     </div>
-                </div>
+                </div>*/}
 
-                <div className="dados-compras">
+                {/*<div className="dados-compras">
                     <div className="prod-cadastrados">
                         <h1>{produtos.length}</h1>
                         <p>Produtos cadastrados</p>
@@ -276,12 +280,12 @@ function AreaLogada() {
                         <h1>0</h1>
                         <p>Reais economizados</p>
                     </div>
-                </div>
+                </div>*/}
 
                 <div className="container-meus-produtos">
                     <div className="meus-produtos-bar">
                         <button className="meus-produtos-btn" onClick={handleAddProduto}>
-                            Cadastrar produto
+                            Inserir produto
                             <img alt="Cadastro Icon" src={cadastro} />
                         </button>
                     </div>
@@ -299,7 +303,7 @@ function AreaLogada() {
                                 <label htmlFor={`produtoCheckbox-${produto.barcode}`}></label>
                                 <div className='card-content-sessao2'>
                                     <div className='card-content-titulo'>
-                                        <img alt='Produto' src={produto.image || produtoImg} /> {/* Usa a imagem do produto ou uma imagem padrão */}
+                                        <img alt='Produto' src={produto.image } /> {/* Usa a imagem do produto ou uma imagem padrão */}
                                         <div className='produto-nome-lista'>
                                             <h3 className='produto-nome-h3'>{produto.name}</h3>
                                             <p className='codigo-de-barras'>{produto.barcode}</p>

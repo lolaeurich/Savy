@@ -27,49 +27,34 @@ function TelaInicial () {
                      <img alt="" src={logo}/>
                 </div>
                 <div className="savvy-text">
-                    <h3 className="conheca-missao">Sua melhor maneira de comprar</h3>
+                    <h3 className="conheca-missao">Sobre esse APP:</h3>
                 </div>
 
-                <h3 className="voce-so-precisa">Cadastre:</h3>
+                <h3 className="voce-so-precisa">Seja sagaz, seja Savvy.</h3>
 
-                <div className="container-precisa">
-                    <div className="cadastro-cep">
-                        <img alt="" src={here} />
-                        <p>CEP</p>
-                    </div>
-                    <p>e</p>
-                    <div className="cadastro-cep">
-                        <img alt="" src={lista} />
-                        <p>Lista de compras</p>
-                    </div>
-                </div>
+                    <p className="inicio-p">Cada compra pode ser uma oportunidade de
+                        economizar, e o Savvy está aqui para garantir
+                        isso. Com uma interface amigável e um
+                        sistema de busca inteligente, você
+                        rapidamente descobre os menores preços na
+                        sua região. Imagine saber exatamente onde
+                        comprar e quanto vai economizar a cada vez.
+                        Com o Savvy, é possível. Basta inserir seu CEP
+                        e sua lista de compras, e nós cuidamos do
+                        resto. Transforme suas compras em uma
+                        experiência mais eficiente e satisfatória. Com o
+                        Savvy, você não apenas economiza, mas se
+                        torna um consumidor consciente e informado,
+                        capaz de fazer o seu dinheiro render mais.
+                    </p>
 
-                <h3 className="voce-so-precisa">Receba:</h3>
-
-                <div className="container-entregamos">
-                    <div className="cadastro-cep2">
-                        <h5>Economia</h5>
-                        <img alt="" src={economia} />
-                        <p>Encontre o menor preço de cada item.</p>
-                    </div>
-                    <div className="cadastro-cep2">
-                        <h5>Controle</h5>
-                        <img alt="" src={controle} />
-                        <p>Ache os menores preços no supermercado.</p>
-                    </div>
-                    <div className="cadastro-cep2">
-                        <h5>Inteligência</h5>
-                        <img alt="" src={intelig} />
-                        <p>Receba em casa pelo de menor preço.</p>
-                    </div>
-                </div>
             </div>
 
             <button
                 className="slide-button"
                 onClick={handleValidacao}
                 reset={reset}
-            >Quero começar a economizar</button>
+            >Vamos começar!</button>
 
         </div>
     )

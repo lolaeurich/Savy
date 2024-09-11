@@ -37,7 +37,7 @@ function Validacao() {
                 if (token) {
                     localStorage.setItem('authToken', token); // Armazena o token
                 }
-                setTimeout(() => navigate('/areaLogada'), 1000);
+                setTimeout(() => navigate('/InfoIniciais'), 1000);
             })
             .catch(error => {
                 console.error('Erro ao validar e-mail:', error.response ? error.response.data : error.message);
@@ -78,19 +78,20 @@ function Validacao() {
                     />
                     <input
                         type="text"
-                        placeholder="Código de verificação"
+                        placeholder="Senha"
                         value={codigo}
                         onChange={e => setCodigo(e.target.value)}
                     />
                 </form>
-
-                <p className="recuperar">Esqueci meu código de acesso.<br /> <span onClick={handleRecuperar}>Solicitar novo código!</span></p>
-                <p className="recuperar">Ainda não possuo cadastro.<br /> <span onClick={handleLogin}>Quero me inscrever agora!</span></p>
-
+                
+                <div className="logins">
+                    <p className="recuperar" onClick={handleRecuperar}><img alt="" src="https://img.icons8.com/?size=100&id=82705&format=png&color=3a7c22"/>Esqueci a senha<br /></p>
+                    <p className="recuperar" onClick={handleLogin}><img alt="" src="https://img.icons8.com/?size=100&id=22396&format=png&color=3a7c22"/>Cadastrar<br /></p>
+                </div>
                 <button
                     className="slide-button"
                     onClick={handleSlideDone}
-                >Começar a economizar!</button>
+                >Cadastrar</button>
             </div>
 
             {showError && (

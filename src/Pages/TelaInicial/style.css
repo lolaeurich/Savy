@@ -72,12 +72,22 @@ html, body {
     height: auto;
 }
 
+.inicio-p {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3rem;
+    color: #3A7C22;
+    font-family: 'Montserrat Alternates', sans-serif;
+    padding-right: 5%;
+}
+
 .conheca-missao {
     font-size: 20px;
     font-style: italic;
     color: #000;
     font-weight: bold;
     margin-bottom: 4px; 
+    text-align: left;
 }
 
 .voce-so-precisa {
@@ -85,6 +95,8 @@ html, body {
     color: #000;
     font-style: italic;
     font-weight: bold;
+    text-align: left;
+    align-self: flex-start;
 }
 
 .container-precisa {
@@ -98,6 +110,7 @@ html, body {
 
 .container-precisa p {
     font-weight: bold;
+    text-align: left;
 }
 
 .cadastro-cep {

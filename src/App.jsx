@@ -12,6 +12,7 @@ import Sobre from "./Pages/Sobre/Sobre";
 import Pesquisa from "./Pages/Pesquisa/Pesquisa";
 import Validacao from "./Pages/Validacao/Validacao";
 import Recuperar from "./Pages/Recuperar/Recuperar";
+import InfoIniciais from "./Pages/InformaçõesIniciais/InfoIniciais";
 import { CartProvider } from "./Context/CartContext";
 
 const App = () => {
@@ -20,6 +21,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<TelaInicial />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/infoIniciais" element={<InfoIniciais />} />
         <Route path="/areaLogada" element={<AreaLogada />} />
         <Route path="/addProduto" element={<AddProduto />} />
         <Route path="/comparativo" element={<Comparativo />} />
