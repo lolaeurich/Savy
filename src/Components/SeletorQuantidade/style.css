@@ -1,7 +1,8 @@
 .quantity-selector {
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: flex-start;
+    column-gap: 8%;
     width: 120px; 
     height: 40px;
     border-radius: 8px;

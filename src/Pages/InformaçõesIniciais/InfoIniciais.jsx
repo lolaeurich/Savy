@@ -56,7 +56,7 @@ function InfoIniciais() {
 
     useEffect(() => {
         // Atualiza a contagem de produtos selecionados sempre que a lista de produtos mudar
-        const count = produtos.filter(produto => produto.isChecked).length;
+        const count = produtos.filter(produto => produto).length;
         setSelectedProductsCount(count);
     }, [produtos]);
 

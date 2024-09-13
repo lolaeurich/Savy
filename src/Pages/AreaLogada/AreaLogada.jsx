@@ -298,12 +298,12 @@ function AreaLogada() {
                                     type="checkbox"
                                     checked={produto.isChecked || false}
                                     onChange={() => handleCheckboxChange(produto.barcode)}
-                                    id={`produtoCheckbox-${produto.barcode}`} // Garantir que a id seja única
+                                    id={`produtoCheckbox-${produto.barcode}`}
                                 />
                                 <label htmlFor={`produtoCheckbox-${produto.barcode}`}></label>
+                                <img className="card-image" alt='' src={produto.image } />
                                 <div className='card-content-sessao2'>
                                     <div className='card-content-titulo'>
-                                        <img alt='Produto' src={produto.image } /> {/* Usa a imagem do produto ou uma imagem padrão */}
                                         <div className='produto-nome-lista'>
                                             <h3 className='produto-nome-h3'>{produto.name}</h3>
                                             <p className='codigo-de-barras'>{produto.barcode}</p>
@@ -311,17 +311,16 @@ function AreaLogada() {
                                     </div>
                                     <div className="card-content-card">
                                         <div className='card-content-quantidade'>
-                                            <h3 className='card-content-quantidade-h3'>Quantidade</h3>
                                             <QuantitySelector />
                                         </div>
-                                        <img
+                                    </div>
+                                </div>
+                                <img
                                             className='lixo-img'
                                             src={lixo}
                                             alt="Excluir"
                                             onClick={() => handleDelete(produto.id)}
-                                        />
-                                    </div>
-                                </div>
+                                    />
                             </div>
                         ))}
                     </div>

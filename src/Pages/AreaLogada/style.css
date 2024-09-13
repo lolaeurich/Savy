@@ -51,6 +51,11 @@
     padding-inline: 5px;
 }
 
+.card-image {
+    width: 60px;
+    height: 60px;
+}
+
 .card-content-quantidade2 {
     display: flex;
     flex-direction: column;
