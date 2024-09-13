@@ -235,6 +235,9 @@ function AreaLogada() {
     return (
         <div className="areaLogada-container">
             <div className="areaLogada-main">
+            <div className="login-savvy-logo2">
+                    <h1>SAVVY</h1>
+                </div>
                 <div className="areaLogada-nav">
                     <h3>Minha lista de produtos</h3>
                     <div className="cart">

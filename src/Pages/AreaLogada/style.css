@@ -19,6 +19,20 @@
     row-gap: 15px;
 }
 
+.login-savvy-logo2 {
+    width: 90%;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+}
+
+.login-savvy-logo2 h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #3A7C22;
+    font-family: 'Montserrat Alternates', sans-serif;
+}
+
 .areaLogada-nav {
     width: 90%;
     display: flex;

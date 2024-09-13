@@ -4,6 +4,7 @@ import axios from 'axios';
 import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
+import barcode from "../../Assets/barcode-icon.png";
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 import { BarcodeDialog } from "../../Components/BarcodeDialog";
 import './style.css';
@@ -154,6 +155,9 @@ function AddProduto() {
   return (
     <div className="add-produto-container">
       <div className="add-produto-main">
+      <div className="login-savvy-logo2">
+                    <h1>SAVVY</h1>
+                </div>
         <div className="add-produto-nav">
           <div className="cart2">
             <img alt="" src={flecha} onClick={handleVoltar} />
@@ -174,40 +178,13 @@ function AddProduto() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </form>
-              <button type="button" onClick={() => fetchProductData(searchTerm)}>
-                  Buscar Produto
-              </button>
+              <img className="barcode" alt="" src={barcode}/>
             </div>
           </div>
 
-          <div className="campo-cep">
-            <form>
-              <label>CEP</label>
-              <input
-                type="text"
-                placeholder="Digite o CEP"
-                name="cep"
-                value={cep}
-                onChange={(e) => setCep(e.target.value)}
-              />
-            </form>
-          </div>
-
-          <div className="descricao-produto">
-            <form>
-              <label>Descrição do produto</label>
-              <input
-                type="text"
-                placeholder="Digite aqui"
-                name="nome"
-                value={productData ? productData.desc : ""}
-                readOnly
-              />
-            </form>
-          </div>
-
-          <div className="container-categorias">
-            <h3>Categoria do produto</h3>
+         <div className="container-categorias">
+          <h3>Nenhum produto pesquisado</h3>
+            {/* <h3>Categoria do produto</h3>
             <label className="custom-control custom-checkbox">
               <span>Bebidas</span>
               <input
@@ -239,17 +216,12 @@ function AddProduto() {
                 disabled
               />
               <span className="custom-control-indicator"></span>
-            </label>
-          </div>
-
-          <div className="container-quantidade">
-            <h3>Quantidade:</h3>
-            <QuantitySelector />
+            </label>*/}
           </div>
 
           <div className="procurar-outra-marca">
             <label className="custom-control custom-checkbox">
-              <span>Podemos procurar outra marca</span>
+              <span style={{width: "70%"}}>Caso este item não exista em todos os supermercados, podemos sugerir um substituto?</span>
               <input
                 type="checkbox"
                 id="check-btn"
