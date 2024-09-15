@@ -60,6 +60,23 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
         locate: true,
         multiple: false,
         frequency: 10,
+        // Configure a rectangle for barcode scanning
+        inputStream: {
+          type: "LiveStream",
+          constraints: {
+            facingMode: "environment",
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+          target: document.querySelector("#barcode-scanner"),
+        },
+        locator: {
+          patchSize: "medium",
+          halfSample: true,
+        },
+        decoder: {
+          readers: ["ean_reader", "code_128_reader", "code_39_reader"],
+        },
       },
       (err) => {
         if (err) {
