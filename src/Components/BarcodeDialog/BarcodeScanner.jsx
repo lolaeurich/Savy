@@ -10,28 +10,9 @@ const PREFIX = "BarcodeScanner";
 const classes = {
   box: `${PREFIX}-box`,
   loading: `${PREFIX}-loading`,
-  modal: `${PREFIX}-modal`,
-  closeButton: `${PREFIX}-closeButton`,
 };
 
 const Root = styled("div")({
-  [`& .${classes.modal}`]: {
-    position: "fixed",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "80%",
-    height: "60%",
-    backgroundColor: "white",
-    boxShadow: "0px 0px 15px rgba(0,0,0,0.2)",
-    zIndex: 1000,
-    borderRadius: "8px",
-    padding: "20px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   [`& .${classes.box}`]: {
     display: "block",
     position: "relative",
@@ -49,18 +30,6 @@ const Root = styled("div")({
   [`& .${classes.loading}`]: {
     marginBottom: "32px",
   },
-  [`& .${classes.closeButton}`]: {
-    position: "absolute",
-    top: "10px",
-    right: "10px",
-    background: "red",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-    padding: "5px 10px",
-    fontSize: "16px",
-  },
 });
 
 export function BarcodeScanner({ setCode, open, setOpen }) {
@@ -74,27 +43,23 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
         inputStream: {
           type: "LiveStream",
           constraints: {
+            width: 640,
+            height: 480,
             facingMode: "environment",
-            width: { ideal: 640 },
-            height: { ideal: 480 },
           },
           target: document.querySelector("#barcode-scanner"),
         },
         locator: {
           halfSample: true,
-          patchSize: "medium",
+          patchSize: "large",
         },
-        numOfWorkers: 2,
+        numOfWorkers: navigator.hardwareConcurrency || 2,
         decoder: {
-          readers: [
-            "code_39_reader",
-            "code_128_reader",
-            "ean_reader",
-            "ean_8_reader",
-            "upc_reader"
-          ],
+          readers: ["code_39_reader", "code_128_reader", "ean_reader"],
         },
         locate: true,
+        multiple: false,
+        frequency: 10,
       },
       (err) => {
         if (err) {
@@ -106,7 +71,7 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
       }
     );
 
-    Quagga.onDetected((result) => {
+    Quagga.onProcessed((result) => {
       if (result.codeResult && result.codeResult.code) {
         Quagga.stop();
         setCode(result.codeResult.code);
@@ -116,21 +81,19 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
 
     return () => {
       Quagga.stop();
+      Quagga.offProcessed();
       Quagga.offDetected();
     };
   }, [open, setCode, setOpen]);
 
   return (
     <Root>
-      <div className={classes.modal}>
-        <button className={classes.closeButton} onClick={() => setOpen(false)}>X</button>
-        <Box
-          id="barcode-scanner"
-          className={classes.box}
-          visibility={loading ? "hidden" : "visible"}
-        />
-        {loading && <Loading className={classes.loading} />}
-      </div>
+      <Box
+        id="barcode-scanner"
+        className={classes.box}
+        visibility={loading ? "hidden" : "visible"}
+      />
+      {loading && <Loading className={classes.loading} />}
     </Root>
   );
 }

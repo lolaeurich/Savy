@@ -1,38 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import "./style.css";
 import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
-import barcode from "../../Assets/barcode-icon.png";
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
-import { BarcodeScanner } from "../../Components/BarcodeDialog/BarcodeScanner" 
-import './style.css';
+import { BarcodeDialog } from "../../Components/BarcodeDialog";
 
 function AddProduto() {
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [scannerOpen, setScannerOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [cep, setCep] = useState(""); 
-  const [productData, setProductData] = useState(null);
-  const [error, setError] = useState(null);
-  const [anotherBrand, setAnotherBrand] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false); // Estado para controlar o diálogo
+  const [code, setCode] = useState(""); // Estado para armazenar o código de barras
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedCep = localStorage.getItem('userCep');
-    if (storedCep) {
-      setCep(storedCep);
-    }
-
     const handleProductFound = (event) => {
-      setSearchTerm(event.detail);
-      fetchProductData(event.detail);
+      setCode(event.detail); // Atualiza o campo de texto com a descrição do produto
     };
 
     const handleProductNotFound = () => {
-      setSearchTerm("");
-      setProductData(null);
+      setCode(""); // Limpa o campo se o produto não for encontrado
     };
 
     window.addEventListener('productFound', handleProductFound);
@@ -48,152 +34,138 @@ function AddProduto() {
     navigate("/areaLogada");
   };
 
-  const handleScannerOpen = () => {
-    setScannerOpen(true);
+  const handleCameraClick = () => {
+    setDialogOpen(true); // Abre o diálogo quando a imagem da câmera é clicada
   };
 
   const handleCodeDetected = (code) => {
-    setSearchTerm(code);
-    setScannerOpen(false);
-    fetchProductData(code);
-  };
-
-  const fetchCoordinatesFromCep = async (cep) => {
-    try {
-      const response = await axios.get(`https://cep.awesomeapi.com.br/json/${cep}`);
-      console.log("Resposta da API AwesomeAPI:", response.data);
-      
-      const { lat, lng } = response.data;
-      
-      if (lat && lng) {
-        console.log(`Coordenadas obtidas: Latitude ${lat}, Longitude ${lng}`);
-        return {
-          latitude: lat,
-          longitude: lng,
-        };
-      } else {
-        console.error("Coordenadas não encontradas na resposta.");
-        return null;
-      }
-    } catch (error) {
-      console.error("Erro ao obter coordenadas:", error);
-      return null;
-    }
-  };
-
-  const fetchProductData = async (searchTerm) => {
-    if (!cep) {
-      setError("CEP não fornecido.");
-      return;
-    }
-
-    try {
-      const coordinates = await fetchCoordinatesFromCep(cep);
-      if (!coordinates) {
-        setError("Não foi possível obter as coordenadas.");
-        return;
-      }
-
-      const { latitude, longitude } = coordinates;
-      const response = await axios.get(
-        "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
-        {
-          params: {
-            termo: searchTerm,
-            local: `${latitude},${longitude}`,
-            raio: 20,
-          },
-        }
-      );
-
-      const product = response.data.produtos.find(p => p.gtin === searchTerm || p.desc.toLowerCase().includes(searchTerm.toLowerCase()));
-      if (product) {
-        setProductData(product);
-        setError(null);
-      } else {
-        setProductData(null);
-        setError("Produto não encontrado.");
-      }
-    } catch (error) {
-      console.error("Erro ao buscar o produto:", error);
-      setProductData(null);
-      setError("Erro ao buscar o produto.");
-    }
-  };
-
-  const handleSave = async () => {
-    if (!productData) {
-      setError("Nenhum produto encontrado para salvar.");
-      return;
-    }
-  
-    const data = {
-      name: productData.desc,
-      barcode: searchTerm,
-      description: productData.desc,
-      another_brand: anotherBrand,
-      categories: [1]
-    };
-  
-    try {
-      const token = localStorage.getItem('authToken');
-      const response = await axios.post("https://savvy-api.belogic.com.br/api/products", data, {
-        headers: {
-          'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
-        }
-      });
-      console.log("Produto salvo com sucesso:", response.data);
-      alert("Produto salvo com sucesso!");
-      navigate("/areaLogada");
-    } catch (error) {
-      console.error("Erro ao salvar o produto:", error);
-      setError("Erro ao salvar o produto.");
-    }
+    setCode(code);
+    setDialogOpen(false); // Fecha o diálogo quando um código é detectado
   };
 
   return (
-    <div className="container">
-      <div className="header">
-        <img src={flecha} alt="Voltar" onClick={handleVoltar} />
-        <h1>Adicionar Produto</h1>
-      </div>
-      <div className="content">
-        <div className="search-section">
-          <input
-            type="text"
-            placeholder="Termo ou código de barras"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button onClick={handleScannerOpen}>
-            <img src={barcode} alt="Escanear Código de Barras" />
-          </button>
-          <button onClick={() => fetchProductData(searchTerm)}>
-            Buscar Produto
-          </button>
-        </div>
-        {productData && (
-          <div className="product-info">
-            <h2>{productData.desc}</h2>
-            <p>Preço: {productData.preco}</p>
-            <p>Marca: {productData.marca}</p>
-            {/* Adicione outros detalhes do produto conforme necessário */}
+    <div className="add-produto-container">
+      <div className="add-produto-main">
+        {/*<div className="add-produto-nav">
+          <div className="cart2">
+            <img alt="" src={flecha} onClick={handleVoltar} />
           </div>
-        )}
-        <div className="additional-info">
-          <label>
-            Outra marca
-            <input
-              type="checkbox"
-              checked={anotherBrand}
-              onChange={(e) => setAnotherBrand(e.target.checked)}
-            />
-          </label>
+          <h3>Cadastro de produto</h3>
+        </div>*/}
+
+        <div className="cadastro-container">
+          <div className="cadastro-nome">
+            {/*<div className="nome-produto">
+              <form>
+                <label>Nome ou código de barras</label>
+                <input
+                  type="text"
+                  placeholder="Digite aqui"
+                  name="nome"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                />
+              </form>
+            </div>*/}
+
+            <div
+              className="camera-container"
+              onClick={handleCameraClick} // Abre o diálogo ao clicar
+            >
+              <img className="tilt-in-tr" alt="" src={camera} />
+              <p>
+                Clique no ícone acima e aponte a câmera do seu celular para o código
+                de barras do produto
+              </p>
+            </div>
+          </div>
+
+         {/*} <div className="descricao-produto">
+            <form>
+              <label>Descrição do produto</label>
+              <input
+                type="text"
+                placeholder="Digite aqui"
+                name="nome"
+                value={code}
+                readOnly
+              />
+            </form>
+          </div>*/}
+
+          {/*<div className="container-categorias">
+            <h3>Categoria do produto</h3>
+            <label className="custom-control custom-checkbox">
+              <span>Lorem Ipsum</span>
+              <input
+                type="checkbox"
+                id="check-btn"
+                className="custom-control-input"
+              />
+              <span className="custom-control-indicator"></span>
+            </label>
+            <label className="custom-control custom-checkbox">
+              <span>Lorem Ipsum</span>
+              <input
+                type="checkbox"
+                id="check-btn"
+                className="custom-control-input"
+              />
+              <span className="custom-control-indicator"></span>
+            </label>
+            <label className="custom-control custom-checkbox">
+              <span>Lorem Ipsum</span>
+              <input
+                type="checkbox"
+                id="check-btn"
+                className="custom-control-input"
+              />
+              <span className="custom-control-indicator"></span>
+            </label>
+            <label className="custom-control custom-checkbox">
+              <span>Lorem Ipsum</span>
+              <input
+                type="checkbox"
+                id="check-btn"
+                className="custom-control-input"
+              />
+              <span className="custom-control-indicator"></span>
+            </label>
+          </div>
+
+          <div className="container-quantidade">
+            <h3>Quantidade:</h3>
+            <QuantitySelector />
+          </div>
+
+          <div className="procurar-outra-marca">
+            <label className="custom-control custom-checkbox">
+              <span>Podemos procurar outra marca</span>
+              <input
+                type="checkbox"
+                id="check-btn"
+                className="custom-control-input"
+              />
+              <span className="custom-control-indicator"></span>
+            </label>
+          </div>
+
+          <div className="cadastrar-produtos-botoes">
+            <button className="btn-salvar">Salvar</button>
+            <button className="btn-cancelar">Cancelar</button>
+            <button className="btn-lixo">
+              <img alt="" src={lixo} />
+            </button>
+          </div>*/}
         </div>
-        <button onClick={handleSave}>Salvar Produto</button>
-        {error && <div className="error-message">{error}</div>}
       </div>
-      <BarcodeScanner setCode={handleCodeDetected} open={scannerOpen} setOpen={setScannerOpen} />
+
+      {/* Adicione o BarcodeDialog aqui */}
+      <BarcodeDialog
+        open={dialogOpen}
+        setOpen={setDialogOpen}
+        setCode={handleCodeDetected}
+      />
     </div>
   );
 }
