@@ -10,9 +10,28 @@ const PREFIX = "BarcodeScanner";
 const classes = {
   box: `${PREFIX}-box`,
   loading: `${PREFIX}-loading`,
+  modal: `${PREFIX}-modal`,
+  closeButton: `${PREFIX}-closeButton`,
 };
 
 const Root = styled("div")({
+  [`& .${classes.modal}`]: {
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "80%",
+    height: "60%",
+    backgroundColor: "white",
+    boxShadow: "0px 0px 15px rgba(0,0,0,0.2)",
+    zIndex: 1000,
+    borderRadius: "8px",
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   [`& .${classes.box}`]: {
     display: "block",
     position: "relative",
@@ -29,6 +48,18 @@ const Root = styled("div")({
   },
   [`& .${classes.loading}`]: {
     marginBottom: "32px",
+  },
+  [`& .${classes.closeButton}`]: {
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    background: "red",
+    color: "white",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+    padding: "5px 10px",
+    fontSize: "16px",
   },
 });
 
@@ -72,7 +103,7 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
     );
 
     Quagga.onProcessed((result) => {
-      if (result.codeResult && result.codeResult.code) {
+      if (result && result.codeResult && result.codeResult.code) {
         Quagga.stop();
         setCode(result.codeResult.code);
         setOpen(false);
@@ -88,12 +119,15 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
 
   return (
     <Root>
-      <Box
-        id="barcode-scanner"
-        className={classes.box}
-        visibility={loading ? "hidden" : "visible"}
-      />
-      {loading && <Loading className={classes.loading} />}
+      <div className={classes.modal}>
+        <button className={classes.closeButton} onClick={() => setOpen(false)}>X</button>
+        <Box
+          id="barcode-scanner"
+          className={classes.box}
+          visibility={loading ? "hidden" : "visible"}
+        />
+        {loading && <Loading className={classes.loading} />}
+      </div>
     </Root>
   );
 }

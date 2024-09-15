@@ -7,10 +7,12 @@ import lixo from "../../Assets/lixo.png";
 import barcode from "../../Assets/barcode-icon.png";
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 import { BarcodeDialog } from "../../Components/BarcodeDialog";
+import { BarcodeScanner } from "../../Components/BarcodeDialog/BarcodeScanner";
 import './style.css';
 
 function AddProduto() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false); // Estado para controlar o BarcodeScanner
   const [searchTerm, setSearchTerm] = useState("");
   const [cep, setCep] = useState(""); 
   const [productData, setProductData] = useState(null);
@@ -51,9 +53,13 @@ function AddProduto() {
     setDialogOpen(true);
   };
 
+  const handleScannerOpen = () => {
+    setScannerOpen(true); // Abre o BarcodeScanner
+  };
+
   const handleCodeDetected = (code) => {
     setSearchTerm(code);
-    setDialogOpen(false);
+    setScannerOpen(false); // Fecha o BarcodeScanner
     fetchProductData(code);
   };
 
@@ -155,9 +161,9 @@ function AddProduto() {
   return (
     <div className="add-produto-container">
       <div className="add-produto-main">
-      <div className="login-savvy-logo2">
-                    <h1>SAVVY</h1>
-                </div>
+        <div className="login-savvy-logo3">
+          <h1>SAVVY</h1>
+        </div>
         <div className="add-produto-nav">
           <div className="cart2">
             <img alt="" src={flecha} onClick={handleVoltar} />
@@ -178,50 +184,23 @@ function AddProduto() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </form>
-              <img className="barcode" alt="" src={barcode}/>
+              <img 
+                className="barcode" 
+                alt="" 
+                src={barcode} 
+                onClick={handleScannerOpen} // Abre o BarcodeScanner
+              />
             </div>
           </div>
 
-         <div className="container-categorias">
-          <h3>Nenhum produto pesquisado</h3>
-            {/* <h3>Categoria do produto</h3>
-            <label className="custom-control custom-checkbox">
-              <span>Bebidas</span>
-              <input
-                type="checkbox"
-                id="check-btn"
-                className="custom-control-input"
-                disabled
-              />
-              <span className="custom-control-indicator"></span>
-            </label>
-
-            <label className="custom-control custom-checkbox">
-              <span>Produtos de Higiene</span>
-              <input
-                type="checkbox"
-                id="check-btn"
-                className="custom-control-input"
-                disabled
-              />
-              <span className="custom-control-indicator"></span>
-            </label>
-
-            <label className="custom-control custom-checkbox">
-              <span>Frutas e Verduras</span>
-              <input
-                type="checkbox"
-                id="check-btn"
-                className="custom-control-input"
-                disabled
-              />
-              <span className="custom-control-indicator"></span>
-            </label>*/}
+          <div className="container-categorias">
+            <h3>Nenhum produto pesquisado</h3>
+            {/* Comentários sobre categorias */}
           </div>
 
           <div className="procurar-outra-marca">
             <label className="custom-control custom-checkbox">
-              <span style={{width: "70%"}}>Caso este item não exista em todos os supermercados, podemos sugerir um substituto?</span>
+              <span style={{ width: "70%" }}>Caso este item não exista em todos os supermercados, podemos sugerir um substituto?</span>
               <input
                 type="checkbox"
                 id="check-btn"
@@ -247,6 +226,10 @@ function AddProduto() {
 
       {dialogOpen && (
         <BarcodeDialog onCodeDetected={handleCodeDetected} onClose={() => setDialogOpen(false)} />
+      )}
+
+      {scannerOpen && (
+        <BarcodeScanner setCode={handleCodeDetected} open={scannerOpen} setOpen={setScannerOpen} />
       )}
     </div>
   );
