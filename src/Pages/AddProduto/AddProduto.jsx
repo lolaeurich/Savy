@@ -159,10 +159,10 @@ function AddProduto() {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                 />
-                <button type="button" onClick={() => fetchProductData(code)}>
-                  Buscar Produto
-                </button>
               </form>
+              <button type="button" onClick={() => fetchProductData(code)}>
+                  Buscar Produto
+              </button>
             </div>
 
             <div className="camera-container" onClick={handleCameraClick}>
