@@ -6,7 +6,7 @@ import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
 import barcode from "../../Assets/barcode-icon.png";
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
-import { BarcodeScanner } from "../../Components/BarcodeScanner";
+import { BarcodeScanner } from "../../Components/BarcodeDialog/BarcodeScanner" 
 import './style.css';
 
 function AddProduto() {
