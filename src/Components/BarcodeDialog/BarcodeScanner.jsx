@@ -71,7 +71,7 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
       }
     );
 
-    Quagga.onProcessed((result) => {
+    Quagga.onDetected((result) => {
       if (result.codeResult && result.codeResult.code) {
         Quagga.stop();
         setCode(result.codeResult.code);
@@ -81,7 +81,6 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
 
     return () => {
       Quagga.stop();
-      Quagga.offProcessed();
       Quagga.offDetected();
     };
   }, [open, setCode, setOpen]);

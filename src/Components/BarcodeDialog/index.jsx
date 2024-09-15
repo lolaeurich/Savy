@@ -27,39 +27,44 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
   };
 
   useEffect(() => {
-    if (setCode) {
-      const fetchProductData = async () => {
-        try {
-          const response = await axios.get(
-            "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
-            {
-              params: {
-                termo: setCode, // Código de barras lido
-                local: "6gkzqf9vb" // Local exemplo, pode ser ajustado conforme necessário
-              },
-            }
-          );
-
-          // Encontrar o produto com o código de barras (se disponível)
-          const product = response.data.produtos.find(p => p.gtin === setCode);
-          if (product) {
-            setProductData(product);
-            setError(null);
-          } else {
-            setProductData(null);
-            setError("Produto não encontrado.");
-          }
-        } catch (error) {
-          console.error("Erro ao buscar o produto:", error);
-          setProductData(null);
-          setError("Erro ao buscar o produto.");
-        }
-      };
-
-      if (setCode) {
-        fetchProductData();
-      }
+    if (open && setCode) {
+      setProductData(null); // Limpar dados do produto ao abrir o diálogo
+      setError(null); // Limpar erros ao abrir o diálogo
     }
+  }, [open, setCode]);
+
+  useEffect(() => {
+    const fetchProductData = async () => {
+      if (!setCode) return; // Se não há código, não fazer a requisição
+
+      try {
+        const response = await axios.get(
+          "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
+          {
+            params: {
+              termo: setCode, // Código de barras lido
+              local: "6gkzqf9vb" // Local exemplo, pode ser ajustado conforme necessário
+            },
+          }
+        );
+
+        // Encontrar o produto com o código de barras (se disponível)
+        const product = response.data.produtos.find(p => p.gtin === setCode);
+        if (product) {
+          setProductData(product);
+          setError(null);
+        } else {
+          setProductData(null);
+          setError("Produto não encontrado.");
+        }
+      } catch (error) {
+        console.error("Erro ao buscar o produto:", error);
+        setProductData(null);
+        setError("Erro ao buscar o produto.");
+      }
+    };
+
+    fetchProductData();
   }, [setCode]);
 
   return (
