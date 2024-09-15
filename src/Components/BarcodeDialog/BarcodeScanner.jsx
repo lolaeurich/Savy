@@ -74,23 +74,27 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
         inputStream: {
           type: "LiveStream",
           constraints: {
-            width: 640,
-            height: 480,
-            facingMode: "environment",
+            facingMode: "environment", // Use a câmera traseira
+            width: { ideal: 640 },
+            height: { ideal: 480 },
           },
           target: document.querySelector("#barcode-scanner"),
         },
         locator: {
           halfSample: true,
-          patchSize: "large",
+          patchSize: "medium", // Tamanho médio de patch pode ajudar
         },
-        numOfWorkers: navigator.hardwareConcurrency || 2,
+        numOfWorkers: 2,
         decoder: {
-          readers: ["code_39_reader", "code_128_reader", "ean_reader"],
+          readers: [
+            "code_39_reader",
+            "code_128_reader",
+            "ean_reader",
+            "ean_8_reader",
+            "upc_reader"
+          ],
         },
         locate: true,
-        multiple: false,
-        frequency: 10,
       },
       (err) => {
         if (err) {
@@ -102,8 +106,9 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
       }
     );
 
-    Quagga.onProcessed((result) => {
-      if (result && result.codeResult && result.codeResult.code) {
+    Quagga.onDetected((result) => {
+      console.log("Detected result: ", result);
+      if (result.codeResult && result.codeResult.code) {
         Quagga.stop();
         setCode(result.codeResult.code);
         setOpen(false);
@@ -112,7 +117,6 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
 
     return () => {
       Quagga.stop();
-      Quagga.offProcessed();
       Quagga.offDetected();
     };
   }, [open, setCode, setOpen]);
