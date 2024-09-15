@@ -6,13 +6,12 @@ import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
 import barcode from "../../Assets/barcode-icon.png";
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
-import { BarcodeDialog } from "../../Components/BarcodeDialog";
-import { BarcodeScanner } from "../../Components/BarcodeDialog/BarcodeScanner";
+import { BarcodeScanner } from "../../Components/BarcodeScanner";
 import './style.css';
 
 function AddProduto() {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [scannerOpen, setScannerOpen] = useState(false); // Estado para controlar o BarcodeScanner
+  const [scannerOpen, setScannerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [cep, setCep] = useState(""); 
   const [productData, setProductData] = useState(null);
@@ -49,17 +48,13 @@ function AddProduto() {
     navigate("/areaLogada");
   };
 
-  const handleCameraClick = () => {
-    setDialogOpen(true);
-  };
-
   const handleScannerOpen = () => {
-    setScannerOpen(true); // Abre o BarcodeScanner
+    setScannerOpen(true);
   };
 
   const handleCodeDetected = (code) => {
     setSearchTerm(code);
-    setScannerOpen(false); // Fecha o BarcodeScanner
+    setScannerOpen(false);
     fetchProductData(code);
   };
 
@@ -147,90 +142,58 @@ function AddProduto() {
           'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
         }
       });
-      console.log('Produto salvo com sucesso:', response.data);
-
-      window.dispatchEvent(new CustomEvent('produtoAdicionado', { detail: response.data }));
-
-      navigate('/areaLogada');
+      console.log("Produto salvo com sucesso:", response.data);
+      alert("Produto salvo com sucesso!");
+      navigate("/areaLogada");
     } catch (error) {
-      console.error("Erro ao salvar o produto:", error.response ? error.response.data : error.message);
-      setError(error.response ? error.response.data.message : "Erro ao salvar o produto.");
+      console.error("Erro ao salvar o produto:", error);
+      setError("Erro ao salvar o produto.");
     }
   };
 
   return (
-    <div className="add-produto-container">
-      <div className="add-produto-main">
-        <div className="login-savvy-logo3">
-          <h1>SAVVY</h1>
-        </div>
-        <div className="add-produto-nav">
-          <div className="cart2">
-            <img alt="" src={flecha} onClick={handleVoltar} />
-          </div>
-          <h3>Cadastro de produto</h3>
-        </div>
-
-        <div className="cadastro-container">
-          <div className="cadastro-nome">
-            <div className="nome-produto">
-              <form>
-                <label>Termo ou Código de barras</label>
-                <input
-                  type="text"
-                  placeholder="Digite aqui"
-                  name="nome"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </form>
-              <img 
-                className="barcode" 
-                alt="" 
-                src={barcode} 
-                onClick={handleScannerOpen} // Abre o BarcodeScanner
-              />
-            </div>
-          </div>
-
-          <div className="container-categorias">
-            <h3>Nenhum produto pesquisado</h3>
-            {/* Comentários sobre categorias */}
-          </div>
-
-          <div className="procurar-outra-marca">
-            <label className="custom-control custom-checkbox">
-              <span style={{ width: "70%" }}>Caso este item não exista em todos os supermercados, podemos sugerir um substituto?</span>
-              <input
-                type="checkbox"
-                id="check-btn"
-                className="custom-control-input"
-                checked={anotherBrand}
-                onChange={() => setAnotherBrand(prev => !prev)}
-              />
-              <span className="custom-control-indicator"></span>
-            </label>
-          </div>
-
-          <div className="cadastrar-produtos-botoes">
-            <button className="btn-salvar" onClick={handleSave}>Salvar</button>
-            <button className="btn-cancelar" onClick={handleVoltar}>Cancelar</button>
-            <button className="btn-lixo">
-              <img alt="" src={lixo} />
-            </button>
-          </div>
-
-          {error && <p className="error-message">{error}</p>}
-        </div>
+    <div className="container">
+      <div className="header">
+        <img src={flecha} alt="Voltar" onClick={handleVoltar} />
+        <h1>Adicionar Produto</h1>
       </div>
-
-      {dialogOpen && (
-        <BarcodeDialog onCodeDetected={handleCodeDetected} onClose={() => setDialogOpen(false)} />
-      )}
-
-      {scannerOpen && (
-        <BarcodeScanner setCode={handleCodeDetected} open={scannerOpen} setOpen={setScannerOpen} />
-      )}
+      <div className="content">
+        <div className="search-section">
+          <input
+            type="text"
+            placeholder="Termo ou código de barras"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button onClick={handleScannerOpen}>
+            <img src={barcode} alt="Escanear Código de Barras" />
+          </button>
+          <button onClick={() => fetchProductData(searchTerm)}>
+            Buscar Produto
+          </button>
+        </div>
+        {productData && (
+          <div className="product-info">
+            <h2>{productData.desc}</h2>
+            <p>Preço: {productData.preco}</p>
+            <p>Marca: {productData.marca}</p>
+            {/* Adicione outros detalhes do produto conforme necessário */}
+          </div>
+        )}
+        <div className="additional-info">
+          <label>
+            Outra marca
+            <input
+              type="checkbox"
+              checked={anotherBrand}
+              onChange={(e) => setAnotherBrand(e.target.checked)}
+            />
+          </label>
+        </div>
+        <button onClick={handleSave}>Salvar Produto</button>
+        {error && <div className="error-message">{error}</div>}
+      </div>
+      <BarcodeScanner setCode={handleCodeDetected} open={scannerOpen} setOpen={setScannerOpen} />
     </div>
   );
 }

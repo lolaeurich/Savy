@@ -74,7 +74,7 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
         inputStream: {
           type: "LiveStream",
           constraints: {
-            facingMode: "environment", // Use a câmera traseira
+            facingMode: "environment",
             width: { ideal: 640 },
             height: { ideal: 480 },
           },
@@ -82,7 +82,7 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
         },
         locator: {
           halfSample: true,
-          patchSize: "medium", // Tamanho médio de patch pode ajudar
+          patchSize: "medium",
         },
         numOfWorkers: 2,
         decoder: {
@@ -107,7 +107,6 @@ export function BarcodeScanner({ setCode, open, setOpen }) {
     );
 
     Quagga.onDetected((result) => {
-      console.log("Detected result: ", result);
       if (result.codeResult && result.codeResult.code) {
         Quagga.stop();
         setCode(result.codeResult.code);
