@@ -4,6 +4,7 @@ import axios from 'axios';
 import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
+import barcode from "../../Assets/barcode-icon.png";
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 import { BarcodeDialog } from "../../Components/BarcodeDialog";
 import './style.css';
@@ -127,7 +128,7 @@ function AddProduto() {
     try {
       await axios.post("https://savvy.belogic.com.br/api/products", data, {
         headers: {
-          'Authorization': `4|sZHt07fjczMbeGxqfX7l985XH56ieSHllWgxKkLq5d37b93c` // Substitua pelo token real
+          'Authorization': `Bearer <YOUR_AUTH_TOKEN>` // Substitua pelo token real
         }
       });
       navigate('/areaLogada');
@@ -140,6 +141,9 @@ function AddProduto() {
   return (
     <div className="add-produto-container">
       <div className="add-produto-main">
+      <div className="login-savvy-logo2">
+                    <h1>SAVVY</h1>
+                </div>
         <div className="add-produto-nav">
           <div className="cart2">
             <img alt="" src={flecha} onClick={handleVoltar} />
@@ -151,7 +155,7 @@ function AddProduto() {
           <div className="cadastro-nome">
             <div className="nome-produto">
               <form>
-                <label>Código de barras</label>
+                <label>Termo ou código de barras</label>
                 <input
                   type="text"
                   placeholder="Digite aqui"
@@ -160,94 +164,20 @@ function AddProduto() {
                   onChange={(e) => setCode(e.target.value)}
                 />
               </form>
-              <button type="button" onClick={() => fetchProductData(code)}>
-                  Buscar Produto
-              </button>
+              <img className="barcode" alt="" src={barcode} onClick={handleCameraClick} />
             </div>
-
-            <div className="camera-container" onClick={handleCameraClick}>
-              <img className="tilt-in-tr" alt="" src={camera} />
-              <p>
-                Aponte a câmera do seu celular para o código
-                de barras do produto
-              </p>
-            </div>
-          </div>
-
-          <div className="campo-cep">
-            <form>
-              <label>CEP</label>
-              <input
-                type="text"
-                placeholder="Digite o CEP"
-                name="cep"
-                value={cep}
-                onChange={(e) => setCep(e.target.value)}
-              />
-            </form>
-          </div>
-
-          <div className="descricao-produto">
-            <form>
-              <label>Descrição do produto</label>
-              <input
-                type="text"
-                placeholder="Digite aqui"
-                name="nome"
-                value={productData ? productData.desc : ""}
-                readOnly
-              />
-            </form>
           </div>
 
           <div className="container-categorias">
-            <h3>Categoria do produto</h3>
-            <label className="custom-control custom-checkbox">
-              <span>Bebidas</span>
-              <input
-                type="checkbox"
-                id="check-btn"
-                className="custom-control-input"
-                onChange={() => setSelectedCategory(prev => prev.includes(4) ? prev.filter(c => c !== 4) : [...prev, 4])}
-                checked={selectedCategory.includes(4)}
-              />
-              <span className="custom-control-indicator"></span>
-            </label>
-
-            <label className="custom-control custom-checkbox">
-              <span>Produtos de Higiene</span>
-              <input
-                type="checkbox"
-                id="check-btn"
-                className="custom-control-input"
-                onChange={() => setSelectedCategory(prev => prev.includes(5) ? prev.filter(c => c !== 5) : [...prev, 5])}
-                checked={selectedCategory.includes(5)}
-              />
-              <span className="custom-control-indicator"></span>
-            </label>
-
-            <label className="custom-control custom-checkbox">
-              <span>Frutas e Verduras</span>
-              <input
-                type="checkbox"
-                id="check-btn"
-                className="custom-control-input"
-                onChange={() => setSelectedCategory(prev => prev.includes(6) ? prev.filter(c => c !== 6) : [...prev, 6])}
-                checked={selectedCategory.includes(6)}
-              />
-              <span className="custom-control-indicator"></span>
-            </label>
-            {/* Outras categorias */}
-          </div>
-
-          <div className="container-quantidade">
-            <h3>Quantidade:</h3>
-            <QuantitySelector />
+            <h3>Nenhum produto pesquisado</h3>
           </div>
 
           <div className="procurar-outra-marca">
             <label className="custom-control custom-checkbox">
-              <span>Podemos procurar outra marca</span>
+              <span>Caso não haja este item em todos
+                    os supermercados, podemos sugerir um
+                    substituto?
+              </span>
               <input
                 type="checkbox"
                 id="check-btn"
