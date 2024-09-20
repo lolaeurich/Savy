@@ -124,7 +124,6 @@ function AddProduto() {
       console.log("Todos os produtos:", response.data.data);
     } catch (error) {
       console.error('Erro ao buscar produtos:', error);
-      setError("Erro ao buscar todos os produtos.");
     }
   };
 
