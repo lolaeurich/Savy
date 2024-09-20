@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import flecha from "../../Assets/flecha-esquerda.png";
-import camera from "../../Assets/camera.png";
-import lixo from "../../Assets/lixo.png";
 import barcode from "../../Assets/barcode-icon.png";
 import { BarcodeDialog } from "../../Components/BarcodeDialog";
 import './style.css';
@@ -15,7 +13,6 @@ function AddProduto() {
   const [productData, setProductData] = useState([]);
   const [error, setError] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState(new Set());
-  const [selectedCategory, setSelectedCategory] = useState([]);
   const [anotherBrand, setAnotherBrand] = useState(false);
   const navigate = useNavigate();
 
@@ -30,19 +27,16 @@ function AddProduto() {
       fetchProductData(event.detail);
     };
 
-    const handleProductNotFound = () => {
+    window.addEventListener('productFound', handleProductFound);
+    window.addEventListener('productNotFound', () => {
       setCode("");
       setProductData([]);
-    };
-
-    window.addEventListener('productFound', handleProductFound);
-    window.addEventListener('productNotFound', handleProductNotFound);
+    });
 
     fetchAllProducts();
 
     return () => {
       window.removeEventListener('productFound', handleProductFound);
-      window.removeEventListener('productNotFound', handleProductNotFound);
     };
   }, []);
 
@@ -55,6 +49,23 @@ function AddProduto() {
       };
     } catch (error) {
       console.error("Erro ao obter coordenadas:", error);
+      setError("Erro ao obter coordenadas do CEP.");
+      return null;
+    }
+  };
+
+  const fetchUnsplashImage = async (query) => {
+    const accessKey = 'YOUR_UNSPLASH_API_KEY'; // Substitua pela sua chave da API do Unsplash
+    try {
+      const response = await axios.get(`https://api.unsplash.com/search/photos`, {
+        params: {
+          query: query,
+          client_id: accessKey,
+        },
+      });
+      return response.data.results.length > 0 ? response.data.results[0].urls.small : null;
+    } catch (error) {
+      console.error("Erro ao buscar imagem:", error);
       return null;
     }
   };
@@ -67,10 +78,7 @@ function AddProduto() {
 
     try {
       const coordinates = await fetchCoordinatesFromCep(cep);
-      if (!coordinates) {
-        setError("Não foi possível obter as coordenadas.");
-        return;
-      }
+      if (!coordinates) return;
 
       const { latitude, longitude } = coordinates;
       const params = {
@@ -84,12 +92,14 @@ function AddProduto() {
         params.termo = term; 
       }
 
-      const response = await axios.get(
-        "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
-        { params }
-      );
+      const response = await axios.get("https://menorpreco.notaparana.pr.gov.br/api/v1/produtos", { params });
 
-      setProductData(response.data.produtos);
+      const productsWithImages = await Promise.all(response.data.produtos.map(async (product) => {
+        const imageUrl = await fetchUnsplashImage(product.desc); // Usando a descrição do produto para buscar a imagem
+        return { ...product, imageUrl };
+      }));
+
+      setProductData(productsWithImages);
       setError(null);
     } catch (error) {
       console.error("Erro ao buscar o produto:", error);
@@ -108,12 +118,13 @@ function AddProduto() {
     try {
       const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
         headers: {
-          'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
+          'Authorization': `Bearer ${authToken}`
         }
       });
       console.log("Todos os produtos:", response.data.data);
     } catch (error) {
       console.error('Erro ao buscar produtos:', error);
+      setError("Erro ao buscar todos os produtos.");
     }
   };
 
@@ -135,7 +146,7 @@ function AddProduto() {
       barcode: code,
       description: product.desc,
       another_brand: anotherBrand,
-      categories: selectedCategory.length > 0 ? selectedCategory : [1]
+      categories: [1] // Ajuste conforme necessário
     }));
 
     try {
@@ -148,7 +159,7 @@ function AddProduto() {
       await Promise.all(data.map(item =>
         axios.post("https://savvy-api.belogic.com.br/api/products", item, {
           headers: {
-            'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
+            'Authorization': `Bearer ${authToken}`
           }
         })
       ));
@@ -210,6 +221,7 @@ function AddProduto() {
           </div>
 
           <div className="container-categorias" style={{ overflowY: "auto", maxHeight: "300px" }}>
+            {error && <p className="error-message">{error}</p>}
             {productData.length > 0 ? (
               <div className="card-container">
                 {productData.map((product) => (
@@ -218,7 +230,7 @@ function AddProduto() {
                     className={`card-item-encontrado ${selectedProducts.has(product.id) ? 'selected' : ''}`} 
                     onClick={() => toggleSelectProduct(product.id)}
                   >
-                    <img src="https://via.placeholder.com/150" alt="Produto" />
+                    <img src={product.imageUrl || "https://via.placeholder.com/150"} alt={product.desc} />
                     <p>{product.desc}</p>
                     <button 
                       className={`btn-add ${selectedProducts.has(product.id) ? 'selected-btn' : ''}`}
