@@ -5,7 +5,6 @@ import flecha from "../../Assets/flecha-esquerda.png";
 import camera from "../../Assets/camera.png";
 import lixo from "../../Assets/lixo.png";
 import barcode from "../../Assets/barcode-icon.png";
-import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 import { BarcodeDialog } from "../../Components/BarcodeDialog";
 import './style.css';
 
@@ -13,9 +12,11 @@ function AddProduto() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [code, setCode] = useState("");
   const [cep, setCep] = useState(""); 
-  const [productData, setProductData] = useState(null);
+  const [productData, setProductData] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedProducts, setSelectedProducts] = useState(new Set());
   const [selectedCategory, setSelectedCategory] = useState([]);
+  const [anotherBrand, setAnotherBrand] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,11 +32,13 @@ function AddProduto() {
 
     const handleProductNotFound = () => {
       setCode("");
-      setProductData(null);
+      setProductData([]);
     };
 
     window.addEventListener('productFound', handleProductFound);
     window.addEventListener('productNotFound', handleProductNotFound);
+
+    fetchAllProducts();
 
     return () => {
       window.removeEventListener('productFound', handleProductFound);
@@ -43,26 +46,11 @@ function AddProduto() {
     };
   }, []);
 
-  const handleVoltar = () => {
-    navigate("/areaLogada");
-  };
-
-  const handleCameraClick = () => {
-    setDialogOpen(true);
-  };
-
-  const handleCodeDetected = (code) => {
-    setCode(code);
-    setDialogOpen(false);
-    fetchProductData(code);
-  };
-
   const fetchCoordinatesFromCep = async (cep) => {
     try {
       const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-      const { uf, localidade } = response.data;
       return {
-        latitude: -25.54692, // Coordenadas fixas para simplificação
+        latitude: -25.54692,
         longitude: -49.18058,
       };
     } catch (error) {
@@ -71,7 +59,7 @@ function AddProduto() {
     }
   };
 
-  const fetchProductData = async (barcode) => {
+  const fetchProductData = async (term) => {
     if (!cep) {
       setError("CEP não fornecido.");
       return;
@@ -85,65 +73,115 @@ function AddProduto() {
       }
 
       const { latitude, longitude } = coordinates;
+      const params = {
+        local: `${latitude},${longitude}`,
+        raio: 20,
+      };
+
+      if (term.length === 13 || term.length === 8) {
+        params.gtin = term; 
+      } else {
+        params.termo = term; 
+      }
+
       const response = await axios.get(
         "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
-        {
-          params: {
-            termo: barcode,
-            local: `${latitude},${longitude}`,
-            raio: 20,
-          },
-        }
+        { params }
       );
 
-      const product = response.data.produtos.find(p => p.gtin === barcode);
-      if (product) {
-        setProductData(product);
-        setError(null);
-      } else {
-        setProductData(null);
-        setError("Produto não encontrado.");
-      }
+      setProductData(response.data.produtos);
+      setError(null);
     } catch (error) {
       console.error("Erro ao buscar o produto:", error);
-      setProductData(null);
+      setProductData([]);
       setError("Erro ao buscar o produto.");
     }
   };
 
+  const fetchAllProducts = async () => {
+    const authToken = localStorage.getItem('authToken');
+    if (!authToken) {
+      console.error('Token de autenticação não encontrado.');
+      return;
+    }
+
+    try {
+      const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
+        headers: {
+          'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
+        }
+      });
+      console.log("Todos os produtos:", response.data.data);
+    } catch (error) {
+      console.error('Erro ao buscar produtos:', error);
+    }
+  };
+
   const handleSave = async () => {
-    if (!productData) {
+    if (!productData.length) {
       setError("Nenhum produto encontrado para salvar.");
       return;
     }
 
-    const data = {
-      name: productData.desc,
+    const selectedProductData = productData.filter(product => selectedProducts.has(product.id));
+
+    if (selectedProductData.length === 0) {
+      setError("Nenhum produto selecionado para salvar.");
+      return;
+    }
+
+    const data = selectedProductData.map(product => ({
+      name: product.desc,
       barcode: code,
-      description: productData.desc,
-      another_brand: false,
-      categories: selectedCategory.length > 0 ? selectedCategory : [1] // Default category for testing
-    };
+      description: product.desc,
+      another_brand: anotherBrand,
+      categories: selectedCategory.length > 0 ? selectedCategory : [1]
+    }));
 
     try {
-      await axios.post("https://savvy.belogic.com.br/api/products", data, {
-        headers: {
-          'Authorization': `Bearer <YOUR_AUTH_TOKEN>` // Substitua pelo token real
-        }
-      });
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        setError("Token de autenticação ausente.");
+        return;
+      }
+
+      await Promise.all(data.map(item =>
+        axios.post("https://savvy-api.belogic.com.br/api/products", item, {
+          headers: {
+            'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
+          }
+        })
+      ));
+
+      console.log("Produtos salvos com sucesso:", data);
+      fetchAllProducts();
       navigate('/areaLogada');
     } catch (error) {
       console.error("Erro ao salvar o produto:", error);
-      setError("Erro ao salvar o produto.");
+      setError(error.response ? error.response.data.message : "Erro ao salvar o produto.");
     }
+  };
+
+  const handleVoltar = () => {
+    navigate("/areaLogada");
+  };
+
+  const toggleSelectProduct = (productId) => {
+    const newSelectedProducts = new Set(selectedProducts);
+    if (newSelectedProducts.has(productId)) {
+      newSelectedProducts.delete(productId);
+    } else {
+      newSelectedProducts.add(productId);
+    }
+    setSelectedProducts(newSelectedProducts);
   };
 
   return (
     <div className="add-produto-container">
       <div className="add-produto-main">
-      <div className="login-savvy-logo2">
-                    <h1>SAVVY</h1>
-                </div>
+        <div className="login-savvy-logo2" style={{ justifyContent: "flex-end" }}>
+          <h1>SAVVY</h1>
+        </div>
         <div className="add-produto-nav">
           <div className="cart2">
             <img alt="" src={flecha} onClick={handleVoltar} />
@@ -161,27 +199,55 @@ function AddProduto() {
                   placeholder="Digite aqui"
                   name="nome"
                   value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  onChange={(e) => {
+                    setCode(e.target.value);
+                    fetchProductData(e.target.value);
+                  }}
                 />
               </form>
-              <img className="barcode" alt="" src={barcode} onClick={handleCameraClick} />
+              <img className="barcode" alt="" src={barcode} onClick={() => setDialogOpen(true)} />
             </div>
           </div>
 
-          <div className="container-categorias">
-            <h3>Nenhum produto pesquisado</h3>
+          <div className="container-categorias" style={{ overflowY: "auto", maxHeight: "300px" }}>
+            {productData.length > 0 ? (
+              <div className="card-container">
+                {productData.map((product) => (
+                  <div 
+                    key={product.id}
+                    className={`card-item-encontrado ${selectedProducts.has(product.id) ? 'selected' : ''}`} 
+                    onClick={() => toggleSelectProduct(product.id)}
+                  >
+                    <img src="https://via.placeholder.com/150" alt="Produto" />
+                    <p>{product.desc}</p>
+                    <button 
+                      className={`btn-add ${selectedProducts.has(product.id) ? 'selected-btn' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleSelectProduct(product.id);
+                      }}
+                    >
+                      {selectedProducts.has(product.id) ? 'Desfazer' : 'Selecionar'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>Nenhum produto pesquisado.</p>
+            )}
           </div>
 
           <div className="procurar-outra-marca">
             <label className="custom-control custom-checkbox">
-              <span>Caso não haja este item em todos
-                    os supermercados, podemos sugerir um
-                    substituto?
+              <span style={{ width: "70%" }}>
+                Caso não haja este item em todos os supermercados, podemos sugerir um substituto?
               </span>
               <input
                 type="checkbox"
                 id="check-btn"
                 className="custom-control-input"
+                checked={anotherBrand}
+                onChange={() => setAnotherBrand(!anotherBrand)}
               />
               <span className="custom-control-indicator"></span>
             </label>
@@ -190,9 +256,6 @@ function AddProduto() {
           <div className="cadastrar-produtos-botoes">
             <button className="btn-salvar" onClick={handleSave}>Salvar</button>
             <button className="btn-cancelar" onClick={handleVoltar}>Cancelar</button>
-            <button className="btn-lixo">
-              <img alt="" src={lixo} />
-            </button>
           </div>
         </div>
       </div>
@@ -200,7 +263,11 @@ function AddProduto() {
       <BarcodeDialog
         open={dialogOpen}
         setOpen={setDialogOpen}
-        setCode={handleCodeDetected}
+        setCode={(code) => {
+          setCode(code);
+          setDialogOpen(false);
+          fetchProductData(code);
+        }}
       />
     </div>
   );

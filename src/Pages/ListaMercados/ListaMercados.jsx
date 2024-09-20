@@ -92,12 +92,13 @@ function ListaMercados() {
     return (
         <div className="listamercados-container">
             <div className="listamercados-main">
+            <div className="login-savvy-logo2" style={{justifyContent: "flex-end"}}>
+                    <h1 style={{fontSize: "20px"}}>SAVVY</h1>
+                </div>
                 <div className="listamercados-nav">
                     <div className="cart2">
                         <img alt="Voltar" src={flecha} onClick={handleComparativo} />
                     </div>
-
-                    <h3>Menor preço</h3>
 
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />

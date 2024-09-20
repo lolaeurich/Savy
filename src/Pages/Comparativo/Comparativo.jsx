@@ -123,11 +123,13 @@ function Comparativo() {
     return (
         <div className="comparativo-container">
             <div className="comparativo-main">
+            <div className="login-savvy-logo2" style={{justifyContent: "flex-end"}}>
+                    <h1 style={{fontSize: "20px"}}>SAVVY</h1>
+                </div>
                 <div className="comparativo-nav">
                     <div className="cart2">
                         <img alt="Voltar" src={flecha} onClick={handleVoltar} />
                     </div>
-                    <h3>Menor preço</h3>
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />
                         <p>{selectedProductsCount}</p> {/* Exibe a contagem de produtos selecionados */}
@@ -136,7 +138,7 @@ function Comparativo() {
                 
                 <div className="comparativo-cards">
                     <div className="card1">
-                        <h3>Preço baixo e onde comprar</h3>
+                        <h3>O menor preço</h3>
                         <div className="card1-icons">
                             <div className="icon1">
                                 <img alt="Mercado Icon" src={mercado} />
@@ -154,7 +156,7 @@ function Comparativo() {
                     </div>
 
                     <div className="card2">
-                        <h3>Melhor custo-benefício em um só lugar</h3>
+                        <h3>O melhor Supermercado</h3>
                         <div className="lista-mercados">
                             <div className="mercado1">
                                 <p className="mercado-distancia">{melhorMercado.distancia}</p>
@@ -170,12 +172,13 @@ function Comparativo() {
                     </div>
 
                     <div className="card3">
-                        <h3>Savvy</h3>
-                        <p>Inteligência, qualidade e conveniência na sua porta</p>
+                        <h3>Receba em casa</h3>
                         <div className="card3-icons">
                             <div className="icon3">
                                 <img className="icon3-img" alt="Receba em casa" src={mercado} />
-                                <p className="icon3-p">Receba em casa</p>
+                                <div className="login-savvy-logo2" style={{justifyContent: "flex-end"}}>
+                    <h1 style={{fontSize: "20px"}}>SAVVY</h1>
+                </div>
                             </div>
                             <div className="icon4">
                                 <img className="icon4-img" alt="Todos os produtos" src={produtos1} />

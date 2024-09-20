@@ -295,7 +295,7 @@ function AreaLogada() {
 
                     <div className="lista-de-produtos">
                         {produtos.map(produto => (
-                            <div className="card-content-produtos" key={produto.barcode}>
+                            <div className="card-content-produtos" key={produto.id}>
                                 <input
                                     className='checkbox-mercado'
                                     type="checkbox"
@@ -319,14 +319,15 @@ function AreaLogada() {
                                     </div>
                                 </div>
                                 <img
-                                            className='lixo-img'
-                                            src={lixo}
-                                            alt="Excluir"
-                                            onClick={() => handleDelete(produto.id)}
-                                    />
-                            </div>
-                        ))}
+                                    className='lixo-img'
+                                    src={lixo}
+                                    alt="Excluir"
+                                    onClick={() => handleDelete(produto.id)}
+                                />
                     </div>
+    ))}
+</div>
+
                 </div>
 
                 <div className="consultar-preco-btn">
