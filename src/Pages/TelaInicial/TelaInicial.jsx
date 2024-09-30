@@ -20,6 +20,10 @@ function TelaInicial () {
         navigate("/validacao");
     };
 
+    const handleUpload = () => {
+        navigate("/upload");
+    };
+
     return (
         <div className="tela-inicial-container">
             <div className="tela-inicial-main">
@@ -55,6 +59,12 @@ function TelaInicial () {
                 onClick={handleValidacao}
                 reset={reset}
             >Vamos começar!</button>
+
+            <button
+                className="slide-button"
+                onClick={handleUpload}
+                reset={reset}
+            >Subir Imagens</button>
 
         </div>
     )

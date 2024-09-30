@@ -14,6 +14,7 @@ import Validacao from "./Pages/Validacao/Validacao";
 import Recuperar from "./Pages/Recuperar/Recuperar";
 import InfoIniciais from "./Pages/InformaçõesIniciais/InfoIniciais";
 import { CartProvider } from "./Context/CartContext";
+import Upload from "./Pages/Upload/Upload";
 
 const App = () => {
   return (
@@ -32,6 +33,7 @@ const App = () => {
         <Route path="/pesquisa" element={<Pesquisa />} />
         <Route path="/validacao" element={<Validacao />} />
         <Route path="/recuperar" element={<Recuperar />} />
+        <Route path="/upload" element={<Upload />} />
       </Routes>
     </CartProvider>
   );
