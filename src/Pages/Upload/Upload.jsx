@@ -4,74 +4,80 @@ import "./style.css";
 
 function Upload() {
     const navigate = useNavigate();
-    const [textInput, setTextInput] = useState("");
-    const [imageInput, setImageInput] = useState(null);
+    const [imageInput, setImageInput] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
 
-    const handleTextChange = (e) => {
-        setTextInput(e.target.value);
-    };
-
     const handleImageChange = (e) => {
-        setImageInput(e.target.files[0]);
+        const files = Array.from(e.target.files);
+        if (files.length + imageInput.length > 50) {
+            alert("Você pode subir até 50 imagens.");
+            return;
+        }
+        setImageInput(prevImages => [...prevImages, ...files]);
     };
 
     const handleSubmit = async () => {
-        if (!textInput || !imageInput) {
-            alert("Por favor, preencha o GTIN e escolha uma imagem.");
+        if (imageInput.length === 0) {
+            alert("Por favor, escolha pelo menos uma imagem.");
             return;
         }
-
-        const formData = new FormData();
-        formData.append('_method', 'PUT');
-        formData.append('gtin', textInput);
-        formData.append('image', imageInput);
-
-        try {
-            const response = await fetch('https://savvy-api.belogic.com.br/api/product-image', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`,
-                },
-                body: formData,
+    
+        const batchSize = 10; // Tamanho do lote
+        for (let i = 0; i < imageInput.length; i += batchSize) {
+            const formData = new FormData();
+            formData.append('_method', 'PUT');
+            const currentBatch = imageInput.slice(i, i + batchSize);
+            currentBatch.forEach((image) => {
+                formData.append('images[]', image);
             });
-
-            if (response.ok) {
-                const result = await response.json();
-                console.log("Sucesso:", result);
-                setShowPopup(true);
-                // Limpa os campos
-                setTextInput("");
-                setImageInput(null);
-            } else {
-                const error = await response.json();
-                console.error("Erro:", error);
-                alert("Erro ao subir a imagem.");
+    
+            try {
+                const response = await fetch('https://savvy-api.belogic.com.br/api/product-image', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`,
+                    },
+                    body: formData,
+                });
+    
+                const responseText = await response.text();
+                if (response.ok) {
+                    const result = JSON.parse(responseText);
+                    console.log("Sucesso:", result);
+                } else {
+                    console.error("Erro:", responseText);
+                    alert(`Erro ao subir as imagens: ${responseText}`);
+                }
+            } catch (error) {
+                console.error("Erro de rede:", error);
+                alert("Erro de rede. Verifique sua conexão ou tente novamente.");
             }
-        } catch (error) {
-            console.error("Erro de rede:", error);
-            alert("Erro de rede.");
         }
+    
+        setShowPopup(true);
+        setImageInput([]); // Limpa os campos após o upload
     };
+    
+    
 
     const closePopup = () => {
         setShowPopup(false);
     };
 
+    const removeImage = (index) => {
+        setImageInput(prevImages => prevImages.filter((_, i) => i !== index));
+    };
+
     return (
         <div className="upload" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <h2>Digite o GTIN e escolha a imagem associada a ele:</h2>
-            <input
-                type="text"
-                value={textInput}
-                onChange={handleTextChange}
-                placeholder="GTIN"
-            />
+            <h2>Escolha as imagens que deseja subir:</h2>
             <input
                 type="file"
                 accept="image/*"
+                multiple
                 onChange={handleImageChange}
             />
+    
             <button
                 className="slide-button"
                 onClick={handleSubmit}
@@ -79,10 +85,20 @@ function Upload() {
                 Subir Imagens
             </button>
 
+            <h3>Imagens carregadas:</h3>
+            <ul style={{"height": "30%"}}>
+                {imageInput.map((image, index) => (
+                    <li key={index}>
+                        {image.name} 
+                        <button onClick={() => removeImage(index)}>Remover</button>
+                    </li>
+                ))}
+            </ul>
+
             {showPopup && (
                 <div className="popup3">
                     <div className="popup-content2">
-                        <p>Imagem enviada com sucesso!</p>
+                        <p>Imagens enviadas com sucesso!</p>
                         <button onClick={closePopup}>Fechar</button>
                     </div>
                 </div>
