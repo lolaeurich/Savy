@@ -38,21 +38,23 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
       if (!setCode) return; // Se não há código, não fazer a requisição
 
       try {
-        const response = await axios.get(
-          "https://menorpreco.notaparana.pr.gov.br/api/v1/produtos",
-          {
-            params: {
-              termo: setCode, // Código de barras lido
-              local: "6gkzqf9vb" // Local exemplo, pode ser ajustado conforme necessário
-            },
-          }
-        );
+        // Verifica se o código contém apenas números (GTIN) ou não (nome)
+        const isGtin = /^\d+$/.test(setCode);
+        const url = "https://savvy-api.belogic.com.br/api/products";
+        const params = isGtin ? { gtin: setCode } : { nome: setCode };
+
+        const response = await axios.get(url, { params });
 
         // Encontrar o produto com o código de barras (se disponível)
-        const product = response.data.produtos.find(p => p.gtin === setCode);
-        if (product) {
-          setProductData(product);
-          setError(null);
+        if (response.data.data && response.data.data.length > 0) {
+          const product = response.data.data.find(p => p.gtin === setCode);
+          if (product) {
+            setProductData(product);
+            setError(null);
+          } else {
+            setProductData(null);
+            setError("Produto não encontrado.");
+          }
         } else {
           setProductData(null);
           setError("Produto não encontrado.");

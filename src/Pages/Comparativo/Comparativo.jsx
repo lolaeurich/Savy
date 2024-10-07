@@ -12,7 +12,7 @@ function Comparativo() {
     const navigate = useNavigate();
     const [mercadoCount, setMercadoCount] = useState(0);
     const [produtoCount, setProdutoCount] = useState(0);
-    const [selectedProductsCount, setSelectedProductsCount] = useState(0); // Adicionado para armazenar a contagem de produtos selecionados
+    const [selectedProductsCount, setSelectedProductsCount] = useState(0); // Armazena a contagem de produtos selecionados
     const [produtos, setProdutos] = useState([]);
     const [cep, setCep] = useState('');
     const [coordenadas, setCoordenadas] = useState('');
@@ -39,7 +39,7 @@ function Comparativo() {
             if (selectedProducts && selectedProducts.length > 0) {
                 setProdutos(selectedProducts);
                 setProdutoCount(selectedProducts.length);
-                setSelectedProductsCount(selectedProductsCount); // Atualiza a contagem de produtos selecionados
+                setSelectedProductsCount(selectedProductsCount || 0); // Atualiza a contagem de produtos selecionados
 
                 const totalMercados = Object.values(priceInfo).reduce((acc, info) => {
                     const match = info.match(/em (\d+) mercados/);
@@ -123,8 +123,8 @@ function Comparativo() {
     return (
         <div className="comparativo-container">
             <div className="comparativo-main">
-            <div className="login-savvy-logo2" style={{justifyContent: "flex-end"}}>
-                    <h1 style={{fontSize: "20px"}}>SAVVY</h1>
+                <div className="login-savvy-logo2" style={{ justifyContent: "flex-end" }}>
+                    <h1 style={{ fontSize: "20px" }}>SAVVY</h1>
                 </div>
                 <div className="comparativo-nav">
                     <div className="cart2">
@@ -176,9 +176,6 @@ function Comparativo() {
                         <div className="card3-icons">
                             <div className="icon3">
                                 <img className="icon3-img" alt="Receba em casa" src={mercado} />
-                                <div className="login-savvy-logo2" style={{justifyContent: "flex-end"}}>
-                    <h1 style={{fontSize: "20px"}}>SAVVY</h1>
-                </div>
                             </div>
                             <div className="icon4">
                                 <img className="icon4-img" alt="Todos os produtos" src={produtos1} />

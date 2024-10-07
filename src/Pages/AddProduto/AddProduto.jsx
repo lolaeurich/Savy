@@ -9,7 +9,6 @@ import './style.css';
 function AddProduto() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [code, setCode] = useState("");
-  const [cep, setCep] = useState(""); 
   const [productData, setProductData] = useState([]);
   const [error, setError] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState(new Set());
@@ -17,113 +16,69 @@ function AddProduto() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedCep = localStorage.getItem('userCep');
-    if (storedCep) {
-      setCep(storedCep);
-    }
-
-    const handleProductFound = (event) => {
-      setCode(event.detail);
-      fetchProductData(event.detail);
-    };
-
-    window.addEventListener('productFound', handleProductFound);
-    window.addEventListener('productNotFound', () => {
-      setCode("");
-      setProductData([]);
-    });
-
+    // Remove o armazenamento do CEP e a lógica relacionada
     fetchAllProducts();
-
-    return () => {
-      window.removeEventListener('productFound', handleProductFound);
-    };
   }, []);
 
-  const fetchCoordinatesFromCep = async (cep) => {
-    try {
-      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
-      return {
-        latitude: -25.54692,
-        longitude: -49.18058,
-      };
-    } catch (error) {
-      console.error("Erro ao obter coordenadas:", error);
-      setError("Erro ao obter coordenadas do CEP.");
-      return null;
-    }
+  const getAuthToken = () => {
+    const token = localStorage.getItem('authToken');
+    console.log("Token de autorização:", token); // Adicione isso para verificar
+    return token;
   };
-
-  const fetchUnsplashImage = async (query) => {
-    const accessKey = 'YOUR_UNSPLASH_API_KEY'; // Substitua pela sua chave da API do Unsplash
-    try {
-      const response = await axios.get(`https://api.unsplash.com/search/photos`, {
-        params: {
-          query: query,
-          client_id: accessKey,
-        },
-      });
-      return response.data.results.length > 0 ? response.data.results[0].urls.small : null;
-    } catch (error) {
-      console.error("Erro ao buscar imagem:", error);
-      return null;
-    }
-  };
+  
 
   const fetchProductData = async (term) => {
-    if (!cep) {
-      setError("CEP não fornecido.");
+    if (!term) {
+      setProductData([]);
       return;
     }
 
+    const params = {};
+    if (/^\d+$/.test(term)) {
+      params.gtin = term; // Se for numérico, busca pelo gtin
+    } else {
+      params.nome = term; // Se não, busca pelo nome
+    }
+
     try {
-      const coordinates = await fetchCoordinatesFromCep(cep);
-      if (!coordinates) return;
+      const response = await axios.get("https://savvy-api.belogic.com.br/api/products", {
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        },
+        params
+      });
 
-      const { latitude, longitude } = coordinates;
-      const params = {
-        local: `${latitude},${longitude}`,
-        raio: 20,
-      };
+      if (response.data.data) {
+        const productsWithImages = response.data.data.map(product => ({
+          id: product.id,
+          desc: product.desc,
+          gtin: product.gtin,
+          imagem: product.imagem || "https://via.placeholder.com/150",
+        }));
 
-      if (term.length === 13 || term.length === 8) {
-        params.gtin = term; 
+        setProductData(productsWithImages);
       } else {
-        params.termo = term; 
+        setProductData([]);
       }
 
-      const response = await axios.get("https://menorpreco.notaparana.pr.gov.br/api/v1/produtos", { params });
-
-      const productsWithImages = await Promise.all(response.data.produtos.map(async (product) => {
-        const imageUrl = await fetchUnsplashImage(product.desc); // Usando a descrição do produto para buscar a imagem
-        return { ...product, imageUrl };
-      }));
-
-      setProductData(productsWithImages);
       setError(null);
     } catch (error) {
-      console.error("Erro ao buscar o produto:", error);
+      console.error("Erro ao buscar o produto:", error.response ? error.response.data : error);
       setProductData([]);
-      setError("Erro ao buscar o produto.");
+      setError(error.response ? error.response.data.message : "Erro ao buscar o produto.");
     }
   };
 
   const fetchAllProducts = async () => {
-    const authToken = localStorage.getItem('authToken');
-    if (!authToken) {
-      console.error('Token de autenticação não encontrado.');
-      return;
-    }
-
     try {
       const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
         headers: {
-          'Authorization': `Bearer ${authToken}`
+          'Authorization': `Bearer ${getAuthToken()}`
         }
       });
       console.log("Todos os produtos:", response.data.data);
     } catch (error) {
-      console.error('Erro ao buscar produtos:', error);
+      console.error('Erro ao buscar produtos:', error.response ? error.response.data : error);
     }
   };
 
@@ -142,33 +97,23 @@ function AddProduto() {
 
     const data = selectedProductData.map(product => ({
       name: product.desc,
-      barcode: code,
       description: product.desc,
-      another_brand: anotherBrand,
-      categories: [1] // Ajuste conforme necessário
+      barcode: product.gtin,
     }));
 
     try {
-      const authToken = localStorage.getItem('authToken');
-      if (!authToken) {
-        setError("Token de autenticação ausente.");
-        return;
-      }
+      await axios.post("https://savvy-api.belogic.com.br/api/shopping", data, {
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      });
 
-      await Promise.all(data.map(item =>
-        axios.post("https://savvy-api.belogic.com.br/api/products", item, {
-          headers: {
-            'Authorization': `Bearer ${authToken}`
-          }
-        })
-      ));
-
-      console.log("Produtos salvos com sucesso:", data);
+      console.log("Produtos adicionados ao carrinho:", data);
       fetchAllProducts();
       navigate('/areaLogada');
     } catch (error) {
-      console.error("Erro ao salvar o produto:", error);
-      setError(error.response ? error.response.data.message : "Erro ao salvar o produto.");
+      console.error("Erro ao adicionar produtos:", error.response ? error.response.data : error);
+      setError(error.response ? error.response.data.message : "Erro ao adicionar produtos.");
     }
   };
 
@@ -229,7 +174,7 @@ function AddProduto() {
                     className={`card-item-encontrado ${selectedProducts.has(product.id) ? 'selected' : ''}`} 
                     onClick={() => toggleSelectProduct(product.id)}
                   >
-                    <img src={product.imageUrl || "https://via.placeholder.com/150"} alt={product.desc} />
+                    <img src={product.imagem} alt={product.desc} />
                     <p>{product.desc}</p>
                     <button 
                       className={`btn-add ${selectedProducts.has(product.id) ? 'selected-btn' : ''}`}

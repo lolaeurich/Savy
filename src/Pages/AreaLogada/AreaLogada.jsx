@@ -8,7 +8,6 @@ import cadastro from "../../Assets/cadastro.png";
 import produtoImg from "../../Assets/produto-imagem.png"; // Imagem padrão do produto
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 
-// Adicione a lista de supermercados permitidos aqui
 const allowedSupermarkets = [
     "Guanabara", "Condor", "VERDE MAIS VILA IZABEL", "Angeloni", "Atacadão", "Atacadao", "Carrefour", 
     "Muffato", "Festval", "Pao de Açúcar", "GPA", "Walmart", "Big", "Sonda", "BH", "Zaffari", "Jacomar",
@@ -22,9 +21,35 @@ function AreaLogada() {
     const [produtos, setProdutos] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [novoCep, setNovoCep] = useState('');
-    const [priceInfo, setPriceInfo] = useState({}); // Adicionando estado priceInfo
-    const [selectedProductsCount, setSelectedProductsCount] = useState(0); // Contador de produtos selecionados
+    const [selectedProductsCount, setSelectedProductsCount] = useState(0);
     const navigate = useNavigate();
+
+    const handleUpdateQuantity = async (productId, newQuantity) => {
+        const token = getAuthToken();
+        if (!token) {
+            console.error('Token de autenticação não encontrado.');
+            return;
+        }
+
+        try {
+            await axios.put(`https://savvy-api.belogic.com.br/api/shopping/${productId}`, {
+                quantity: newQuantity
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            // Atualiza a lista de produtos localmente
+            setProdutos(prevProdutos =>
+                prevProdutos.map(prod => 
+                    prod.id === productId ? { ...prod, quantity: newQuantity } : prod
+                )
+            );
+        } catch (error) {
+            console.error('Erro ao atualizar a quantidade do produto:', error.response ? error.response.data : error.message);
+        }
+    };
 
     useEffect(() => {
         const storedCep = localStorage.getItem('userCep');
@@ -33,10 +58,10 @@ function AreaLogada() {
             fetchCidade(storedCep);
         }
         fetchProdutos();
+        fetchProductImages(); // Chama a função para buscar imagens
     }, []);
 
     useEffect(() => {
-        // Atualiza a contagem de produtos selecionados sempre que a lista de produtos mudar
         const count = produtos.filter(produto => produto.isChecked).length;
         setSelectedProductsCount(count);
     }, [produtos]);
@@ -51,22 +76,59 @@ function AreaLogada() {
         }
     };
 
+    const getAuthToken = () => {
+        return localStorage.getItem('authToken');
+    };
+
     const fetchProdutos = async () => {
-        const token = localStorage.getItem('authToken');
+        const token = getAuthToken();
         if (!token) {
             console.error('Token de autenticação não encontrado.');
             return;
         }
 
         try {
-            const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
+            const response = await axios.get('https://savvy-api.belogic.com.br/api/shopping', {
                 headers: {
-                    'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
+                    'Authorization': `Bearer ${token}`
                 }
             });
-            setProdutos(Array.isArray(response.data.data) ? response.data.data : []);
+            setProdutos(Array.isArray(response.data) ? response.data : []);
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
+        }
+    };
+
+    const fetchProductImages = async () => {
+        const token = getAuthToken(); // Obtém o token de autenticação
+        if (!token) {
+            console.error('Token de autenticação não encontrado.');
+            return;
+        }
+    
+        try {
+            const response = await axios.get('https://savvy-api.belogic.com.br/api/product-image', {
+                headers: {
+                    'Authorization': `Bearer ${token}` // Inclui o token no cabeçalho
+                }
+            });
+            const imagesData = response.data.data;
+    
+            // Mapeia as imagens usando o GTIN
+            const imagesMap = {};
+            imagesData.forEach(item => {
+                imagesMap[item.gtin] = item.image[0]?.url || produtoImg; // URL da imagem ou imagem padrão
+            });
+    
+            // Atualiza a lista de produtos com as imagens associadas
+            setProdutos(prevProdutos =>
+                prevProdutos.map(prod => ({
+                    ...prod,
+                    image: imagesMap[prod.barcode] || produtoImg // Usa a imagem associada ou a padrão
+                }))
+            );
+        } catch (error) {
+            console.error('Erro ao buscar imagens de produtos:', error);
         }
     };
 
@@ -74,111 +136,34 @@ function AreaLogada() {
         localStorage.setItem('produtos', JSON.stringify(produtos));
     }, [produtos]);
 
-    const fetchCoordinatesFromCep = async (cep) => {
-        try {
-            const response = await axios.get(`https://cep.awesomeapi.com.br/json/${cep}`);
-            const { lat, lng } = response.data;
-
-            if (lat && lng) {
-                return {
-                    latitude: lat,
-                    longitude: lng,
-                };
-            } else {
-                console.error("Coordenadas não encontradas.");
-                return null;
-            }
-        } catch (error) {
-            console.error("Erro ao obter coordenadas:", error);
-            return null;
-        }
-    };
-
-    const fetchPriceFromApi = async (productName) => {
-        try {
-            const coordinates = await fetchCoordinatesFromCep(cep);
-            if (!coordinates) {
-                console.error("Não foi possível obter as coordenadas.");
-                return { filteredMarkets: [], minPrice: null };
-            }
-        
-            const { latitude, longitude } = coordinates;
-            const encodedProductName = encodeURIComponent(productName);
-            const encodedLatitude = encodeURIComponent(latitude);
-            const encodedLongitude = encodeURIComponent(longitude);
-            const searchUrl = `https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=${encodedLatitude}%2C${encodedLongitude}&termo=${encodedProductName}&raio=20`;
-        
-            console.log(`Consultando preços na URL: ${searchUrl}`);
-            const response = await axios.get(searchUrl);
-            const produtos = response.data.produtos;
-        
-            console.log("Produtos retornados da API:", produtos);
-        
-            const filteredMarkets = produtos
-                .filter(produto => {
-                    const supermercadoNome = produto.estabelecimento.nm_emp?.trim().toLowerCase();
-                    const nomeDoMercado = produto.estabelecimento.nm_fan?.trim();
-                    return supermercadoNome && nomeDoMercado && allowedSupermarkets.some(supermarket => supermercadoNome.includes(supermarket.toLowerCase()));
-                })
-                .map(produto => ({
-                    nomeDoMercado: produto.estabelecimento.nm_fan,
-                    distancia: produto.distkm,
-                    custo: produto.valor,
-                    produto: productName,
-                    codigoDeBarras: produto.ncm,
-                    logradouro: produto.estabelecimento.nm_logr,
-                    numero: produto.estabelecimento.nr_logr
-                }));
-        
-            console.log("Mercados filtrados para o produto", productName, ":", filteredMarkets);
-            console.log("Número de mercados encontrados para o produto", productName, ":", filteredMarkets.length);
-        
-            const minPrice = filteredMarkets.length > 0 
-                ? Math.min(...filteredMarkets.map(market => market.custo)) 
-                : null;
-        
-            return { filteredMarkets, minPrice };
-        } catch (error) {
-            console.error("Erro ao buscar o preço:", error);
-            return { filteredMarkets: [], minPrice: null };
-        }
-    };
-
     const handleSlideDone = async () => {
-        const selectedProducts = produtos.filter(produto => produto.isChecked);
-        const updatedPriceInfo = {};
-        const allMarkets = [];
-        let totalMinPrice = 0;
-    
-        console.log("Produtos selecionados:", selectedProducts);
-    
-        for (const produto of selectedProducts) {
-            const { filteredMarkets, minPrice } = await fetchPriceFromApi(produto.name);
-            if (filteredMarkets.length > 0) {
-                updatedPriceInfo[produto.id] = `Produto disponível em ${filteredMarkets.length} mercados`;
-                allMarkets.push(...filteredMarkets);
-            } else {
-                updatedPriceInfo[produto.id] = "Nenhum mercado encontrado";
-            }
-    
-            if (minPrice !== null) {
-                totalMinPrice += minPrice;
-            }
+        const selectedProductIds = produtos
+            .filter(produto => produto.isChecked)
+            .map(produto => produto.id); // Mapeia para obter apenas os IDs
+
+        if (selectedProductIds.length === 0) {
+            alert('Por favor, selecione ao menos um produto.');
+            return;
         }
-    
-        setPriceInfo(updatedPriceInfo);
-    
-        navigate("/comparativo", { 
-            state: { 
-                selectedProducts, 
-                priceInfo: updatedPriceInfo, 
-                allMarkets, 
-                totalMinPrice,
-                selectedProductsCount // Passa o contador de produtos selecionados
-            } 
-        });
+
+        try {
+            const token = getAuthToken();
+            const response = await axios.post('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
+                products: selectedProductIds // Envia os IDs no formato esperado
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            console.log('Resposta do servidor:', response.data);
+            navigate("/comparativo", { 
+                state: { selectedProducts: response.data } // Passa a resposta para a próxima página, se necessário
+            });
+        } catch (error) {
+            console.error('Erro ao enviar produtos:', error.response ? error.response.data : error.message);
+        }
     };
-    
 
     const handleAddProduto = () => {
         navigate("/addProduto");
@@ -217,73 +202,40 @@ function AreaLogada() {
     };
 
     const handleDelete = async (productId) => {
+        const token = getAuthToken();
+        if (!token) {
+            console.error('Token de autenticação não encontrado.');
+            return;
+        }
+    
         try {
-            const token = localStorage.getItem('authToken');
-            const response = await axios.delete(`https://savvy-api.belogic.com.br/api/products/${productId}`, {
+            const response = await axios.delete(`https://savvy-api.belogic.com.br/api/shopping/${productId}`, {
                 headers: {
-                    'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`
+                    'Authorization': `Bearer ${token}`
                 }
             });
-
+    
             console.log('Produto excluído com sucesso:', response.data);
             setProdutos(prevProdutos => prevProdutos.filter(produto => produto.id !== productId));
         } catch (error) {
             console.error('Erro ao excluir o produto:', error.response ? error.response.data : error.message);
+            alert('Não foi possível excluir o produto. Verifique se ele está associado a outros registros.');
         }
     };
 
     return (
         <div className="areaLogada-container">
             <div className="areaLogada-main">
-            <div className="login-savvy-logo2">
+                <div className="login-savvy-logo2">
                     <h1>SAVVY</h1>
                 </div>
                 <div className="areaLogada-nav">
                     <h3>Minha lista de produtos</h3>
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />
-                        <p>{selectedProductsCount}</p> {/* Mostra o número de produtos selecionados */}
+                        <p>{selectedProductsCount}</p>
                     </div>
                 </div>
-
-                {/*<div className="areaLogada-dados">
-                    <div className="areaLogada-endereco">
-                        {isEditing ? (
-                            <div>
-                                <input
-                                    type="text"
-                                    value={novoCep}
-                                    onChange={e => setNovoCep(e.target.value)}
-                                    placeholder="Digite o novo CEP"
-                                />
-                                <div style={{ display: "flex", columnGap: "5px" }}>
-                                    <h4 onClick={handleSaveCep}>Salvar</h4>
-                                    <h4 onClick={handleCancelEdit} style={{ width: "80px" }}>Cancelar</h4>
-                                </div>
-                            </div>
-                        ) : (
-                            <div>
-                                <p>Buscas realizadas para o CEP:<span> {cep || '00000-000'}</span></p>
-                                <p>Cidade:<span> {cidade}</span></p>
-                                <div>
-                                    <h4 onClick={handleEditCep}>Editar</h4>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>*/}
-
-                {/*<div className="dados-compras">
-                    <div className="prod-cadastrados">
-                        <h1>{produtos.length}</h1>
-                        <p>Produtos cadastrados</p>
-                    </div>
-
-                    <div className="reais-economizados">
-                        <h1>0</h1>
-                        <p>Reais economizados</p>
-                    </div>
-                </div>*/}
 
                 <div className="container-meus-produtos">
                     <div className="meus-produtos-bar">
@@ -304,7 +256,7 @@ function AreaLogada() {
                                     id={`produtoCheckbox-${produto.barcode}`}
                                 />
                                 <label htmlFor={`produtoCheckbox-${produto.barcode}`}></label>
-                                <img className="card-image" alt='' src={produto.image } />
+                                <img className="card-image" alt='' src={produto.image || produtoImg} />
                                 <div className='card-content-sessao2'>
                                     <div className='card-content-titulo'>
                                         <div className='produto-nome-lista'>
@@ -314,7 +266,10 @@ function AreaLogada() {
                                     </div>
                                     <div className="card-content-card">
                                         <div className='card-content-quantidade'>
-                                            <QuantitySelector />
+                                            <QuantitySelector 
+                                                initialQuantity={produto.quantity || 1} 
+                                                onQuantityChange={(newQuantity) => handleUpdateQuantity(produto.id, newQuantity)} 
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -324,17 +279,18 @@ function AreaLogada() {
                                     alt="Excluir"
                                     onClick={() => handleDelete(produto.id)}
                                 />
+                            </div>
+                        ))}
                     </div>
-    ))}
-</div>
-
                 </div>
 
                 <div className="consultar-preco-btn">
                     <button
                         className="slide-button2"
                         onClick={handleSlideDone}
-                    >Consultar preço</button>
+                    >
+                        Consultar preço
+                    </button>
                 </div>
             </div>
         </div>

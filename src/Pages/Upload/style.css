@@ -57,3 +57,63 @@
     border-radius: 12px;
 }
 
+
+.upload {
+    row-gap: 5%;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload h2 {
+    text-align: center;
+    color: green;
+}
+
+.upload input {
+    height: 45px;
+    border-radius: 12px;
+    padding: 2%;
+    width: 70%;
+}
+
+.popup3 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.popup-content2 {
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+    text-align: center;
+    height: 15%;
+    row-gap: 5%;
+    width: 75%;
+}
+
+.popup-content2 p {
+    padding-bottom: 15px;
+    font-size: 18px;
+    font-weight: 500;
+    padding-top: 5%;
+}
+
+.popup-content2 button {
+    padding: 5%;
+    background-color: green;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+}
+

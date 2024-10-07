@@ -1,17 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "./style.css";
 
-const QuantitySelector = () => {
-    const [quantity, setQuantity] = useState(0);
+const QuantitySelector = ({ initialQuantity, onQuantityChange }) => {
+    const [quantity, setQuantity] = useState(initialQuantity || 1);
+
+    useEffect(() => {
+        setQuantity(initialQuantity); // Atualiza a quantidade se a prop mudar
+    }, [initialQuantity]);
 
     const decreaseQuantity = () => {
         if (quantity > 1) {
-            setQuantity(quantity - 1);
+            const newQuantity = quantity - 1;
+            setQuantity(newQuantity);
+            onQuantityChange(newQuantity); // Chama a função de callback
         }
     };
 
     const increaseQuantity = () => {
-        setQuantity(quantity + 1);
+        const newQuantity = quantity + 1;
+        setQuantity(newQuantity);
+        onQuantityChange(newQuantity); // Chama a função de callback
     };
 
     return (
