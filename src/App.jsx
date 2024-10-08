@@ -15,10 +15,11 @@ import Recuperar from "./Pages/Recuperar/Recuperar";
 import InfoIniciais from "./Pages/InformaçõesIniciais/InfoIniciais";
 import { CartProvider } from "./Context/CartContext";
 import Upload from "./Pages/Upload/Upload";
+import { ComparativoProvider } from "../src/Context/ComparativoContext";
 
 const App = () => {
   return (
-    <CartProvider>
+    <ComparativoProvider>
       <Routes>
         <Route path="/" element={<TelaInicial />} />
         <Route path="/login" element={<Login />} />
@@ -35,7 +36,7 @@ const App = () => {
         <Route path="/recuperar" element={<Recuperar />} />
         <Route path="/upload" element={<Upload />} />
       </Routes>
-    </CartProvider>
+    </ComparativoProvider>
   );
 }
 

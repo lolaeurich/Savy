@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './style.css';
@@ -6,65 +6,72 @@ import cart from "../../Assets/cart.png";
 import flecha from "../../Assets/flecha-esquerda.png";
 import mercado from "../../Assets/home.png";
 import produtos1 from "../../Assets/produtos.png";
+import { useComparativo } from '../../Context/ComparativoContext';
 
 function Comparativo() {
     const location = useLocation();
     const navigate = useNavigate();
-    const [mercadoCount, setMercadoCount] = useState(0);
-    const [produtoCount, setProdutoCount] = useState(0);
-    const [selectedProductsCount, setSelectedProductsCount] = useState(0); // Armazena a contagem de produtos selecionados
-    const [produtos, setProdutos] = useState([]);
-    const [cep, setCep] = useState('');
-    const [coordenadas, setCoordenadas] = useState('');
-    const [custoTotal, setCustoTotal] = useState(0);
-    const [melhorMercado, setMelhorMercado] = useState({
-        nome: 'Não disponível',
-        distancia: 'Não disponível',
-        quantidadeProdutos: 0,
-        custo: Infinity
-    });
+    const { comparativoData, setComparativoData } = useComparativo();
+
+    const {
+        marketQuantity,
+        selectedProductsCount,
+        totalMinPrice,
+        melhorMercado
+    } = comparativoData;
 
     useEffect(() => {
         const storedCep = localStorage.getItem('userCep');
         if (storedCep) {
-            setCep(storedCep);
             fetchCidade(storedCep);
         }
     }, []);
 
     useEffect(() => {
         if (location.state) {
-            const { selectedProducts, priceInfo, allMarkets, totalMinPrice, selectedProductsCount } = location.state;
+            const { responseData, allMarkets } = location.state;
 
-            if (selectedProducts && selectedProducts.length > 0) {
-                setProdutos(selectedProducts);
-                setProdutoCount(selectedProducts.length);
-                setSelectedProductsCount(selectedProductsCount || 0); // Atualiza a contagem de produtos selecionados
+            if (responseData) {
+                const { market_quantity, product_quantity, total, products } = responseData.data;
 
-                const totalMercados = Object.values(priceInfo).reduce((acc, info) => {
-                    const match = info.match(/em (\d+) mercados/);
-                    return match ? acc + parseInt(match[1], 10) : acc;
-                }, 0);
+                setComparativoData(prevData => ({
+                    ...prevData,
+                    marketQuantity: market_quantity || 0,
+                    selectedProductsCount: product_quantity || 0,
+                    totalMinPrice: total || 0,
+                    produtos: products || []
+                }));
 
-                setMercadoCount(totalMercados);
-                setCustoTotal(totalMinPrice);
-
-                encontrarMelhorMercado(allMarkets, selectedProducts);
+                if (allMarkets) {
+                    encontrarMelhorMercado(allMarkets, products);
+                    fetchLowPrice(products, allMarkets);
+                } else {
+                    console.error('allMarkets está indefinido');
+                }
+            } else {
+                console.error('responseData está indefinido');
             }
+        } else {
+            console.error('location.state está indefinido');
         }
-    }, [location.state]);
+    }, [location.state, setComparativoData]);
 
     const fetchCidade = async (cep) => {
         try {
             const response = await axios.get(`https://cep.awesomeapi.com.br/json/${cep}`);
             const { lat, lng } = response.data;
-            setCoordenadas(`${lat},${lng}`);
+            // Se precisar armazenar as coordenadas, crie um estado ou adicione ao contexto
         } catch (error) {
             console.error('Erro ao buscar as coordenadas:', error);
         }
     };
 
     const encontrarMelhorMercado = (allMarkets, selectedProducts) => {
+        if (typeof allMarkets !== 'object' || !selectedProducts.length) {
+            console.error('allMarkets não é um objeto válido ou está vazio');
+            return; 
+        }
+        
         let melhorMercado = {
             nome: 'Não disponível',
             distancia: 'Não disponível',
@@ -72,23 +79,23 @@ function Comparativo() {
             custo: Infinity
         };
 
-        allMarkets.forEach(market => {
-            const produtosNoMercado = market.produtos || [];
+        Object.values(allMarkets).forEach(market => {
+            const produtosNoMercado = market.products || {};
 
             const todosProdutosPresentes = selectedProducts.every(produto => 
-                produtosNoMercado.some(p => p.id === produto.id)
+                produtosNoMercado[produto.id]
             );
 
             if (todosProdutosPresentes) {
                 const custoTotalMercado = selectedProducts.reduce((total, produto) => {
-                    const produtoNoMercado = produtosNoMercado.find(p => p.id === produto.id);
-                    return total + (produtoNoMercado ? produtoNoMercado.preco : 0);
+                    const produtoNoMercado = produtosNoMercado[produto.id];
+                    return total + (produtoNoMercado ? produtoNoMercado.total : 0);
                 }, 0);
 
                 if (custoTotalMercado < melhorMercado.custo) {
                     melhorMercado = {
-                        nome: market.nomeDoMercado || 'Não disponível',
-                        distancia: market.distancia || 'Não disponível',
+                        nome: market.fantasyName || 'Não disponível',
+                        distancia: `${market.distKm} km`,
                         quantidadeProdutos: selectedProducts.length,
                         custo: custoTotalMercado
                     };
@@ -96,14 +103,69 @@ function Comparativo() {
             }
         });
 
-        setMelhorMercado(melhorMercado);
+        setComparativoData(prevData => ({
+            ...prevData,
+            melhorMercado
+        }));
+    };
+
+    const fetchLowPrice = async (selectedProducts, allMarkets) => {
+        const token = localStorage.getItem('authToken');
+    
+        if (!token) {
+            console.error('Token não encontrado. Verifique se o usuário está autenticado.');
+            return;
+        }
+    
+        // Extraia os IDs dos produtos e marketplaces
+        const productIds = selectedProducts.map(prod => prod.gtin); // ou o ID que você usa para o produto
+        const marketIds = Object.keys(allMarkets).map(marketId => parseInt(marketId)); // obtém os mktId como números
+    
+        // Verifique se há marketplaces disponíveis
+        if (marketIds.length === 0) {
+            console.error('Nenhum marketplace disponível para enviar.');
+            return;
+        }
+    
+        console.log('Enviando para low-price:', { products: productIds, marketplaces: marketIds });
+    
+        try {
+            const response = await axios.post('https://savvy-api.belogic.com.br/api/checkout/low-price-where-to-buy', {
+                products: productIds,
+                marketplaces: marketIds
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+    
+            console.log('Resposta do low-price:', response.data);
+            
+            // Aqui você pode processar a resposta e atualizar seu estado se necessário
+            const lowPriceData = response.data.data;
+            // Atualizar o estado com os dados do melhor mercado
+            if (Object.keys(lowPriceData).length > 0) {
+                const melhorMercadoData = lowPriceData[Object.keys(lowPriceData)[0]]; // pega o primeiro mercado
+                setComparativoData(prevData => ({
+                    ...prevData,
+                    melhorMercado: {
+                        nome: melhorMercadoData.fantasyName || 'Não disponível',
+                        distancia: `${melhorMercadoData.distKm} km`,
+                        quantidadeProdutos: Object.keys(melhorMercadoData.products).length,
+                        custo: melhorMercadoData.total || Infinity
+                    }
+                }));
+            }
+        } catch (error) {
+            console.error('Erro ao buscar o preço mais baixo:', error);
+        }
     };
 
     const handleListaMercados = () => {
         navigate("/listaMercados", { 
             state: { 
-                mercados: location.state.allMarkets,
-                selectedProductsCount // Passa a contagem de produtos selecionados
+                mercados: location.state.allMarkets, 
+                responseData: location.state.responseData 
             } 
         });
     };
@@ -132,7 +194,7 @@ function Comparativo() {
                     </div>
                     <div className="cart">
                         <img alt="Cart Icon" src={cart} />
-                        <p>{selectedProductsCount}</p> {/* Exibe a contagem de produtos selecionados */}
+                        <p>{selectedProductsCount}</p>
                     </div>
                 </div>
                 
@@ -142,16 +204,16 @@ function Comparativo() {
                         <div className="card1-icons">
                             <div className="icon1">
                                 <img alt="Mercado Icon" src={mercado} />
-                                <p>{mercadoCount} supermercados</p>
+                                <p>{marketQuantity} supermercados</p>
                             </div>
                             <div className="icon2">
                                 <img alt="Produtos Icon" src={produtos1} />
-                                <p>{produtoCount} produtos</p>
+                                <p>{selectedProductsCount} produtos</p>
                             </div>
                         </div>
                         <div className="card1-btns">
                             <button className="ver-mercados" onClick={handleListaMercados}>Ver supermercados</button>
-                            <button className="custo">Custo R$ {custoTotal.toFixed(2)}</button>
+                            <button className="custo">Custo R$ {totalMinPrice.toFixed(2)}</button>
                         </div>
                     </div>
 
@@ -167,7 +229,6 @@ function Comparativo() {
                         </div>
                         <div className="card1-btns">
                             <button className="ver-mercados" onClick={handleCompraUnica}>Ver supermercados</button>
-                            <button className="custo">Custo R$ {melhorMercado.custo.toFixed(2)}</button>
                         </div>
                     </div>
 

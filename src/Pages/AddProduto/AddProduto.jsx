@@ -16,16 +16,12 @@ function AddProduto() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Remove o armazenamento do CEP e a lógica relacionada
     fetchAllProducts();
   }, []);
 
   const getAuthToken = () => {
-    const token = localStorage.getItem('authToken');
-    console.log("Token de autorização:", token); // Adicione isso para verificar
-    return token;
+    return localStorage.getItem('authToken');
   };
-  
 
   const fetchProductData = async (term) => {
     if (!term) {
@@ -33,48 +29,65 @@ function AddProduto() {
       return;
     }
 
-    const params = {};
-    if (/^\d+$/.test(term)) {
-      params.gtin = term; // Se for numérico, busca pelo gtin
-    } else {
-      params.nome = term; // Se não, busca pelo nome
+    const token = getAuthToken();
+    if (!token) {
+      setError("Token de autenticação não encontrado.");
+      return;
     }
 
+    const productPromises = [];
+    const url = "https://savvy-api.belogic.com.br/api/products";
+  
     try {
-      const response = await axios.get("https://savvy-api.belogic.com.br/api/products", {
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        },
-        params
-      });
-
-      if (response.data.data) {
-        const productsWithImages = response.data.data.map(product => ({
-          id: product.id,
-          desc: product.desc,
-          gtin: product.gtin,
-          imagem: product.imagem || "https://via.placeholder.com/150",
-        }));
-
-        setProductData(productsWithImages);
+      if (/^\d+$/.test(term)) {
+        productPromises.push(
+          axios.get(url, {
+            headers: { 'Authorization': `Bearer ${token}` },
+            params: { gtin: term }
+          })
+        );
       } else {
-        setProductData([]);
+        productPromises.push(
+          axios.get(url, {
+            headers: { 'Authorization': `Bearer ${token}` },
+            params: { nome: term }
+          })
+        );
       }
 
+      const responses = await Promise.all(productPromises);
+      const products = responses.flatMap(response => response.data.data);
+
+      if (products.length === 0) {
+        setError("Nenhum produto encontrado.");
+        return;
+      }
+
+      const productsWithImages = await Promise.all(products.map(async product => ({
+        id: product.id,
+        desc: product.desc,
+        gtin: product.gtin,
+        imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
+      })));
+
+      setProductData(productsWithImages);
       setError(null);
     } catch (error) {
-      console.error("Erro ao buscar o produto:", error.response ? error.response.data : error);
-      setProductData([]);
-      setError(error.response ? error.response.data.message : "Erro ao buscar o produto.");
+      console.error("Erro ao buscar o produto:", error);
+      setError("Erro ao buscar o produto: " + (error.response?.data.message || error.message));
     }
   };
 
   const fetchAllProducts = async () => {
+    const token = getAuthToken();
+    if (!token) {
+      setError("Token de autenticação não encontrado.");
+      return;
+    }
+
     try {
       const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       console.log("Todos os produtos:", response.data.data);
     } catch (error) {
@@ -101,19 +114,23 @@ function AddProduto() {
       barcode: product.gtin,
     }));
 
+    const token = getAuthToken();
+    if (!token) {
+      setError("Token de autenticação não encontrado.");
+      return;
+    }
+
     try {
       await axios.post("https://savvy-api.belogic.com.br/api/shopping", data, {
-        headers: {
-          'Authorization': `Bearer ${getAuthToken()}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
 
       console.log("Produtos adicionados ao carrinho:", data);
       fetchAllProducts();
       navigate('/areaLogada');
     } catch (error) {
-      console.error("Erro ao adicionar produtos:", error.response ? error.response.data : error);
-      setError(error.response ? error.response.data.message : "Erro ao adicionar produtos.");
+      console.error("Erro ao adicionar produtos:", error);
+      setError("Erro ao adicionar produtos: " + (error.response?.data.message || error.message));
     }
   };
 

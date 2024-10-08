@@ -5,7 +5,7 @@ import "./style.css";
 import cart from "../../Assets/cart.png";
 import lixo from "../../Assets/lixo.png";
 import cadastro from "../../Assets/cadastro.png";
-import produtoImg from "../../Assets/produto-imagem.png"; // Imagem padrão do produto
+import produtoImg from "../../Assets/products.png";
 import QuantitySelector from "../../Components/SeletorQuantidade/SeletorQuantidade";
 
 const allowedSupermarkets = [
@@ -24,6 +24,7 @@ function AreaLogada() {
     const [selectedProductsCount, setSelectedProductsCount] = useState(0);
     const navigate = useNavigate();
 
+    // Atualiza a quantidade de produtos no backend
     const handleUpdateQuantity = async (productId, newQuantity) => {
         const token = getAuthToken();
         if (!token) {
@@ -58,7 +59,7 @@ function AreaLogada() {
             fetchCidade(storedCep);
         }
         fetchProdutos();
-        fetchProductImages(); // Chama a função para buscar imagens
+        fetchProductImages();
     }, []);
 
     useEffect(() => {
@@ -100,7 +101,7 @@ function AreaLogada() {
     };
 
     const fetchProductImages = async () => {
-        const token = getAuthToken(); // Obtém o token de autenticação
+        const token = getAuthToken();
         if (!token) {
             console.error('Token de autenticação não encontrado.');
             return;
@@ -109,22 +110,20 @@ function AreaLogada() {
         try {
             const response = await axios.get('https://savvy-api.belogic.com.br/api/product-image', {
                 headers: {
-                    'Authorization': `Bearer ${token}` // Inclui o token no cabeçalho
+                    'Authorization': `Bearer ${token}`
                 }
             });
             const imagesData = response.data.data;
     
-            // Mapeia as imagens usando o GTIN
             const imagesMap = {};
             imagesData.forEach(item => {
-                imagesMap[item.gtin] = item.image[0]?.url || produtoImg; // URL da imagem ou imagem padrão
+                imagesMap[item.gtin] = item.image[0]?.url || produtoImg;
             });
     
-            // Atualiza a lista de produtos com as imagens associadas
             setProdutos(prevProdutos =>
                 prevProdutos.map(prod => ({
                     ...prod,
-                    image: imagesMap[prod.barcode] || produtoImg // Usa a imagem associada ou a padrão
+                    image: imagesMap[prod.barcode] || produtoImg
                 }))
             );
         } catch (error) {
@@ -137,34 +136,45 @@ function AreaLogada() {
     }, [produtos]);
 
     const handleSlideDone = async () => {
-        const selectedProductIds = produtos
-            .filter(produto => produto.isChecked)
-            .map(produto => produto.id); // Mapeia para obter apenas os IDs
-
+        const selectedProducts = produtos.filter(produto => produto.isChecked);
+        const selectedProductIds = selectedProducts.map(produto => produto.id);
+    
         if (selectedProductIds.length === 0) {
             alert('Por favor, selecione ao menos um produto.');
             return;
         }
-
+    
         try {
             const token = getAuthToken();
-            const response = await axios.post('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
-                products: selectedProductIds // Envia os IDs no formato esperado
+    
+            // Chamada para obter os melhores preços
+            const bestCostResponse = await axios.post('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
+                products: selectedProductIds
             }, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-
-            console.log('Resposta do servidor:', response.data);
-            navigate("/comparativo", { 
-                state: { selectedProducts: response.data } // Passa a resposta para a próxima página, se necessário
+    
+            console.log('Resposta do servidor para best-cost:', bestCostResponse.data);
+    
+            // Navegar para a página de comparação com a resposta
+            navigate("/comparativo", {
+                state: {
+                    selectedProducts: bestCostResponse.data.products || [],
+                    priceInfo: bestCostResponse.data.priceInfo || {},
+                    totalMinPrice: bestCostResponse.data.total || 0,
+                    selectedProductsCount: bestCostResponse.data.product_quantity || 0,
+                    responseData: bestCostResponse.data,
+                    allMarkets: bestCostResponse.data.allMarkets || {} // Passe os mercados se necessário
+                }
             });
         } catch (error) {
             console.error('Erro ao enviar produtos:', error.response ? error.response.data : error.message);
+            alert('Ocorreu um erro ao processar sua solicitação. Tente novamente.');
         }
     };
-
+    
     const handleAddProduto = () => {
         navigate("/addProduto");
     };
@@ -209,13 +219,13 @@ function AreaLogada() {
         }
     
         try {
-            const response = await axios.delete(`https://savvy-api.belogic.com.br/api/shopping/${productId}`, {
+            await axios.delete(`https://savvy-api.belogic.com.br/api/shopping/${productId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
     
-            console.log('Produto excluído com sucesso:', response.data);
+            // Atualiza a lista de produtos localmente
             setProdutos(prevProdutos => prevProdutos.filter(produto => produto.id !== productId));
         } catch (error) {
             console.error('Erro ao excluir o produto:', error.response ? error.response.data : error.message);
