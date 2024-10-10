@@ -6,8 +6,6 @@ import axios from 'axios';
 
 function Validacao() {
     const [email, setEmail] = useState('');
-    const [codigo, setCodigo] = useState('');
-    const [reset, setReset] = useState(0);
     const [showError, setShowError] = useState(false);
     const navigate = useNavigate();
 
@@ -20,17 +18,17 @@ function Validacao() {
     };
 
     const handleSlideDone = () => {
-        // Verifica se o e-mail e o código de verificação são válidos
-        if (!email || !email.includes('@') || !email.includes('.') || !codigo) {
+        // Verifica se o e-mail é válido
+        if (!email || !email.includes('@') || !email.includes('.')) {
             setShowError(true);
             return;
         }
 
         // Dados para a validação
-        const data = { email, code: codigo };
+        const data = { email };
 
         // Envia a solicitação de validação para a API
-        axios.post('https://savvy-api.belogic.com.br/api/email-validate', data)
+        axios.post('https://savvy-api.belogic.com.br/api/login', data)
             .then(response => {
                 // Sucesso na validação
                 const token = response.data.token; // Ajuste conforme a estrutura da resposta da API
@@ -47,7 +45,6 @@ function Validacao() {
 
     const handleTryAgain = () => {
         setShowError(false);
-        setReset(reset + 1);
     };
 
     return (
@@ -65,7 +62,7 @@ function Validacao() {
 
                 <div className="login-savvy-text2">
                     <h2 className="digite-dados" style={{ textAlign: "center", color: "#3A7C22" }}>
-                        Informe seu e-mail e seu código de verificação para acessar a plataforma:
+                        Informe seu e-mail para acessar a plataforma:
                     </h2>
                 </div>
 
@@ -76,22 +73,15 @@ function Validacao() {
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                     />
-                    <input
-                        type="text"
-                        placeholder="Senha"
-                        value={codigo}
-                        onChange={e => setCodigo(e.target.value)}
-                    />
                 </form>
                 
                 <div className="logins">
-                    <p className="recuperar" onClick={handleRecuperar}><img alt="" src="https://img.icons8.com/?size=100&id=82705&format=png&color=3a7c22"/>Esqueci a senha<br /></p>
-                    <p className="recuperar" onClick={handleLogin}><img alt="" src="https://img.icons8.com/?size=100&id=22396&format=png&color=3a7c22"/>Cadastrar<br /></p>
+                    <p className="recuperar" onClick={handleLogin}><img alt="" src="https://img.icons8.com/?size=100&id=22396&format=png&color=3a7c22"/>Quero me cadastrar!<br /></p>
                 </div>
                 <button
                     className="slide-button"
                     onClick={handleSlideDone}
-                >Cadastrar</button>
+                >Quero economizar!</button>
             </div>
 
             {showError && (
@@ -100,7 +90,7 @@ function Validacao() {
                         <img alt="Erro" src={erro} />
                         <div className="erro-text">
                             <h3>Ops!!</h3>
-                            <p>Houve um erro ao realizar a verificação. Confira seu código e tente novamente!</p>
+                            <p>Houve um erro ao realizar a verificação. Confira seu e-mail e tente novamente!</p>
                         </div>
                         <button onClick={handleTryAgain}>Tentar Novamente</button>
                     </div>

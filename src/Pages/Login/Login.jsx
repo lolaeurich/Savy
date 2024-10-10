@@ -22,7 +22,7 @@ function Login() {
     };
 
     const handleRecuperar = () => {
-        navigate("/recuperar");
+        navigate("/validacao");
     };
 
     const handleLogin = () => {
@@ -115,8 +115,7 @@ function Login() {
                     />
                 </form>
 
-                <p className="recuperar">Já tenho cadastro.<br /> <span onClick={handleRecuperar}>Solicitar novo código de acesso!</span></p>
-                <p className="recuperar">Tenho um código de acesso e lembro dele<br /> <span onClick={handleLogin}>Quero acessar agora!</span></p>
+                <p className="recuperar">Já tenho cadastro.<br /> <span onClick={handleRecuperar}> ‎ Fazer login</span></p>
 
                 <button
                     className="slide-button"
