@@ -60,11 +60,6 @@ function TelaInicial () {
                 reset={reset}
             >Vamos começar!</button>
 
-            <button
-                className="slide-button"
-                onClick={handleUpload}
-                reset={reset}
-            >Subir Imagens</button>
 
         </div>
     )
