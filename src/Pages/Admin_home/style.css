@@ -1,0 +1,16 @@
+.botoes-home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    row-gap: 25px;
+}
+
+.botoes-home button {
+    width: 90%;
+    border: none;
+    height: 55px;
+    background-color: #3A7C22;
+    color: #fff;
+    border-radius: 20px;
+}

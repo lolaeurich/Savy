@@ -16,6 +16,12 @@ import InfoIniciais from "./Pages/InformaçõesIniciais/InfoIniciais";
 import { CartProvider } from "./Context/CartContext";
 import Upload from "./Pages/Upload/Upload";
 import { ComparativoProvider } from "../src/Context/ComparativoContext";
+import Admin from "./Pages/Admin/Admin";
+import AdminHome from "./Pages/Admin_home/AdminHome";
+import AlterarProdutos from "./Pages/AlterarProdutos/AlterarProdutos";
+import AdminNovosProdutos from "./Pages/AdminNovosProdutos/AdminNovosProdutos";
+import EditarProdutos from "./Pages/EditarProdutos/EditarProdutos";
+import ListarProdutos from "./Pages/ListarProdutos/ListarProdutos";
 
 const App = () => {
   return (
@@ -35,6 +41,12 @@ const App = () => {
         <Route path="/validacao" element={<Validacao />} />
         <Route path="/recuperar" element={<Recuperar />} />
         <Route path="/upload" element={<Upload />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/adminHome" element={<AdminHome />} />
+        <Route path="/alterarProdutos" element={<AlterarProdutos />} />
+        <Route path="/adicionarProdutos" element={<AdminNovosProdutos />} />
+        <Route path="/editarProdutos" element={<EditarProdutos />} />
+        <Route path="/listarProdutos" element={<ListarProdutos />} />
       </Routes>
     </ComparativoProvider>
   );
