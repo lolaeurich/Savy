@@ -488,3 +488,47 @@
     color: white; /* Texto branco para contraste */
   }
   
+
+  @media screen and (min-width: 1000px) {
+    .add-main {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 5% !important;
+        border-radius: 20px;
+        border: 2px solid green;
+        width: 50% !important;
+
+        /* height: 50vh; */
+        height: inherit !important;
+        row-gap: 5%;
+        box-shadow: 0 4px 15px rgba(0, 255, 0, 0.5);
+    }
+
+    .add-main h1 {
+        font-size: 70px !important;
+        color: #3A7C22 !important;
+    }
+
+    .add-main input {
+        width: 40% !important;
+    }
+
+    .add-main form {
+        display: flex;
+    flex-direction: column;
+    WIDTH: 195% !important;
+    align-items: center;
+    }
+
+    .add-main button {
+        width: 30% !important;
+        height: 35px;
+        background-color: green;
+        color: rgb(255, 255, 255);
+        margin-top: 10px;
+        border-radius: 12px;
+    }
+
+  }

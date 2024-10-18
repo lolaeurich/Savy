@@ -85,7 +85,7 @@ function ListarProdutos() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="Pesquisar por barcode ou descrição"
                     />
-                    <button type="submit">Listar produtos da base</button>
+                    <button style={{padding: "3%", width: "22%", display: "flex", alignItems: "center", justifyContent: "center"  }} type="submit">Listar produtos da base</button>
                 </form>
 
                 <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>

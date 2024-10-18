@@ -71,7 +71,7 @@ function EditarProdutos() {
                         onChange={(e) => setProductName(e.target.value)} 
                         placeholder="Buscar produto..."
                     />
-                    <button type="submit">Buscar</button>
+                    <button style={{padding: "3%", width: "15%"}} type="submit">Buscar</button>
                 </form>
 
                 {productData && (

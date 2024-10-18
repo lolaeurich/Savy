@@ -48,7 +48,7 @@ function Upload() {
                     console.log("Sucesso:", result);
                 } else {
                     console.error("Erro:", responseText);
-                    alert(`Erro ao subir as imagens: ${responseText}`);
+                    alert(`Erro ao subir as imagens: o produto ainda não existe em nossa base. Adicione o produto e tente novamente!`);
                 }
             } catch (error) {
                 console.error("Erro de rede:", error);
@@ -71,6 +71,7 @@ function Upload() {
 
     return (
         <div className="upload" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div className="div-nova">
             <h2>Escolha as imagens que deseja subir:</h2>
             <input
                 type="file"
@@ -104,6 +105,7 @@ function Upload() {
                     </div>
                 </div>
             )}
+        </div>
         </div>
     );
 }
