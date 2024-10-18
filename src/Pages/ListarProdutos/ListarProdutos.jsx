@@ -4,19 +4,8 @@ import "./style.css";
 
 function ListarProdutos() {
     const [products, setProducts] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
-
-    const handleEncontrar = () => {
-        navigate("/adicionarProdutos");
-    };
-
-    const handleEditar = () => {
-        navigate("/editarProdutos");
-    };
-
-    const handleListar = () => {
-        navigate("/listarProdutos");
-    };
 
     const getAuthToken = () => {
         return localStorage.getItem('authToken');
@@ -24,16 +13,15 @@ function ListarProdutos() {
 
     const handleSearch = async (e) => {
         e.preventDefault();
-        await fetchProducts();
+        await fetchProducts(searchTerm);
     };
-
-    const fetchProducts = async () => {
+    const fetchProducts = async (search) => {
         const token = getAuthToken();
         if (!token) {
             console.error("Token de autenticação não encontrado.");
             return;
         }
-
+    
         try {
             const response = await fetch("https://savvy-api.belogic.com.br/api/products", {
                 method: 'GET',
@@ -41,29 +29,38 @@ function ListarProdutos() {
                     'Authorization': `Bearer ${token}`
                 }
             });
-
-            // Verifique se a resposta é bem-sucedida
+    
             if (!response.ok) {
                 throw new Error(`Erro ${response.status}: ${response.statusText}`);
             }
-
+    
             const data = await response.json();
-
-            // Acesse a propriedade 'data' para obter a lista de produtos
-            if (Array.isArray(data.data)) {
-                const sortedData = data.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Ajuste se necessário
-                setProducts(sortedData);
-            } else {
-                console.error("Dados recebidos não são um array:", data);
-            }
+            console.log("Dados recebidos:", data);
+    
+            // Filtrar produtos com base no primeiro caractere do termo de busca
+            const filteredProducts = data.data.filter(product => {
+                const firstChar = search.charAt(0);
+                const isNumber = !isNaN(firstChar);
+    
+                if (isNumber) {
+                    // Se o primeiro caractere é um número, procurar no barcode
+                    return product.barcode.includes(search);
+                } else {
+                    // Se o primeiro caractere é uma letra, procurar na description
+                    return product.description.toLowerCase().includes(search.toLowerCase());
+                }
+            });
+    
+            setProducts(filteredProducts);
         } catch (error) {
             console.error("Erro ao buscar produtos:", error);
         }
     };
+    
 
     const downloadExcel = () => {
         const csvContent = "data:text/csv;charset=utf-8," 
-            + products.map(product => `${product.name},${product.description},${product.gtin}`).join("\n");
+            + products.map(product => `${product.name},${product.description},${product.barcode}`).join("\n");
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -79,14 +76,20 @@ function ListarProdutos() {
                 <div className="login-savvy-logo">
                     <h1>SAVVY</h1>
                 </div>
-                <p style={{width: "80%"}}>Consulte e baixe a lista de produtos disponíveis na nossa base:</p>
+                <p style={{ width: "80%" }}>Consulte e baixe a lista de produtos disponíveis na nossa base:</p>
 
                 <form className="buscar-produto" onSubmit={handleSearch}>
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Pesquisar por barcode ou descrição"
+                    />
                     <button type="submit">Listar produtos da base</button>
                 </form>
 
-                <div style={{width: "100%", display: "flex", justifyContent: "center"}}>
-                    <button onClick={downloadExcel} disabled={products.length === 0} style={{width: "30%", height: "40px", borderRadius: "10px", backgroundColor: "orange", color: "black", border: "none", fontWeight: "700"}}>
+                <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+                    <button onClick={downloadExcel} disabled={products.length === 0} style={{ width: "30%", height: "40px", borderRadius: "10px", backgroundColor: "orange", color: "black", border: "none", fontWeight: "700" }}>
                         Baixar Excel
                     </button>
                 </div>
@@ -94,17 +97,16 @@ function ListarProdutos() {
                 <div>
                     {products.length > 0 ? (
                         <ul>
-                           {products.map((product, index) => (
-    <li key={product.id || `${product.gtin}-${index}`}>
-        <strong>{product.name}</strong><br />
-        {product.description}<br />
-        GTIN: {product.gtin}
-    </li>
-))}
-
+                           {products.map((product) => (
+                                <li key={product.id}>
+                                    <strong>{product.name}</strong><br />
+                                    {product.description}<br />
+                                    GTIN: {product.barcode}
+                                </li>
+                            ))}
                         </ul>
                     ) : (
-                        <p style={{width: "100%", textAlign: "center", paddingInline: "5%"}}>Nenhum produto encontrado. Clique em "Listar produtos da base" para buscar.</p>
+                        <p style={{ width: "100%", textAlign: "center", paddingInline: "5%" }}>Nenhum produto encontrado. Clique em "Listar produtos da base" para buscar.</p>
                     )}
                 </div>
             </div>

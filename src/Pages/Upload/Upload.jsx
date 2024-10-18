@@ -23,9 +23,11 @@ function Upload() {
         }
     
         const batchSize = 10; // Tamanho do lote
+        const token = localStorage.getItem('authToken'); // Recupera o token do localStorage
+    
         for (let i = 0; i < imageInput.length; i += batchSize) {
             const formData = new FormData();
-            formData.append('_method', 'PUT');
+            formData.append('_method', 'PUT'); // Método que deve ser usado
             const currentBatch = imageInput.slice(i, i + batchSize);
             currentBatch.forEach((image) => {
                 formData.append('images[]', image);
@@ -33,9 +35,9 @@ function Upload() {
     
             try {
                 const response = await fetch('https://savvy-api.belogic.com.br/api/product-image', {
-                    method: 'POST',
+                    method: 'POST', // Mantenha como POST se a rota estiver configurada para isso
                     headers: {
-                        'Authorization': `Bearer 19|fOvn5kU8eYYn3OETTlIKrVarFrih56cW03LOVkaS93a28077`,
+                        'Authorization': `Bearer ${token}`, // Usando o token do localStorage
                     },
                     body: formData,
                 });
@@ -57,7 +59,6 @@ function Upload() {
         setShowPopup(true);
         setImageInput([]); // Limpa os campos após o upload
     };
-    
     
 
     const closePopup = () => {
@@ -86,7 +87,7 @@ function Upload() {
             </button>
 
             <h3>Imagens carregadas:</h3>
-            <ul style={{"height": "30%"}}>
+            <ul style={{ height: "30%" }}>
                 {imageInput.map((image, index) => (
                     <li key={index}>
                         {image.name} 
