@@ -14,3 +14,85 @@
     color: #fff;
     border-radius: 20px;
 }
+
+.produtos-list {
+    width: 90%;
+}
+
+.produtos-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.produtos-table th, .produtos-table td {
+    border: 1px solid #3A7C22;
+    padding: 8px;
+    text-align: center;
+}
+
+.produtos-table th {
+    background-color: #f4f4f4;
+}
+
+.produto-item td {
+    font-weight: 600;
+}
+
+.produto-item img {
+    max-width: 50px; /* Ajuste o tamanho da imagem se necessário */
+}
+
+.titulos th {
+    background-color: #3A7C22;
+    color: #fff;
+    text-align: center;
+}
+
+.acoes-container {
+    display: flex;
+    justify-content: space-around; /* Para deixar os botões com espaço entre eles */
+    align-items: center; /* Para centralizar verticalmente */
+    width: 100%; /* Para ocupar a largura total da célula */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    /* border: none !important; */
+    height: 14vh;
+}
+
+.acoes-container button {
+    width: 48%; /* Para que os botões não fiquem muito largos */
+    border: none;
+    height: 40px; /* Altura dos botões */
+    background-color: #3A7C22; /* Cor do botão */
+    color: #fff; /* Cor do texto */
+    border-radius: 10px; /* Bordas arredondadas */
+    cursor: pointer; /* Muda o cursor ao passar em cima */
+}
+
+.acoes-container button:hover {
+    background-color: #2a5e17; /* Cor do botão ao passar o mouse */
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+}
