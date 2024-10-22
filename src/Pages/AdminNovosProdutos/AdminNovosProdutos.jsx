@@ -123,9 +123,6 @@ function AdminNovosProdutos() {
 
     return (
         <div className="login-container">
-            <div style={{ display: "flex", flexDirection: "column" }} className="add-main">
-                <h1>SAVVY</h1>
-                <p>Encontre um novo produto e adicione ele a nossa base!</p>
                 <form style={{ display: "flex", flexDirection: "column" }} onSubmit={(e) => {
                     e.preventDefault();
                     fetchProductData(code);
@@ -182,7 +179,6 @@ function AdminNovosProdutos() {
                     </div>
                 )}
             </div>
-        </div>
     );
 }
 
