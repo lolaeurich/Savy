@@ -17,6 +17,7 @@
 
 .produtos-list {
     width: 90%;
+    overflow-y: auto;
 }
 
 .produtos-table {
