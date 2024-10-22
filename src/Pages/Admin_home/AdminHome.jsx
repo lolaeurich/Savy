@@ -7,10 +7,9 @@ function AdminHome() {
     const [produtos, setProdutos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [isPopupOpen, setPopupOpen] = useState(false);
-    const [selectedProductId, setSelectedProductId] = useState(null);
-    const [imageInput, setImageInput] = useState([]);
-    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [productName, setProductName] = useState("");
+    const [productData, setProductData] = useState(null); // Para armazenar os dados do produto
+    const [showEditPopup, setShowEditPopup] = useState(false); // Controle do popup de edição
 
     const handleAddProduto = () => {
         navigate("/upload");
@@ -20,106 +19,112 @@ function AdminHome() {
         navigate("/alterarProdutos");
     };
 
-    const handleOpenPopup = (productId) => {
-        setSelectedProductId(productId);
-        setPopupOpen(true);
-    };
-
     const getAuthToken = () => {
         return localStorage.getItem('authToken');
     };
 
-    useEffect(() => {
-        const fetchProdutos = async () => {
-            const token = getAuthToken();
-            if (!token) {
-                console.error('Token não encontrado');
-                navigate('/admin'); // Redirecionar se não houver token
-                return;
-            }
+    const fetchProdutos = async () => {
+        const token = getAuthToken();
+        if (!token) {
+            console.error('Token não encontrado');
+            navigate('/admin'); // Redirecionar se não houver token
+            return;
+        }
 
-            try {
-                const response = await fetch('https://savvy-api.belogic.com.br/api/products', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (!response.ok) {
-                    if (response.status === 401) {
-                        navigate('/admin'); // Redirecionar para a página de login
-                    }
-                    throw new Error('Falha ao buscar produtos');
+        try {
+            const response = await fetch('https://savvy-api.belogic.com.br/api/products', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
                 }
-
-                const data = await response.json();
-                setProdutos(data.data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProdutos();
-    }, [navigate]);
-
-    const handleImageChange = (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length + imageInput.length > 50) {
-            alert("Você pode subir até 50 imagens.");
-            return;
-        }
-        setImageInput(prevImages => [...prevImages, ...files]);
-    };
-
-    const handleSubmit = async () => {
-        if (imageInput.length === 0) {
-            alert("Por favor, escolha pelo menos uma imagem.");
-            return;
-        }
-
-        const batchSize = 10; // Tamanho do lote
-        const token = localStorage.getItem('authToken');
-
-        for (let i = 0; i < imageInput.length; i += batchSize) {
-            const formData = new FormData();
-            formData.append('_method', 'PUT'); // Método que deve ser usado
-            const currentBatch = imageInput.slice(i, i + batchSize);
-            currentBatch.forEach((image) => {
-                formData.append('images[]', image);
             });
 
-            try {
-                const response = await fetch(`https://savvy-api.belogic.com.br/api/product-image`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                    body: formData,
-                });
-
-                if (!response.ok) {
-                    throw new Error("Erro ao enviar imagens.");
+            if (!response.ok) {
+                if (response.status === 401) {
+                    navigate('/admin'); // Redirecionar para a página de login
                 }
-            } catch (error) {
-                console.error("Erro:", error);
-                alert("Erro ao subir as imagens.");
+                throw new Error('Falha ao buscar produtos');
             }
+
+            const data = await response.json();
+            setProdutos(data.data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchProdutos();
+    }, []);
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (productName.trim() === "") {
+            setProductData(null);
+            return;
         }
 
-        setShowSuccessPopup(true);
-        setImageInput([]);
-        setPopupOpen(false); // Fecha o popup após o envio
+        const token = getAuthToken();
+        if (!token) {
+            console.error("Token de autenticação não encontrado.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://savvy-api.belogic.com.br/api/products/find?nome=${encodeURIComponent(productName)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+
+            if (data && data.data && data.data.length > 0) {
+                setProductData(data.data[0]); // Assume que vamos trabalhar com o primeiro produto retornado
+            } else {
+                setProductData(null); // Limpa se não encontrar
+                console.error("Produto não encontrado");
+            }
+        } catch (error) {
+            console.error("Erro ao buscar produto:", error);
+        }
     };
 
-    const closePopup = () => {
-        setPopupOpen(false);
+    const handleUpdateProduct = async () => {
+        const token = getAuthToken();
+        if (!token) {
+            console.error("Token de autenticação não encontrado.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`https://savvy-api.belogic.com.br/api/products/${productData.id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productData)
+            });
+
+            if (response.ok) {
+                alert("Produto atualizado com sucesso!");
+                setShowEditPopup(false); // Fecha o popup após a atualização
+                setProductData(null); // Limpa os dados após a atualização
+                fetchProdutos(); // Atualiza a lista de produtos
+            } else {
+                console.error("Erro ao atualizar produto:", await response.text());
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar produto:", error);
+        }
     };
 
-    const removeImage = (index) => {
-        setImageInput(prevImages => prevImages.filter((_, i) => i !== index));
+    const handleOpenEditPopup = (produto) => {
+        setProductData(produto);
+        setShowEditPopup(true);
     };
 
     return (
@@ -128,9 +133,29 @@ function AdminHome() {
                 <h1>SAVVY</h1>
             </div>
             <div className="botoes-home">
-                <button onClick={handleAddProduto}>Adicionar imagens de produtos</button>
                 <button onClick={handleProduto}>Alterar/incluir produtos</button>
             </div>
+
+            <form onSubmit={handleSearch}>
+                <input 
+                    type="text" 
+                    value={productName} 
+                    onChange={(e) => setProductName(e.target.value)} 
+                    placeholder="Buscar produto..."
+                />
+                <button type="submit">Buscar</button>
+            </form>
+
+            {productData && (
+                <div className="product-details">
+                    <h2>Detalhes do Produto:</h2>
+                    <p><strong>Nome:</strong> {productData.name}</p>
+                    <p><strong>GTIN:</strong> {productData.gtin}</p>
+                    <p><strong>Descrição:</strong> {productData.description}</p>
+                    <button onClick={() => handleOpenEditPopup(productData)}>Alterar Produto</button>
+                </div>
+            )}
+
             <div className="produtos-list">
                 {loading && <p>Carregando produtos...</p>}
                 {error && <p>Erro: {error}</p>}
@@ -161,8 +186,8 @@ function AdminHome() {
                                         )}
                                     </td>
                                     <td className="acoes-container">
-                                        <button onClick={() => handleOpenPopup(produto.id)}>Adicionar imagem</button>
-                                        <button onClick={() => navigate(`/alterar-produto/${produto.id}`)}>Alterar produto</button>
+                                        <button onClick={() => handleOpenEditPopup(produto)}>Alterar produto</button>
+                                        <button onClick={() => handleAddProduto(produto.id)}>Adicionar imagem</button>
                                     </td>
                                 </tr>
                             ))}
@@ -171,40 +196,30 @@ function AdminHome() {
                 )}
             </div>
 
-            {/* Popup para Adicionar Imagem */}
-            {isPopupOpen && (
+            {showEditPopup && (
                 <div className="popup">
                     <div className="popup-content">
-                        <h2>Escolha as imagens que deseja subir:</h2>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleImageChange}
+                        <h2>Editar Produto</h2>
+                        <label>Nome:</label>
+                        <input 
+                            type="text" 
+                            value={productData.name} 
+                            onChange={(e) => setProductData({ ...productData, name: e.target.value })} 
                         />
-                        <button onClick={handleSubmit}>Subir Imagens</button>
-
-                        <h3>Imagens carregadas:</h3>
-                        <ul>
-                            {imageInput.map((image, index) => (
-                                <li key={index}>
-                                    {image.name}
-                                    <button onClick={() => removeImage(index)}>Remover</button>
-                                </li>
-                            ))}
-                        </ul>
-
-                        <button onClick={closePopup}>Fechar</button>
-                    </div>
-                </div>
-            )}
-
-            {/* Popup de Sucesso */}
-            {showSuccessPopup && (
-                <div className="popup">
-                    <div className="popup-content">
-                        <p>Imagens enviadas com sucesso!</p>
-                        <button onClick={() => setShowSuccessPopup(false)}>Fechar</button>
+                        <label>GTIN:</label>
+                        <input 
+                            type="text" 
+                            value={productData.gtin} 
+                            onChange={(e) => setProductData({ ...productData, gtin: e.target.value })} 
+                        />
+                        <label>Descrição:</label>
+                        <input 
+                            type="text" 
+                            value={productData.description} 
+                            onChange={(e) => setProductData({ ...productData, description: e.target.value })} 
+                        />
+                        <button onClick={handleUpdateProduct}>Salvar Alterações</button>
+                        <button onClick={() => setShowEditPopup(false)}>Cancelar</button>
                     </div>
                 </div>
             )}
