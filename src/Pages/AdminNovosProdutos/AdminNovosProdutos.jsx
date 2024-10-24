@@ -4,14 +4,14 @@ import axios from 'axios';
 import './style.css';
 
 function AdminNovosProdutos() {
-    const [searchTerm, setSearchTerm] = useState(""); // Para nome ou GTIN
-    const [productData, setProductData] = useState([]); // Para armazenar os dados do produto
-    const [error, setError] = useState(null); // Para armazenar erros
+    const [searchTerm, setSearchTerm] = useState(""); 
+    const [productData, setProductData] = useState([]); 
+    const [error, setError] = useState(null); 
     const [code, setCode] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Se necessário, você pode buscar todos os produtos aqui
+    
     }, []);
 
     const getAuthToken = () => {
@@ -60,7 +60,7 @@ function AdminNovosProdutos() {
                 gtin: product.gtin,
                 desc: product.desc,
                 imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
-                editable: false // Adicionando o estado de edição
+                editable: false 
             }));
 
             setProductData(productsWithImages);
@@ -76,7 +76,7 @@ function AdminNovosProdutos() {
         const productToEdit = productData.find(product => product.id === productId);
         
         if (productToEdit.editable) {
-            // Se estava editável, fazer o POST
+          
             const data = {
                 name: productToEdit.nome,
                 description: productToEdit.desc,
@@ -101,7 +101,6 @@ function AdminNovosProdutos() {
             }
         }
 
-        // Alternar estado de edição
         setProductData(prevProducts => 
             prevProducts.map(product =>
                 product.id === productId ? { ...product, editable: !product.editable } : product

@@ -18,6 +18,7 @@
 .produtos-list {
     width: 90%;
     overflow-y: auto;
+    margin-bottom: 25px;
 }
 
 .produtos-table {

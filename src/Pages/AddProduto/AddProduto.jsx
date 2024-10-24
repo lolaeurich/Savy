@@ -35,40 +35,27 @@ function AddProduto() {
       return;
     }
 
-    const productPromises = [];
-    const url = "https://savvy-api.belogic.com.br/api/products";
-  
+    const url = "https://savvy-api.belogic.com.br/api/shopping/";
+    const params = /^\d+$/.test(term) ? { gtin: term } : { nome: term };
+
     try {
-      if (/^\d+$/.test(term)) {
-        productPromises.push(
-          axios.get(url, {
-            headers: { 'Authorization': `Bearer ${token}` },
-            params: { gtin: term }
-          })
-        );
-      } else {
-        productPromises.push(
-          axios.get(url, {
-            headers: { 'Authorization': `Bearer ${token}` },
-            params: { nome: term }
-          })
-        );
-      }
+      const response = await axios.get(url, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        params,
+      });
 
-      const responses = await Promise.all(productPromises);
-      const products = responses.flatMap(response => response.data.data);
-
+      const products = response.data.data || [];
       if (products.length === 0) {
         setError("Nenhum produto encontrado.");
         return;
       }
 
-      const productsWithImages = await Promise.all(products.map(async product => ({
+      const productsWithImages = products.map(product => ({
         id: product.id,
         desc: product.desc,
         gtin: product.gtin,
         imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
-      })));
+      }));
 
       setProductData(productsWithImages);
       setError(null);
@@ -86,12 +73,13 @@ function AddProduto() {
     }
 
     try {
-      const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
+      const response = await axios.get('https://savvy-api.belogic.com.br/api/shopping', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       console.log("Todos os produtos:", response.data.data);
     } catch (error) {
       console.error('Erro ao buscar produtos:', error.response ? error.response.data : error);
+      setError("Erro ao buscar produtos: " + (error.response?.data.message || error.message));
     }
   };
 
@@ -121,11 +109,11 @@ function AddProduto() {
     }
 
     try {
-      await axios.post("https://savvy-api.belogic.com.br/api/shopping", data, {
+      const response = await axios.post("https://savvy-api.belogic.com.br/api/shopping", data, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
-      console.log("Produtos adicionados ao carrinho:", data);
+      console.log("Produtos adicionados ao carrinho:", response.data);
       fetchAllProducts();
       navigate('/areaLogada');
     } catch (error) {

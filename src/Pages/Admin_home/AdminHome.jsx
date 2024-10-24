@@ -323,9 +323,6 @@ function AdminHome() {
         }
     };
     
-    
-
-    
 
     return (
         <div className="login-container">
@@ -333,7 +330,7 @@ function AdminHome() {
                 <h1>SAVVY</h1>
             </div>
             <div className="botoes-home">
-                <button onClick={openNewProductPopup}>Incluir Novo Produto +</button>
+                <button style={{cursor: "pointer"}} onClick={openNewProductPopup}>Incluir Novo Produto +</button>
             </div>
 
             <form onSubmit={handleSearch} style={{ width: "90%", display: "flex" }}>
@@ -344,7 +341,7 @@ function AdminHome() {
                     onChange={(e) => setProductName(e.target.value)}
                     placeholder="Buscar produto..."
                 />
-                <button type="submit" style={{ marginLeft: "1%", backgroundColor: "#2a5e17", color: "#fff", border: "none", marginRight: "3%", paddingInline: "1%", borderRadius: "12px" }}>Buscar</button>
+                <button type="submit" style={{ marginLeft: "1%", cursor: "pointer", backgroundColor: "#2a5e17", color: "#fff", border: "none", marginRight: "3%", paddingInline: "1%", borderRadius: "12px" }}>Buscar</button>
                 <label>
                     <select
                         name="filtro"
@@ -391,8 +388,8 @@ function AdminHome() {
                                         )}
                                     </td>
                                     <td className="acoes-container">
-                                        <button onClick={() => handleOpenEditPopup(produto)}>Alterar produto</button>
-                                        <button onClick={openUploadPopup}>Adicionar imagem</button>
+                                        <button style={{cursor: "pointer"}} onClick={() => handleOpenEditPopup(produto)}>Alterar produto</button>
+                                        <button style={{cursor: "pointer"}} onClick={openUploadPopup}>Adicionar imagem</button>
                                     </td>
                                 </tr>
                             ))}
@@ -423,8 +420,8 @@ function AdminHome() {
                             value={productData.description}
                             onChange={(e) => setProductData({ ...productData, description: e.target.value })}
                         />
-                        <button onClick={handleUpdateProduct}>Salvar Alterações</button>
-                        <button onClick={() => setShowEditPopup(false)}>Cancelar</button>
+                        <button style={{cursor: "pointer"}} onClick={handleUpdateProduct}>Salvar Alterações</button>
+                        <button style={{cursor: "pointer"}} onClick={() => setShowEditPopup(false)}>Cancelar</button>
                     </div>
                 </div>
             )}
@@ -450,7 +447,7 @@ function AdminHome() {
                     onChange={(e) => setNewProductData({ ...newProductData, searchTerm: e.target.value })}
                 />
                 <button
-                    style={{ width: "50%", height: "35px", backgroundColor: "green", color: "#fff", marginTop: "10px" }}
+                    style={{ width: "50%", height: "35px", backgroundColor: "green", color: "#fff", marginTop: "10px", cursor: "pointer" }}
                     type="submit"
                 >
                     Buscar
@@ -468,7 +465,7 @@ function AdminHome() {
                             <p><strong>GTIN:</strong> {product.gtin}</p>
                             <p><strong>Descrição:</strong> {product.desc}</p>
                             <button
-                                style={{ backgroundColor: "darkorange", color: "#fff", border: "none", width: "40%", height: "37px", marginTop: "3%" }}
+                                style={{ backgroundColor: "darkorange", color: "#fff", border: "none", width: "40%", height: "37px", marginTop: "3%", cursor: "pointer" }}
                                 onClick={() => handleSelectProduct(product)}
                             >
                                 Selecionar
@@ -494,13 +491,13 @@ function AdminHome() {
                             multiple
                             onChange={handleImageChange}
                         />
-                        <button onClick={handleSubmit}>Subir Imagens</button>
+                        <button style={{cursor: "pointer"}} onClick={handleSubmit}>Subir Imagens</button>
                         <h3>Imagens carregadas:</h3>
                         <ul>
                             {imageInput.map((image, index) => (
                                 <li key={index}>
                                     {image.name}
-                                    <button onClick={() => removeImage(index)}>Remover</button>
+                                    <button style={{cursor: "pointer"}} onClick={() => removeImage(index)}>Remover</button>
                                 </li>
                             ))}
                         </ul>
