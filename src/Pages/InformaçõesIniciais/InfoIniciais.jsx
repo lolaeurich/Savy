@@ -34,18 +34,14 @@ function InfoIniciais() {
     const [novoCep, setNovoCep] = useState('');
     const [cep, setCep] = useState('');
     const [cidade, setCidade] = useState('Lorem Ipsun');
-    const [selectedOption, setSelectedOption] = useState('cadastrado'); // Define a opção inicial como 'cadastrado'
-    const [isModalOpen, setIsModalOpen] = useState(false); // Estado para controle do modal
+    const [selectedOption, setSelectedOption] = useState('cadastrado');
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [produtos, setProdutos] = useState([]);
-    const [selectedProductsCount, setSelectedProductsCount] = useState(0); // Contador de produtos selecionados
+    const [selectedProductsCount, setSelectedProductsCount] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedCep = localStorage.getItem('userCep');
-        if (storedCep) {
-            setCep(storedCep);
-            fetchCidade(storedCep);
-        }
+        fetchUserData(); // Busca o CEP da API assim que o componente monta
 
         // Carregar produtos do localStorage
         const produtosStored = localStorage.getItem('produtos');
@@ -55,7 +51,6 @@ function InfoIniciais() {
     }, []);
 
     useEffect(() => {
-        // Atualiza a contagem de produtos selecionados sempre que a lista de produtos mudar
         const count = produtos.filter(produto => produto).length;
         setSelectedProductsCount(count);
     }, [produtos]);
@@ -67,6 +62,28 @@ function InfoIniciais() {
         } catch (error) {
             console.error('Erro ao buscar a cidade:', error);
             setCidade('Cidade não encontrada');
+        }
+    };
+
+    const fetchUserData = async () => {
+        const token = localStorage.getItem('authToken');
+        console.log("Token armazenado:", token);
+        if (!token) {
+            console.error("Token não encontrado. Verifique se o usuário está logado.");
+            return;
+        }
+
+        try {
+            const response = await axios.get('https://savvy-api.belogic.com.br/api/user', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            console.log("Dados do usuário recebidos:", response.data);
+            const userCep = response.data.cep;
+            setCep(userCep);
+            setNovoCep(userCep); // Atualiza o estado do novo CEP
+            fetchCidade(userCep); // Busca a cidade com o CEP obtido
+        } catch (error) {
+            console.error('Erro ao buscar dados do usuário:', error);
         }
     };
 
@@ -84,7 +101,7 @@ function InfoIniciais() {
         try {
             await fetchCidade(novoCep);
             setCep(novoCep);
-            localStorage.setItem('userCep', novoCep);
+            localStorage.setItem('userCep', novoCep); // Armazena o novo CEP, se necessário
             setIsModalOpen(false);
         } catch (error) {
             console.error('Erro ao salvar o novo CEP:', error);

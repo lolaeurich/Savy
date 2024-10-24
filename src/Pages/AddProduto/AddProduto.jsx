@@ -35,7 +35,7 @@ function AddProduto() {
       return;
     }
 
-    const url = "https://savvy-api.belogic.com.br/api/shopping/";
+    const url = "https://savvy-api.belogic.com.br/api/shopping/find";
     const params = /^\d+$/.test(term) ? { gtin: term } : { nome: term };
 
     try {
@@ -51,10 +51,11 @@ function AddProduto() {
       }
 
       const productsWithImages = products.map(product => ({
-        id: product.id,
-        desc: product.desc,
-        gtin: product.gtin,
-        imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
+          id: product.id,
+                nome: product.nome,
+                gtin: product.gtin,
+                desc: product.desc,
+                imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
       }));
 
       setProductData(productsWithImages);
@@ -181,6 +182,8 @@ function AddProduto() {
                   >
                     <img src={product.imagem} alt={product.desc} />
                     <p>{product.desc}</p>
+                    <p>{product.gtin}</p>
+                    <p>{product.barcode}</p>
                     <button 
                       className={`btn-add ${selectedProducts.has(product.id) ? 'selected-btn' : ''}`}
                       onClick={(e) => {

@@ -40,7 +40,7 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
       try {
         // Verifica se o código contém apenas números (GTIN) ou não (nome)
         const isGtin = /^\d+$/.test(setCode);
-        const url = "https://savvy-api.belogic.com.br/api/products";
+        const url = "https://savvy-api.belogic.com.br/api/shopping/find";
         const params = isGtin ? { gtin: setCode } : { nome: setCode };
 
         const response = await axios.get(url, { params });

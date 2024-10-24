@@ -23,7 +23,7 @@ function AddProdutoCard({ produto }) {
                 <div className='card-content-titulo'>
                     <img alt='Produto' src={produto.image || produtoImg} /> {/* Usa a imagem do produto ou uma imagem padrão */}
                     <div className='produto-nome-lista'>
-                        <h3 className='produto-nome-h3'>{produto.name || 'Produto'}</h3>
+                        <h3 className='produto-nome-h3'>{produto.description || 'Produto'}</h3>
                         <p className='codigo-de-barras'>{produto.barcode || 'Código de barras'}</p>
                     </div>
                 </div>
