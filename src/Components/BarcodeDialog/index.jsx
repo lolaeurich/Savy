@@ -37,13 +37,20 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
     const fetchProductData = async () => {
       if (!setCode) return; // Se não há código, não fazer a requisição
 
+      const token = localStorage.getItem('authToken'); // Obtendo o token do localStorage
+
       try {
         // Verifica se o código contém apenas números (GTIN) ou não (nome)
         const isGtin = /^\d+$/.test(setCode);
         const url = "https://savvy-api.belogic.com.br/api/shopping/find";
         const params = isGtin ? { gtin: setCode } : { nome: setCode };
 
-        const response = await axios.get(url, { params });
+        const response = await axios.get(url, {
+          params,
+          headers: {
+            Authorization: `Bearer ${token}`, // Adicionando o token nos headers
+          },
+        });
 
         // Encontrar o produto com o código de barras (se disponível)
         if (response.data.data && response.data.data.length > 0) {

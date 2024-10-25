@@ -102,13 +102,10 @@ function AreaLogada() {
             const updatedProdutos = prevProdutos.map(prod => 
                 prod.barcode === barcode ? { ...prod, isChecked: !prod.isChecked } : prod
             );
-
-            const count = updatedProdutos.filter(produto => produto.isChecked).length;
-            setSelectedProductsCount(count);
-            
             return updatedProdutos;
         });
     };
+    
 
     const handleDelete = async (productId) => {
         const token = getAuthToken();
@@ -133,7 +130,10 @@ function AreaLogada() {
 
     const handleSlideDone = async () => {
         const selectedProducts = produtos.filter(produto => produto.isChecked);
-        const selectedProductIds = selectedProducts.map(produto => produto.id);
+        const selectedProductIds = selectedProducts.map(produto => produto.product_id); // Alterado para product_id
+    
+        console.log("Produtos selecionados:", selectedProducts);
+        console.log("IDs dos produtos selecionados:", selectedProductIds);
     
         if (selectedProductIds.length === 0) {
             alert('Por favor, selecione ao menos um produto.');
@@ -144,7 +144,7 @@ function AreaLogada() {
             const token = getAuthToken();
     
             const bestCostResponse = await axios.post('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
-                products: selectedProductIds
+                products: selectedProductIds // Enviando product_id
             }, {
                 headers: {
                     'Authorization': `Bearer ${token}`

@@ -67,8 +67,8 @@ function Comparativo() {
     };
 
     const encontrarMelhorMercado = (allMarkets, selectedProducts) => {
-        if (typeof allMarkets !== 'object' || !selectedProducts.length) {
-            console.error('allMarkets não é um objeto válido ou está vazio');
+        if (typeof allMarkets !== 'object' || !Array.isArray(selectedProducts) || selectedProducts.length === 0) {
+            console.error('allMarkets não é um objeto válido ou selectedProducts está vazio ou indefinido');
             return; 
         }
         
@@ -78,20 +78,20 @@ function Comparativo() {
             quantidadeProdutos: 0,
             custo: Infinity
         };
-
+    
         Object.values(allMarkets).forEach(market => {
             const produtosNoMercado = market.products || {};
-
+    
             const todosProdutosPresentes = selectedProducts.every(produto => 
                 produtosNoMercado[produto.id]
             );
-
+    
             if (todosProdutosPresentes) {
                 const custoTotalMercado = selectedProducts.reduce((total, produto) => {
                     const produtoNoMercado = produtosNoMercado[produto.id];
                     return total + (produtoNoMercado ? produtoNoMercado.total : 0);
                 }, 0);
-
+    
                 if (custoTotalMercado < melhorMercado.custo) {
                     melhorMercado = {
                         nome: market.fantasyName || 'Não disponível',
@@ -102,12 +102,13 @@ function Comparativo() {
                 }
             }
         });
-
+    
         setComparativoData(prevData => ({
             ...prevData,
             melhorMercado
         }));
     };
+    
 
     const fetchLowPrice = async (selectedProducts, allMarkets) => {
         const token = localStorage.getItem('authToken');
