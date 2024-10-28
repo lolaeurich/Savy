@@ -71,7 +71,7 @@ function Recuperar() {
     };
 
     return (
-        <div className="login-container">
+        <div className="">
             <div className="login-main-recuperar">
                 <div className="login-savvy-logo-recuperar">
                     <h1>SAVVY</h1>

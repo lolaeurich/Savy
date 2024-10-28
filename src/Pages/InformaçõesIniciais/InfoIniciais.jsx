@@ -38,12 +38,13 @@ function InfoIniciais() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [produtos, setProdutos] = useState([]);
     const [selectedProductsCount, setSelectedProductsCount] = useState(0);
+    const [valorEconomizado, setValorEconomizado] = useState(0); // New state for economized value
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchUserData(); // Busca o CEP da API assim que o componente monta
+        fetchUserData(); // Fetch user data on component mount
 
-        // Carregar produtos do localStorage
+        // Load products from localStorage
         const produtosStored = localStorage.getItem('produtos');
         if (produtosStored) {
             setProdutos(JSON.parse(produtosStored));
@@ -67,7 +68,6 @@ function InfoIniciais() {
 
     const fetchUserData = async () => {
         const token = localStorage.getItem('authToken');
-        console.log("Token armazenado:", token);
         if (!token) {
             console.error("Token não encontrado. Verifique se o usuário está logado.");
             return;
@@ -77,13 +77,24 @@ function InfoIniciais() {
             const response = await axios.get('https://savvy-api.belogic.com.br/api/user', {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            console.log("Dados do usuário recebidos:", response.data);
             const userCep = response.data.cep;
             setCep(userCep);
-            setNovoCep(userCep); // Atualiza o estado do novo CEP
-            fetchCidade(userCep); // Busca a cidade com o CEP obtido
+            setNovoCep(userCep);
+            fetchCidade(userCep);
+            fetchEconomizedValue(token); // Fetch the economized value after user data
         } catch (error) {
             console.error('Erro ao buscar dados do usuário:', error);
+        }
+    };
+
+    const fetchEconomizedValue = async (token) => {
+        try {
+            const response = await axios.get('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setValorEconomizado(response.data.data.valor_economizado); // Update the state with the fetched value
+        } catch (error) {
+            console.error('Erro ao buscar valor economizado:', error);
         }
     };
 
@@ -101,7 +112,7 @@ function InfoIniciais() {
         try {
             await fetchCidade(novoCep);
             setCep(novoCep);
-            localStorage.setItem('userCep', novoCep); // Armazena o novo CEP, se necessário
+            localStorage.setItem('userCep', novoCep);
             setIsModalOpen(false);
         } catch (error) {
             console.error('Erro ao salvar o novo CEP:', error);
@@ -121,9 +132,7 @@ function InfoIniciais() {
         const selected = event.target.value;
         setSelectedOption(selected);
 
-        if (selected === 'proximo') {
-            // Lógica para "Próximo a mim", se necessário
-        } else if (selected === 'editar') {
+        if (selected === 'editar') {
             handleEditCep();
         }
     };
@@ -144,7 +153,7 @@ function InfoIniciais() {
                         <p className="voce-so-precisa-p">Total dos valores economizados</p>
                     </div>
                     <div className="reais-economizados1">
-                        <h1>0</h1>
+                        <h1>{valorEconomizado}</h1> {/* Render the economized value here */}
                         <p>Reais economizados</p>
                     </div>
                 </div>

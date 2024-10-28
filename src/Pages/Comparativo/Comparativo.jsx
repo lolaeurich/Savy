@@ -33,7 +33,6 @@ function Comparativo() {
 
             if (responseData) {
                 const { market_quantity, product_quantity, total, products } = responseData.data;
-
                 setComparativoData(prevData => ({
                     ...prevData,
                     marketQuantity: market_quantity || 0,
@@ -71,27 +70,27 @@ function Comparativo() {
             console.error('allMarkets não é um objeto válido ou selectedProducts está vazio ou indefinido');
             return; 
         }
-        
+
         let melhorMercado = {
             nome: 'Não disponível',
             distancia: 'Não disponível',
             quantidadeProdutos: 0,
             custo: Infinity
         };
-    
+
         Object.values(allMarkets).forEach(market => {
             const produtosNoMercado = market.products || {};
-    
+
             const todosProdutosPresentes = selectedProducts.every(produto => 
                 produtosNoMercado[produto.id]
             );
-    
+
             if (todosProdutosPresentes) {
                 const custoTotalMercado = selectedProducts.reduce((total, produto) => {
                     const produtoNoMercado = produtosNoMercado[produto.id];
                     return total + (produtoNoMercado ? produtoNoMercado.total : 0);
                 }, 0);
-    
+
                 if (custoTotalMercado < melhorMercado.custo) {
                     melhorMercado = {
                         nome: market.fantasyName || 'Não disponível',
@@ -102,34 +101,29 @@ function Comparativo() {
                 }
             }
         });
-    
+
         setComparativoData(prevData => ({
             ...prevData,
             melhorMercado
         }));
     };
-    
 
     const fetchLowPrice = async (selectedProducts, allMarkets) => {
         const token = localStorage.getItem('authToken');
-    
+
         if (!token) {
             console.error('Token não encontrado. Verifique se o usuário está autenticado.');
             return;
         }
-    
-        // Extraia os IDs dos produtos e marketplaces
-        const productIds = selectedProducts.map(prod => prod.gtin); // ou o ID que você usa para o produto
-        const marketIds = Object.keys(allMarkets).map(marketId => parseInt(marketId)); // obtém os mktId como números
-    
-        // Verifique se há marketplaces disponíveis
+
+        const productIds = selectedProducts.map(prod => prod.gtin);
+        const marketIds = Object.keys(allMarkets).map(marketId => parseInt(marketId));
+
         if (marketIds.length === 0) {
             console.error('Nenhum marketplace disponível para enviar.');
             return;
         }
-    
-        console.log('Enviando para low-price:', { products: productIds, marketplaces: marketIds });
-    
+
         try {
             const response = await axios.post('https://savvy-api.belogic.com.br/api/checkout/low-price-where-to-buy', {
                 products: productIds,
@@ -139,14 +133,10 @@ function Comparativo() {
                     'Authorization': `Bearer ${token}`
                 }
             });
-    
-            console.log('Resposta do low-price:', response.data);
-            
-            // Aqui você pode processar a resposta e atualizar seu estado se necessário
+
             const lowPriceData = response.data.data;
-            // Atualizar o estado com os dados do melhor mercado
             if (Object.keys(lowPriceData).length > 0) {
-                const melhorMercadoData = lowPriceData[Object.keys(lowPriceData)[0]]; // pega o primeiro mercado
+                const melhorMercadoData = lowPriceData[Object.keys(lowPriceData)[0]];
                 setComparativoData(prevData => ({
                     ...prevData,
                     melhorMercado: {
@@ -172,7 +162,12 @@ function Comparativo() {
     };
 
     const handleCompraUnica = () => {
-        navigate("/compraUnica");
+        navigate("/compraUnica", {
+            state: {
+                selectedProductsCount,
+                produtos1,
+            }
+        });
     };
 
     const handleSobre = () => {
@@ -222,10 +217,10 @@ function Comparativo() {
                         <h3>O melhor Supermercado</h3>
                         <div className="lista-mercados">
                             <div className="mercado1">
-                                <p className="mercado-distancia">{melhorMercado.distancia}</p>
+                                <p className="mercado-distancia">{melhorMercado.fantasyName}</p>
                                 <img alt="Mercado Icon" src={mercado} />
-                                <p className="mercado-produtos">{melhorMercado.quantidadeProdutos} produtos</p>
-                                <p className="mercado-economia">R$ {melhorMercado.custo.toFixed(2)}</p>
+                                <p className="mercado-produtos">{selectedProductsCount} produtos</p>
+                                <p className="mercado-economia">R$ {totalMinPrice.toFixed(2)}</p>
                             </div>
                         </div>
                         <div className="card1-btns">
