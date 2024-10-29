@@ -38,7 +38,7 @@ function InfoIniciais() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [produtos, setProdutos] = useState([]);
     const [selectedProductsCount, setSelectedProductsCount] = useState(0);
-    const [valorEconomizado, setValorEconomizado] = useState(0); // New state for economized value
+    const [valorEconomizado, setValorEconomizado] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -47,13 +47,21 @@ function InfoIniciais() {
         // Load products from localStorage
         const produtosStored = localStorage.getItem('produtos');
         if (produtosStored) {
-            setProdutos(JSON.parse(produtosStored));
+            const produtosParsed = JSON.parse(produtosStored);
+            console.log('Produtos armazenados:', produtosParsed);
+            setProdutos(produtosParsed);
         }
     }, []);
 
     useEffect(() => {
         const count = produtos.filter(produto => produto).length;
         setSelectedProductsCount(count);
+    }, [produtos]);
+
+    useEffect(() => {
+        if (produtos.length > 0) {
+            fetchEconomizedValue(); // Fetch the economized value when products are loaded
+        }
     }, [produtos]);
 
     const fetchCidade = async (cep) => {
@@ -81,18 +89,25 @@ function InfoIniciais() {
             setCep(userCep);
             setNovoCep(userCep);
             fetchCidade(userCep);
-            fetchEconomizedValue(token); // Fetch the economized value after user data
         } catch (error) {
             console.error('Erro ao buscar dados do usuário:', error);
         }
     };
 
-    const fetchEconomizedValue = async (token) => {
+    const fetchEconomizedValue = async () => {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+
+        // Extraindo product_id dos produtos armazenados
+        const productIds = produtos.map(produto => produto.product_id);
+
         try {
-            const response = await axios.get('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
+            const response = await axios.post('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
+                products: productIds
+            }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setValorEconomizado(response.data.data.valor_economizado); // Update the state with the fetched value
+            setValorEconomizado(response.data.data.valor_economizado);
         } catch (error) {
             console.error('Erro ao buscar valor economizado:', error);
         }
@@ -153,7 +168,7 @@ function InfoIniciais() {
                         <p className="voce-so-precisa-p">Total dos valores economizados</p>
                     </div>
                     <div className="reais-economizados1">
-                        <h1>{valorEconomizado}</h1> {/* Render the economized value here */}
+                        <h1>R$ {valorEconomizado.toFixed(2)}</h1> {/* Render the economized value here */}
                         <p>Reais economizados</p>
                     </div>
                 </div>
