@@ -1,0 +1,9 @@
+.voltar-admin {
+    cursor: pointer;
+    align-self: flex-start;
+    padding: 1%;
+    border-radius: 12px;
+    border: none;
+    background-color: darkgreen;
+    color: white;
+}

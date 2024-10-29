@@ -22,6 +22,7 @@ import AlterarProdutos from "./Pages/AlterarProdutos/AlterarProdutos";
 import AdminNovosProdutos from "./Pages/AdminNovosProdutos/AdminNovosProdutos";
 import EditarProdutos from "./Pages/EditarProdutos/EditarProdutos";
 import ListarProdutos from "./Pages/ListarProdutos/ListarProdutos";
+import Respostas from "./Pages/Respostas/Respostas";
 
 const App = () => {
   return (
@@ -47,6 +48,7 @@ const App = () => {
         <Route path="/adicionarProdutos" element={<AdminNovosProdutos />} />
         <Route path="/editarProdutos" element={<EditarProdutos />} />
         <Route path="/listarProdutos" element={<ListarProdutos />} />
+        <Route path="/respostas" element={<Respostas />} />
       </Routes>
     </ComparativoProvider>
   );

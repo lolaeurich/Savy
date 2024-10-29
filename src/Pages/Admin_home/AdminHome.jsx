@@ -17,6 +17,10 @@ function AdminHome() {
     const [newProductData, setNewProductData] = useState({ searchTerm: "" });
     const [productData, setProductData] = useState([]); // Mudei de null para []
 
+    const handleRespostas = () => {
+        navigate("/respostas");
+    };
+
 
     const [code, setCode] = useState("");
 
@@ -331,6 +335,7 @@ function AdminHome() {
             </div>
             <div className="botoes-home">
                 <button style={{cursor: "pointer"}} onClick={openNewProductPopup}>Incluir Novo Produto +</button>
+                <button style={{cursor: "pointer",backgroundColor: "darkorange"}} onClick={handleRespostas}>Ver respostas do questionário</button>
             </div>
 
             <form onSubmit={handleSearch} style={{ width: "90%", display: "flex" }}>
