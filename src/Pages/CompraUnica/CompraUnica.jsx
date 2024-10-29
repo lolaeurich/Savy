@@ -4,14 +4,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import cart from "../../Assets/cart.png";
 import flecha from "../../Assets/flecha-esquerda.png";
 import mercado from "../../Assets/home.png";
-import CardCompraUnica from "../../Components/CardCompraUnica/CardCompraUnica";
 import axios from 'axios';
+import visualizar from "../../Assets/visualizar.png";
+import { radioClasses } from "@mui/material";
 
 function CompraUnica() {
     const navigate = useNavigate();
     const location = useLocation();
     
-    // Obter dados da localização anterior
     const { selectedProducts, allMarkets, selectedProductsCount } = location.state || {};
     const [marketData, setMarketData] = useState(null);
 
@@ -27,13 +27,20 @@ function CompraUnica() {
         const fetchMarketData = async () => {
             if (!selectedProducts || !allMarkets) return;
 
-            const productIds = selectedProducts.map(prod => prod.product_id);
-            const marketIds = Object.keys(allMarkets);
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                console.error('Token não encontrado. Verifique se o usuário está autenticado.');
+                return;
+            }
 
             try {
                 const response = await axios.post('https://savvy-api.belogic.com.br/api/checkout/low-price-where-to-buy', {
-                    products: productIds,
-                    marketplaces: marketIds
+                    products: selectedProducts,
+                    marketplaces: allMarkets
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    }
                 });
 
                 setMarketData(response.data.data);
@@ -48,28 +55,36 @@ function CompraUnica() {
     const renderMarketInfo = () => {
         if (!marketData) return null;
 
-        return Object.keys(marketData).map(marketId => {
-            const market = marketData[marketId];
+        const marketWithHighestCost = Object.values(marketData)
+            .map(market => ({
+                ...market,
+                validProducts: market.products.filter(product => typeof product !== 'string')
+            }))
+            .filter(market => market.validProducts.length > 0)
+            .reduce((highest, current) => {
+                return current.total > highest.total ? current : highest;
+            }, { total: 0 });
 
-            return (
-                <div key={marketId} className="market-info">
-                    <h4>Empresa: {market.company || 'Não disponível'}</h4>
-                    <p>Total: R$ {market.total.toFixed(2)}</p>
-                    <h5>Produtos:</h5>
-                    <ul>
-                        {market.products.map((product, index) => (
-                            typeof product === 'string' ? (
-                                <li key={index}>{product}</li> // Produto não encontrado
-                            ) : (
-                                <li key={index}>
-                                    {product.product} - R$ {product.value.toFixed(2)} (Quantidade: {product.quantity})
-                                </li>
-                            )
+        if (marketWithHighestCost.total === 0) return null;
+
+        return (
+            <div key={marketWithHighestCost.mktId} className="market-info" style={{ display: "flex", alignItems: "flex-start", columnGap: "20px", border: "1px solid green", padding: "4%", borderRadius: "12px" }}>
+                <img src={visualizar} alt=""/>
+                <div>
+                    <h4 style={{ fontSize: "12px", color: "green" }}>{marketWithHighestCost.company || 'Não disponível'}</h4>
+                    
+                    <h5 style={{ paddingTop: "5px" }}>Produtos:</h5>
+                    <ul style={{ listStyle: "none", rowGap: "5%" }}>
+                        {marketWithHighestCost.validProducts.map((product, index) => (
+                            <li key={index} style={{ fontSize: "12px", paddingTop: "10px" }}>
+                                &#10140; {product.product} - R$ {parseFloat(product.value).toFixed(2)} {/* Exibe o valor unitário do item */}
+                            </li>
                         ))}
                     </ul>
-                </div>
-            );
-        });
+                </div>  
+                <p style={{ fontSize: "14px", backgroundColor: "transparent", border: "1px solid green", padding: "2%", textAlign: "center", fontWeight: "700", color: "green", borderRadius: "12px" }}>Custo: R$ {marketWithHighestCost.total.toFixed(2)}</p>  
+            </div>
+        );
     };
 
     return (
@@ -84,7 +99,7 @@ function CompraUnica() {
 
                     <div className="cart" onClick={handleListaCompras}>
                         <img alt="" src={cart} />
-                        <p>{selectedProductsCount}</p> {/* Usando o count aqui */}
+                        <p>{selectedProductsCount}</p>
                     </div>
                 </div>
 
@@ -94,7 +109,6 @@ function CompraUnica() {
                         <img alt="" src={mercado} />
                         <p>Lista disponível em: 1 supermercado</p>
                     </div>
-                    <CardCompraUnica />
                     {renderMarketInfo()}
                 </div>
             </div>

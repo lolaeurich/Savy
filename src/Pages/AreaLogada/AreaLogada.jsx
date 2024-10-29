@@ -130,10 +130,10 @@ function AreaLogada() {
 
     const handleSlideDone = async () => {
         const selectedProducts = produtos.filter(produto => produto.isChecked);
-        const selectedProductIds = selectedProducts.map(produto => produto.product_id); // Alterado para product_id
+        const selectedProductIds = selectedProducts.map(produto => produto.product_id); // Acesse o product_id aqui
     
         console.log("Produtos selecionados:", selectedProducts);
-        console.log("IDs dos produtos selecionados:", selectedProductIds);
+        console.log("IDs dos produtos selecionados:", selectedProductIds); // Verifique se os IDs estão corretos
     
         if (selectedProductIds.length === 0) {
             alert('Por favor, selecione ao menos um produto.');
@@ -142,7 +142,6 @@ function AreaLogada() {
     
         try {
             const token = getAuthToken();
-    
             const bestCostResponse = await axios.post('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
                 products: selectedProductIds // Enviando product_id
             }, {
@@ -153,14 +152,23 @@ function AreaLogada() {
     
             console.log('Resposta do servidor para best-cost:', bestCostResponse.data);
     
+            // Capturando os dados necessários
+            const productsData = bestCostResponse.data.data.products || [];
+            const marketData = productsData.map(product => ({
+                product_id: product.mktId, // Captura o mktId
+                ...product
+            }));
+    
             navigate("/comparativo", {
                 state: {
-                    selectedProducts: bestCostResponse.data.products || [],
+                    selectedProducts: productsData,
+                    selectedProductIds, // Passa os IDs selecionados
                     priceInfo: bestCostResponse.data.priceInfo || {},
                     totalMinPrice: bestCostResponse.data.total || 0,
                     selectedProductsCount: bestCostResponse.data.product_quantity || 0,
                     responseData: bestCostResponse.data,
-                    allMarkets: bestCostResponse.data.allMarkets || {}
+                    allMarkets: bestCostResponse.data.allMarkets || {},
+                    marketData // Envia os dados com mktId
                 }
             });
         } catch (error) {
@@ -168,6 +176,8 @@ function AreaLogada() {
             alert('Ocorreu um erro ao processar sua solicitação. Tente novamente.');
         }
     };
+    
+    
 
     const handleAddProduto = () => {
         navigate("/addProduto");
