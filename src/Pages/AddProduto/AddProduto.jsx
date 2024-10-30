@@ -28,36 +28,40 @@ function AddProduto() {
       setProductData([]);
       return;
     }
-
+  
     const token = getAuthToken();
     if (!token) {
       setError("Token de autenticação não encontrado.");
       return;
     }
-
+  
     const url = "https://savvy-api.belogic.com.br/api/shopping/find";
     const params = /^\d+$/.test(term) ? { gtin: term } : { nome: term };
-
+  
     try {
       const response = await axios.get(url, {
         headers: { 'Authorization': `Bearer ${token}` },
         params,
       });
-
+  
+      console.log("Response da API:", response.data); // Verificar a estrutura da resposta
+  
       const products = response.data.data || [];
       if (products.length === 0) {
         setError("Nenhum produto encontrado.");
         return;
       }
-
-      const productsWithImages = products.map(product => ({
-        id: product.id,
-        nome: product.nome || product.name || "Nome não disponível",
-        gtin: product.gtin || product.barcode || "GTIN não disponível",
-        desc: product.desc || product.description || "Descrição não disponível",
-        imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
-      }));
-
+  
+      const productsWithImages = products.map(product => {
+        return {
+          id: product.id,
+          nome: product.desc || product.description ,
+          gtin: product.gtin || product.barcode, 
+          desc: product.desc || product.description, 
+          imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
+        };
+      });
+  
       setProductData(productsWithImages);
       setError(null);
     } catch (error) {
@@ -65,6 +69,7 @@ function AddProduto() {
       setError("Erro ao buscar o produto: " + (error.response?.data.message || error.message));
     }
   };
+  
 
   const fetchAllProducts = async () => {
     const token = getAuthToken();
@@ -181,8 +186,8 @@ function AddProduto() {
                     onClick={() => toggleSelectProduct(product.id)}
                   >
                     <img src={product.imagem} alt={product.desc} />
-                    <p>{product.desc}</p>
-                    <p>{product.gtin || product.barcode || "Código não disponível"}</p>
+                    <p>{product.nome}</p>
+                    <p>{product.gtin}</p>
                     <button 
                       className={`btn-add ${selectedProducts.has(product.id) ? 'selected-btn' : ''}`}
                       onClick={(e) => {
