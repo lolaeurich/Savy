@@ -51,11 +51,11 @@ function AddProduto() {
       }
 
       const productsWithImages = products.map(product => ({
-          id: product.id,
-                nome: product.nome,
-                gtin: product.gtin,
-                desc: product.desc,
-                imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
+        id: product.id,
+        nome: product.nome || product.name || "Nome não disponível",
+        gtin: product.gtin || product.barcode || "GTIN não disponível",
+        desc: product.desc || product.description || "Descrição não disponível",
+        imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
       }));
 
       setProductData(productsWithImages);
@@ -182,8 +182,7 @@ function AddProduto() {
                   >
                     <img src={product.imagem} alt={product.desc} />
                     <p>{product.desc}</p>
-                    <p>{product.gtin}</p>
-                    <p>{product.barcode}</p>
+                    <p>{product.gtin || product.barcode || "Código não disponível"}</p>
                     <button 
                       className={`btn-add ${selectedProducts.has(product.id) ? 'selected-btn' : ''}`}
                       onClick={(e) => {

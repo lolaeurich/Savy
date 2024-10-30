@@ -48,7 +48,7 @@ function Validacao() {
     };
 
     return (
-        <div className="login-container" style={{height: "95vh !important"}}>
+        <div className="login-container">
             <div className="login-main">
                 <div className="login-savvy-logo">
                     <h1>SAVVY</h1>
