@@ -30,11 +30,12 @@ html, body {
 
 .tela-inicial-container {
     width: 100%;
-    height: 100vh;
+    height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
+    row-gap: 10px;
 }
 
 .tela-inicial-main {
@@ -79,6 +80,7 @@ html, body {
     color: #3A7C22;
     font-family: 'Montserrat Alternates', sans-serif;
     padding-right: 5%;
+    padding-bottom: 10%;
 }
 
 .conheca-missao {

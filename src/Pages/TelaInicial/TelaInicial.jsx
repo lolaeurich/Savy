@@ -52,13 +52,15 @@ function TelaInicial () {
                         capaz de fazer o seu dinheiro render mais.
                     </p>
 
-            </div>
-
-            <button
+                    <button
                 className="slide-button"
                 onClick={handleValidacao}
                 reset={reset}
             >Vamos começar!</button>
+
+            </div>
+
+          
 
 
         </div>
