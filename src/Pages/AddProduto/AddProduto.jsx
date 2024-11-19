@@ -13,6 +13,7 @@ function AddProduto() {
   const [error, setError] = useState(null);
   const [selectedProducts, setSelectedProducts] = useState(new Set());
   const [anotherBrand, setAnotherBrand] = useState(false);
+  const [loading, setLoading] = useState(false); // Estado de loading
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,64 +29,67 @@ function AddProduto() {
       setProductData([]);
       return;
     }
-  
+
+    setLoading(true); // Inicia o loading
+
     const token = getAuthToken();
     if (!token) {
       setError("Token de autenticação não encontrado.");
+      setLoading(false); // Finaliza o loading
       return;
     }
-  
+
     const url = "https://savvy-api.belogic.com.br/api/shopping/find";
     const params = /^\d+$/.test(term) ? { gtin: term } : { nome: term };
-  
+
     try {
       const response = await axios.get(url, {
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
         params,
       });
-  
-      console.log("Response da API:", response.data); // Verificar a estrutura da resposta
-  
+
       const products = response.data.data || [];
       if (products.length === 0) {
         setError("Nenhum produto encontrado.");
-        return;
-      }
-  
-      const productsWithImages = products.map(product => {
-        return {
+      } else {
+        const productsWithImages = products.map((product) => ({
           id: product.id,
-          nome: product.desc || product.description ,
-          gtin: product.gtin || product.barcode, 
-          desc: product.desc || product.description, 
+          nome: product.desc || product.description,
+          gtin: product.gtin || product.barcode,
+          desc: product.desc || product.description,
           imagem: product.imagem || "https://img.icons8.com/?size=100&id=89619&format=png&color=3A7C22",
-        };
-      });
-  
-      setProductData(productsWithImages);
-      setError(null);
+        }));
+
+        setProductData(productsWithImages);
+        setError(null);
+      }
     } catch (error) {
-      console.error("Erro ao buscar o produto:", error);
       setError("Erro ao buscar o produto: " + (error.response?.data.message || error.message));
+    } finally {
+      setLoading(false); // Finaliza o loading
     }
   };
-  
 
   const fetchAllProducts = async () => {
+    setLoading(true); // Inicia o loading
+
     const token = getAuthToken();
     if (!token) {
       setError("Token de autenticação não encontrado.");
+      setLoading(false); // Finaliza o loading
       return;
     }
 
     try {
-      const response = await axios.get('https://savvy-api.belogic.com.br/api/shopping', {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await axios.get("https://savvy-api.belogic.com.br/api/shopping", {
+        headers: { Authorization: `Bearer ${token}` },
       });
+
       console.log("Todos os produtos:", response.data.data);
     } catch (error) {
-      console.error('Erro ao buscar produtos:', error.response ? error.response.data : error);
       setError("Erro ao buscar produtos: " + (error.response?.data.message || error.message));
+    } finally {
+      setLoading(false); // Finaliza o loading
     }
   };
 
@@ -102,6 +106,8 @@ function AddProduto() {
       return;
     }
 
+    setLoading(true); // Inicia o loading
+
     const data = selectedProductData.map(product => ({
       name: product.desc,
       description: product.desc,
@@ -111,20 +117,22 @@ function AddProduto() {
     const token = getAuthToken();
     if (!token) {
       setError("Token de autenticação não encontrado.");
+      setLoading(false); // Finaliza o loading
       return;
     }
 
     try {
       const response = await axios.post("https://savvy-api.belogic.com.br/api/shopping", data, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       console.log("Produtos adicionados ao carrinho:", response.data);
       fetchAllProducts();
       navigate('/areaLogada');
     } catch (error) {
-      console.error("Erro ao adicionar produtos:", error);
       setError("Erro ao adicionar produtos: " + (error.response?.data.message || error.message));
+    } finally {
+      setLoading(false); // Finaliza o loading
     }
   };
 
@@ -144,6 +152,11 @@ function AddProduto() {
 
   return (
     <div className="add-produto-container">
+      {loading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+        </div>
+      )}
       <div className="add-produto-main">
         <div className="login-savvy-logo2" style={{ justifyContent: "flex-end" }}>
           <h1>SAVVY</h1>

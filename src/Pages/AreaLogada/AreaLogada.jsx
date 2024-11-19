@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./style.css";
 import cart from "../../Assets/cart.png";
+import flecha from "../../Assets/flecha-esquerda.png";
 import lixo from "../../Assets/lixo.png";
 import cadastro from "../../Assets/cadastro.png";
 import produtoImg from "../../Assets/products.png"; // imagem padrão
@@ -21,6 +22,7 @@ function AreaLogada() {
     const [produtos, setProdutos] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [novoCep, setNovoCep] = useState('');
+    const [loading, setLoading] = useState(false); // Estado de loading
     const [selectedProductsCount, setSelectedProductsCount] = useState(0);
     const navigate = useNavigate();
 
@@ -39,12 +41,15 @@ function AreaLogada() {
     }, [produtos]);
 
     const fetchCidade = async (cep) => {
+        setLoading(true); // Inicia o loading
         try {
             const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
             setCidade(response.data.localidade || 'Cidade não encontrada');
         } catch (error) {
             console.error('Erro ao buscar a cidade:', error);
             setCidade('Cidade não encontrada');
+        } finally {
+            setLoading(false); // Finaliza o loading
         }
     };
 
@@ -53,9 +58,11 @@ function AreaLogada() {
     };
 
     const fetchProdutos = async () => {
+        setLoading(true); // Inicia o loading
         const token = getAuthToken();
         if (!token) {
             console.error('Token de autenticação não encontrado.');
+            setLoading(false); // Finaliza o loading
             return;
         }
 
@@ -68,13 +75,17 @@ function AreaLogada() {
             setProdutos(Array.isArray(response.data.data) ? response.data.data : []);
         } catch (error) {
             console.error('Erro ao buscar produtos:', error);
+        } finally {
+            setLoading(false); // Finaliza o loading
         }
     };
 
     const handleUpdateQuantity = async (productId, newQuantity) => {
+        setLoading(true); // Inicia o loading
         const token = getAuthToken();
         if (!token) {
             console.error('Token de autenticação não encontrado.');
+            setLoading(false); // Finaliza o loading
             return;
         }
 
@@ -94,6 +105,8 @@ function AreaLogada() {
             );
         } catch (error) {
             console.error('Erro ao atualizar a quantidade do produto:', error.response ? error.response.data : error.message);
+        } finally {
+            setLoading(false); // Finaliza o loading
         }
     };
 
@@ -105,12 +118,13 @@ function AreaLogada() {
             return updatedProdutos;
         });
     };
-    
 
     const handleDelete = async (productId) => {
+        setLoading(true); // Inicia o loading
         const token = getAuthToken();
         if (!token) {
             console.error('Token de autenticação não encontrado.');
+            setLoading(false); // Finaliza o loading
             return;
         }
 
@@ -125,59 +139,51 @@ function AreaLogada() {
         } catch (error) {
             console.error('Erro ao excluir o produto:', error.response ? error.response.data : error.message);
             alert('Não foi possível excluir o produto. Verifique se ele está associado a outros registros.');
+        } finally {
+            setLoading(false); // Finaliza o loading
         }
     };
 
     const handleSlideDone = async () => {
+        setLoading(true); // Inicia o loading
         const selectedProducts = produtos.filter(produto => produto.isChecked);
-        const selectedProductIds = selectedProducts.map(produto => produto.product_id); // Acesse o product_id aqui
-    
-        console.log("Produtos selecionados:", selectedProducts);
-        console.log("IDs dos produtos selecionados:", selectedProductIds); // Verifique se os IDs estão corretos
-    
+        const selectedProductIds = selectedProducts.map(produto => produto.product_id);
+
         if (selectedProductIds.length === 0) {
             alert('Por favor, selecione ao menos um produto.');
+            setLoading(false); // Finaliza o loading
             return;
         }
-    
+
         try {
             const token = getAuthToken();
             const bestCostResponse = await axios.post('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
-                products: selectedProductIds // Enviando product_id
+                products: selectedProductIds
             }, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-    
-            console.log('Resposta do servidor para best-cost:', bestCostResponse.data);
-    
-            // Capturando os dados necessários
+
             const productsData = bestCostResponse.data.data.products || [];
-            const marketData = productsData.map(product => ({
-                product_id: product.mktId, // Captura o mktId
-                ...product
-            }));
-    
             navigate("/comparativo", {
                 state: {
                     selectedProducts: productsData,
-                    selectedProductIds, // Passa os IDs selecionados
+                    selectedProductIds,
                     priceInfo: bestCostResponse.data.priceInfo || {},
                     totalMinPrice: bestCostResponse.data.total || 0,
                     selectedProductsCount: bestCostResponse.data.product_quantity || 0,
                     responseData: bestCostResponse.data,
-                    allMarkets: bestCostResponse.data.allMarkets || {},
-                    marketData // Envia os dados com mktId
+                    allMarkets: bestCostResponse.data.allMarkets || {}
                 }
             });
         } catch (error) {
             console.error('Erro ao enviar produtos:', error.response ? error.response.data : error.message);
             alert('Ocorreu um erro ao processar sua solicitação. Tente novamente.');
+        } finally {
+            setLoading(false); // Finaliza o loading
         }
     };
-    
-    
 
     const handleAddProduto = () => {
         navigate("/addProduto");
@@ -194,6 +200,7 @@ function AreaLogada() {
             return;
         }
 
+        setLoading(true); // Inicia o loading
         try {
             await fetchCidade(novoCep);
             setCep(novoCep);
@@ -201,6 +208,8 @@ function AreaLogada() {
             setIsEditing(false);
         } catch (error) {
             console.error('Erro ao salvar o novo CEP:', error);
+        } finally {
+            setLoading(false); // Finaliza o loading
         }
     };
 
@@ -209,14 +218,26 @@ function AreaLogada() {
         setNovoCep(cep);
     };
 
+    const handleVoltar = () => {
+        navigate("/infoIniciais");
+    };
+
     useEffect(() => {
         localStorage.setItem('produtos', JSON.stringify(produtos));
     }, [produtos]);
 
     return (
         <div className="areaLogada-container">
+            {loading && (
+                <div className="loading-overlay">
+                    <div className="spinner"></div>
+                </div>
+            )}
             <div className="areaLogada-main">
-                <div className="login-savvy-logo2">
+                <div className="login-savvy-logo2" style={{ justifyContent: "space-between" }}>
+                    <div className="cart2">
+                        <img alt="" src={flecha} onClick={handleVoltar} />
+                    </div>
                     <h1>SAVVY</h1>
                 </div>
                 <div className="areaLogada-nav">

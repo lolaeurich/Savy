@@ -12,7 +12,7 @@ function ListaMercados() {
     const location = useLocation();
     const navigate = useNavigate();
     const [produtos, setProdutos] = useState([]);
-    const [expandedIndex, setExpandedIndex] = useState(null);
+    const [expandedIndices, setExpandedIndices] = useState([]); // Agora é um array
     const [produtoCount, setProdutoCount] = useState(0);
 
     useEffect(() => {
@@ -90,7 +90,15 @@ function ListaMercados() {
     }, []);
 
     const toggleExpansion = (index) => {
-        setExpandedIndex(expandedIndex === index ? null : index);
+        setExpandedIndices((prevExpandedIndices) => {
+            if (prevExpandedIndices.includes(index)) {
+                // Remove o índice se já estiver expandido
+                return prevExpandedIndices.filter(i => i !== index);
+            } else {
+                // Adiciona o índice se não estiver expandido
+                return [...prevExpandedIndices, index];
+            }
+        });
     };
 
     const handleComparativo = () => {
@@ -120,14 +128,14 @@ function ListaMercados() {
                     {produtos.map((produto, index) => (
                         <div className="card" key={index}>
                             <div className="card-header" onClick={() => toggleExpansion(index)}>
-                                <img className={`arrow ${expandedIndex === index ? 'arrow-up' : 'arrow-down'}`} src={flecha2} alt="Seta" />
+                                <img className={`arrow ${expandedIndices.includes(index) ? 'arrow-up' : 'arrow-down'}`} src={flecha2} alt="Seta" />
                                 <div className="card-mercado-text">
                                     <h2 className="card-title">{produto.fantasyName || 'Mercado Desconhecido'}</h2>
                                     <p>Distância: {produto.distKm} km</p>
                                 </div>
                                 <button className="custo">R$ {produto.value}</button>
                             </div>
-                            {expandedIndex === index && (
+                            {expandedIndices.includes(index) && (
                                 <div className="card-content">
                                     <div className='card-content-sessao1'>
                                         <div className='card-content-titulo'>
