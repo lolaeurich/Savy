@@ -1,15 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import "./style.css";
-import here from "../../Assets/here.png";
-import lista from "../../Assets/lista1.png";
-import conexao from "../../Assets/conexao.png";
-import cesta from "../../Assets/cesta.png";
 import logo from "../../Assets/logo1.png";
-import intelig from "../../Assets/inteligencia.jpeg";
-import economia from "../../Assets/economia.jpeg";
-import controle from "../../Assets/controle.jpeg";
-
 
 function TelaInicial () {
     const [reset, setReset] = useState(0);
@@ -59,10 +51,6 @@ function TelaInicial () {
             >Vamos começar!</button>
 
             </div>
-
-          
-
-
         </div>
     )
 }

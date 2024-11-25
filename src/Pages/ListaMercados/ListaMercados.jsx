@@ -6,13 +6,13 @@ import "../../Components/Mercados/style.css";
 import flecha from "../../Assets/flecha-esquerda.png";
 import flecha2 from "../../Assets/flecha-direita.png";
 import cart from "../../Assets/cart.png";
-import produtoImg1 from "../../Assets/products.png"; // Imagem padrão do produto
+import produtoImg1 from "../../Assets/products.png"; 
 
 function ListaMercados() {
     const location = useLocation();
     const navigate = useNavigate();
     const [produtos, setProdutos] = useState([]);
-    const [expandedIndices, setExpandedIndices] = useState([]); // Agora é um array
+    const [expandedIndices, setExpandedIndices] = useState([]); 
     const [produtoCount, setProdutoCount] = useState(0);
 
     useEffect(() => {
@@ -27,28 +27,28 @@ function ListaMercados() {
 
     // Função para buscar imagens dos produtos do carrinho
     const fetchProductImages = async (products) => {
-        const token = localStorage.getItem('authToken'); // Recupera o token do localStorage
+        const token = localStorage.getItem('authToken');
 
         try {
             const response = await axios.get('https://savvy-api.belogic.com.br/api/shopping', {
                 headers: {
-                    'Authorization': `Bearer ${token}` // Adiciona o token ao cabeçalho
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
-            const allProducts = response.data.data; // Todos os produtos do carrinho
+            const allProducts = response.data.data; 
 
             // Atualiza os produtos com a imagem correspondente
             const updatedProducts = products.map(produto => {
                 const productInCart = allProducts.find(cartProduct => 
-                    cartProduct.barcode === produto.gtin || cartProduct.product_id === produto.id // Compara GTIN ou ID
+                    cartProduct.barcode === produto.gtin || cartProduct.product_id === produto.id
                 );
                 
                 return {
                     ...produto,
                     imageUrl: productInCart && productInCart.image.length > 0 
-                        ? productInCart.image[0].url // Usa a URL da imagem correspondente
-                        : produtoImg1 // Imagem padrão
+                        ? productInCart.image[0].url 
+                        : produtoImg1 
                 };
             });
 
@@ -91,7 +91,7 @@ function ListaMercados() {
 
     const toggleExpansion = (index) => {
         setExpandedIndices((prevExpandedIndices) => {
-            if (prevExpandedIndices.includes(index)) {
+            if (prevExpandedIndices.includes(index)) { 
                 // Remove o índice se já estiver expandido
                 return prevExpandedIndices.filter(i => i !== index);
             } else {

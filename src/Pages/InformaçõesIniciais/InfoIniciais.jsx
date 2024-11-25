@@ -185,7 +185,7 @@ function InfoIniciais() {
     };
 
     return (
-        <div className="tela-inicial-container">
+        <div className="tela-inicial-container" style={{height: "110vh"}}>
             <div className="tela-inicial-main">
                 <div className="savvy-logo">
                     <img alt="" src={logo} />
