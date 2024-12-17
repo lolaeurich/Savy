@@ -1,6 +1,7 @@
 {
   "name": "savy",
   "version": "0.1.0",
+  "homepage": "http://savvy-ia.com.br",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.13.0",
