@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import IMaskInput from 'react-input-mask';
 import { useNavigate } from 'react-router-dom';
 import "./style.css";
 import erro from "../../Assets/erro-icon.png";
@@ -107,8 +108,8 @@ function Login() {
                         value={nome}
                         onChange={e => setNome(e.target.value)}
                     />
-                    <input
-                        type="text"
+                    <IMaskInput
+                        mask="99999-999"
                         placeholder="CEP"
                         value={cep}
                         onChange={e => setCep(e.target.value)}
