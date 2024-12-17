@@ -71,8 +71,8 @@ function CompraUnica() {
             <div key={marketWithHighestCost.mktId} className="market-info" style={{ display: "flex", alignItems: "flex-start", columnGap: "20px", border: "1px solid green", padding: "4%", borderRadius: "12px" }}>
                 <img src={visualizar} alt=""/>
                 <div>
-                    <h4 style={{ fontSize: "12px", color: "green" }}>{marketWithHighestCost.company || 'Não disponível'}</h4>
-                    
+                    <h4 style={{ fontSize: "12px", color: "green" }}>{marketWithHighestCost.fantasyName || marketWithHighestCost.company.split(' ')[0]}</h4>
+
                     <h5 style={{ paddingTop: "5px" }}>Produtos:</h5>
                     <ul style={{ listStyle: "none", rowGap: "5%" }}>
                         {marketWithHighestCost.validProducts.map((product, index) => (
