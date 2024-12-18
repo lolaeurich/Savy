@@ -93,11 +93,6 @@ function InfoIniciais() {
     };
 
     const handleSaveCep = async () => {
-        if (novoCep === cep) {
-            setIsModalOpen(false);
-            return;
-        }
-
         const token = localStorage.getItem("authToken");
         if (!token) {
             console.error("Token não encontrado.");
