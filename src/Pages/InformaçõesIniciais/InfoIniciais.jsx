@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import IMaskInput from 'react-input-mask';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./style.css";
@@ -14,8 +15,8 @@ const Modal = ({ isOpen, onClose, onSave, novoCep, setNovoCep }) => {
         <div className="modal-overlay">
             <div className="modal-content">
                 <h3>Editar CEP:</h3>
-                <input
-                    type="text"
+                <IMaskInput
+                    mask="99999-999"
                     value={novoCep}
                     onChange={(e) => setNovoCep(e.target.value)}
                     placeholder="Digite o novo CEP"

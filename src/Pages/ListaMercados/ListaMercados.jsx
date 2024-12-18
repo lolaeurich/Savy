@@ -130,7 +130,7 @@ function ListaMercados() {
                             <div className="card-header" onClick={() => toggleExpansion(index)}>
                                 <img className={`arrow ${expandedIndices.includes(index) ? 'arrow-up' : 'arrow-down'}`} src={flecha2} alt="Seta" />
                                 <div className="card-mercado-text">
-                                    <h2 className="card-title">{produto.fantasyName || 'Mercado Desconhecido'}</h2>
+                                    <h2 className="card-title">{produto.fantasyName || produto.company.split(' ')[0]}</h2>
                                     <p>Distância: {produto.distKm} km</p>
                                 </div>
                                 <button className="custo">R$ {produto.value}</button>
