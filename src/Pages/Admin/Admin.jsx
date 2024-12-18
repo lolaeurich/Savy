@@ -12,7 +12,7 @@ function Admin() {
         e.preventDefault(); // Evita o envio do formulário
 
         try {
-            const response = await fetch('https://savvy-api.belogic.com.br/api/login', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

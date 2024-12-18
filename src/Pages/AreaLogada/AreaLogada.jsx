@@ -67,7 +67,7 @@ function AreaLogada() {
         }
 
         try {
-            const response = await axios.get('https://savvy-api.belogic.com.br/api/shopping', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/shopping`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -90,7 +90,7 @@ function AreaLogada() {
         }
 
         try {
-            await axios.put(`https://savvy-api.belogic.com.br/api/shopping/${productId}`, {
+            await axios.put(`${process.env.REACT_APP_API_URL}/shopping/${productId}`, {
                 quantity: newQuantity
             }, {
                 headers: {
@@ -129,7 +129,7 @@ function AreaLogada() {
         }
 
         try {
-            await axios.delete(`https://savvy-api.belogic.com.br/api/shopping/${productId}`, {
+            await axios.delete(`${process.env.REACT_APP_API_URL}/shopping/${productId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -157,7 +157,7 @@ function AreaLogada() {
 
         try {
             const token = getAuthToken();
-            const bestCostResponse = await axios.post('https://savvy-api.belogic.com.br/api/checkout/best-cost-in-one-place', {
+            const bestCostResponse = await axios.post(`${process.env.REACT_APP_API_URL}/checkout/best-cost-in-one-place`, {
                 products: selectedProductIds
             }, {
                 headers: {

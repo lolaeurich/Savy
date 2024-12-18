@@ -49,7 +49,7 @@ function Login() {
         const data = { email, name: nome, cep };
 
         // Envia a solicitação de registro para a API
-        axios.post('https://savvy-api.belogic.com.br/api/first-registration', data)
+        axios.post(`${process.env.REACT_APP_API_URL}/first-registration`, data)
             .then(response => {
                 // Sucesso no registro
                 setTimeout(() => navigate('/validacao'), 1000);

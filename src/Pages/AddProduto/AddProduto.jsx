@@ -39,7 +39,7 @@ function AddProduto() {
       return;
     }
 
-    const url = "https://savvy-api.belogic.com.br/api/shopping/find";
+    const url = `${process.env.REACT_APP_API_URL}/shopping/find`;
     const params = /^\d+$/.test(term) ? { gtin: term } : { nome: term };
 
     try {
@@ -81,7 +81,7 @@ function AddProduto() {
     }
 
     try {
-      const response = await axios.get("https://savvy-api.belogic.com.br/api/shopping", {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/shopping`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -122,7 +122,7 @@ function AddProduto() {
     }
 
     try {
-      const response = await axios.post("https://savvy-api.belogic.com.br/api/shopping", data, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/shopping`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

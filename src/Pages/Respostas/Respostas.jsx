@@ -28,7 +28,7 @@ function Respostas() {
             }
 
             try {
-                const response = await axios.get("https://savvy-api.belogic.com.br/api/questionary", {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/questionary`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }

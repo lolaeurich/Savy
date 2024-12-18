@@ -30,7 +30,7 @@ function ListaMercados() {
         const token = localStorage.getItem('authToken');
 
         try {
-            const response = await axios.get('https://savvy-api.belogic.com.br/api/shopping', {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/shopping`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -67,7 +67,7 @@ function ListaMercados() {
             }
 
             try {
-                const response = await axios.get('https://savvy-api.belogic.com.br/api/products', {
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/products`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

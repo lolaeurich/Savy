@@ -25,7 +25,7 @@ function Recuperar() {
         const data = { email };
 
         // Envia a solicitação para o endpoint de login
-        axios.post('https://savvy-api.belogic.com.br/api/login', data)
+        axios.post(`${process.env.REACT_APP_API_URL}/login`, data)
             .then(response => {
                 // Sucesso ao solicitar novo código
                 setSuccess(true);
@@ -49,7 +49,7 @@ function Recuperar() {
         const data = { email, code: codigo };
 
         // Envia a solicitação de validação para o endpoint de validação
-        axios.post('https://savvy-api.belogic.com.br/api/email-validate', data)
+        axios.post(`${process.env.REACT_APP_API_URL}/email-validate`, data)
             .then(response => {
                 // Sucesso na validação
                 const token = response.data.token; // Ajuste conforme a estrutura da resposta da API

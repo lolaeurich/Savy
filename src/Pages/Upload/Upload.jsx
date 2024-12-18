@@ -34,7 +34,7 @@ function Upload() {
             });
     
             try {
-                const response = await fetch('https://savvy-api.belogic.com.br/api/product-image', {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/product-image`, {
                     method: 'POST', // Mantenha como POST se a rota estiver configurada para isso
                     headers: {
                         'Authorization': `Bearer ${token}`, // Usando o token do localStorage

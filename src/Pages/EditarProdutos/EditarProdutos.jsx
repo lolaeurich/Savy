@@ -34,7 +34,7 @@ function EditarProdutos() {
         }
 
         try {
-            const response = await fetch(`https://savvy-api.belogic.com.br/api/products/find?nome=${encodeURIComponent(productName)}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/products/find?nome=${encodeURIComponent(productName)}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`

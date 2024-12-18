@@ -65,7 +65,7 @@ function InfoIniciais() {
         }
 
         try {
-            const response = await axios.get("https://savvy-api.belogic.com.br/api/user", {
+            const response = await axios.get(`${process.env.REACT_APP_API_URL}/user`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const { cep, valor_economizado } = response.data;
@@ -106,7 +106,7 @@ function InfoIniciais() {
 
         try {
             await axios.post(
-                "https://savvy-api.belogic.com.br/api/user/update-cep",
+                `${process.env.REACT_APP_API_URL}/user/update-cep`,
                 { cep: novoCep },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -145,7 +145,7 @@ function InfoIniciais() {
                     }
 
                     await axios.post(
-                        "https://savvy-api.belogic.com.br/api/user/update-cep",
+                        `${process.env.REACT_APP_API_URL}/user/update-cep`,
                         { cep: fetchedCep },
                         { headers: { Authorization: `Bearer ${token}` } }
                     );
