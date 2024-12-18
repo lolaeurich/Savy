@@ -34,7 +34,7 @@ function CompraUnica() {
             }
 
             try {
-                const response = await axios.post('https://savvy-api.belogic.com.br/api/checkout/low-price-where-to-buy', {
+                const response = await axios.post(`${process.env.REACT_APP_API_URL}/checkout/low-price-where-to-buy`, {
                     products: selectedProducts,
                     marketplaces: allMarkets
                 }, {

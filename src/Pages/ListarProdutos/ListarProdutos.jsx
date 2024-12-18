@@ -23,7 +23,7 @@ function ListarProdutos() {
         }
     
         try {
-            const response = await fetch("https://savvy-api.belogic.com.br/api/products", {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/products`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`

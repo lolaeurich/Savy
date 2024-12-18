@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import flecha from "../../Assets/flecha-esquerda.png";
 import barcode from "../../Assets/barcode-icon.png";
+import lupa from "../../Assets/lupa.png"; // Importando o ícone da lupa
 import { BarcodeDialog } from "../../Components/BarcodeDialog";
 import './style.css';
 
@@ -39,7 +40,7 @@ function AddProduto() {
       return;
     }
 
-    const url = "https://savvy-api.belogic.com.br/api/shopping/find";
+    const url = `${process.env.REACT_APP_API_URL}/shopping/find`;
     const params = /^\d+$/.test(term) ? { gtin: term } : { nome: term };
 
     try {
@@ -81,7 +82,7 @@ function AddProduto() {
     }
 
     try {
-      const response = await axios.get("https://savvy-api.belogic.com.br/api/shopping", {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/shopping`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -122,7 +123,7 @@ function AddProduto() {
     }
 
     try {
-      const response = await axios.post("https://savvy-api.belogic.com.br/api/shopping", data, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/shopping`, data, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -150,6 +151,10 @@ function AddProduto() {
     setSelectedProducts(newSelectedProducts);
   };
 
+  const handleSearchClick = () => {
+    fetchProductData(code); // Executa a busca apenas ao clicar na lupa
+  };
+
   return (
     <div className="add-produto-container">
       {loading && (
@@ -172,18 +177,21 @@ function AddProduto() {
           <div className="cadastro-nome">
             <div className="nome-produto">
               <form>
-                <label>Termo ou código de barras</label>
+                <label>Termo ou código de barras</label> 
                 <input
                   type="text"
                   placeholder="Digite aqui"
                   name="nome"
                   value={code}
-                  onChange={(e) => {
-                    setCode(e.target.value);
-                    fetchProductData(e.target.value);
-                  }}
+                  onChange={(e) => setCode(e.target.value)} // Apenas atualiza o estado
                 />
               </form>
+              <img
+                alt="Buscar"
+                src={lupa}
+                style={{ height: "40px", cursor: "pointer" }}
+                onClick={handleSearchClick} // Dispara a busca ao clicar
+              />
               <img className="barcode" alt="" src={barcode} onClick={() => setDialogOpen(true)} />
             </div>
           </div>

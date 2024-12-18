@@ -16,7 +16,7 @@ function Pesquisa() {
       const token = localStorage.getItem("authToken");
       if (token) {
         try {
-          const response = await fetch("https://savvy-api.belogic.com.br/api/answer-questionary", {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/answer-questionary`, {
             method: "GET",
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -64,7 +64,7 @@ function Pesquisa() {
     ].filter(answer => answer.answer_id !== null);
 
     try {
-      const response = await fetch("https://savvy-api.belogic.com.br/api/answer-questionary", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/answer-questionary`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

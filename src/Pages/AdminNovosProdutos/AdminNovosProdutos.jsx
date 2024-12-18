@@ -34,7 +34,7 @@ function AdminNovosProdutos() {
             return;
         }
 
-        const url = "https://savvy-api.belogic.com.br/api/products/find";
+        const url = `${process.env.REACT_APP_API_URL}/products/find`;
         const params = /^\d+$/.test(term) ? { gtin: term } : { nome: term };
 
         console.log("Fazendo requisição para a API com os parâmetros:", params);
@@ -90,7 +90,7 @@ function AdminNovosProdutos() {
             }
 
             try {
-                await axios.post("https://savvy-api.belogic.com.br/api/products", data, {
+                await axios.post(`${process.env.REACT_APP_API_URL}/products`, data, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 console.log("Produto atualizado:", data);
