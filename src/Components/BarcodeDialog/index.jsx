@@ -45,6 +45,8 @@ export function BarcodeDialog({ open, setOpen, setCode }) {
         const url = `${process.env.REACT_APP_API_URL}/shopping/find`;
         const params = isGtin ? { gtin: setCode } : { nome: setCode };
 
+        if (!isGtin) return;
+
         const response = await axios.get(url, {
           params,
           headers: {
