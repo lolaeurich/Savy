@@ -258,6 +258,7 @@ function AreaLogada() {
 
                     <div className="lista-de-produtos">
                         {produtos.map(produto => (
+                            produto.barcode ? (
                             <div className="card-content-produtos" key={produto.id}>
                                 <input
                                     className='checkbox-mercado'
@@ -295,6 +296,7 @@ function AreaLogada() {
                                     onClick={() => handleDelete(produto.id)}
                                 />
                             </div>
+                            ) : null
                         ))}
                     </div>
                 </div>

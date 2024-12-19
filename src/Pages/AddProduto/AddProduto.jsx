@@ -201,6 +201,7 @@ function AddProduto() {
             {productData.length > 0 ? (
               <div className="card-container">
                 {productData.map((product) => (
+                  product.gtin ? (
                   <div 
                     key={product.id}
                     className={`card-item-encontrado ${selectedProducts.has(product.id) ? 'selected' : ''}`} 
@@ -219,6 +220,7 @@ function AddProduto() {
                       {selectedProducts.has(product.id) ? 'Desfazer' : 'Selecionar'}
                     </button>
                   </div>
+                  ) : null
                 ))}
               </div>
             ) : (
