@@ -72,6 +72,7 @@ function CompraUnica() {
                 <img src={visualizar} alt=""/>
                 <div>
                     <h4 style={{ fontSize: "12px", color: "green" }}>{marketWithHighestCost.fantasyName || marketWithHighestCost.company.split(' ')[0]}</h4>
+                    <p style={{ fontSize: "12px" }}>{marketWithHighestCost.address.streetType} {marketWithHighestCost.address.street} {marketWithHighestCost.address.number}</p>
 
                     <h5 style={{ paddingTop: "5px" }}>Produtos:</h5>
                     <ul style={{ listStyle: "none", rowGap: "5%" }}>
