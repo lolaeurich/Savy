@@ -19,75 +19,10 @@ function ListaMercados() {
         if (location.state && location.state.responseData) {
             const { products } = location.state.responseData.data;
             setProdutos(products || []);
-            fetchProductImages(products || []);
         } else {
             console.error("Nenhum dado recebido da página anterior.");
         }
     }, [location.state]);
-
-    // Função para buscar imagens dos produtos do carrinho
-    const fetchProductImages = async (products) => {
-        const token = localStorage.getItem('authToken');
-
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/shopping`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            const allProducts = response.data.data; 
-
-            // Atualiza os produtos com a imagem correspondente
-            const updatedProducts = products.map(produto => {
-                const productInCart = allProducts.find(cartProduct => 
-                    cartProduct.barcode === produto.gtin || cartProduct.product_id === produto.id
-                );
-                
-                return {
-                    ...produto,
-                    imageUrl: productInCart && productInCart.image.length > 0 
-                        ? productInCart.image[0].url 
-                        : produtoImg1 
-                };
-            });
-
-            setProdutos(updatedProducts);
-        } catch (error) {
-            console.error('Erro ao buscar imagens dos produtos:', error.response ? error.response.data : error.message);
-        }
-    };
-
-    useEffect(() => {
-        const fetchProdutoCount = async () => {
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                console.error('Token não encontrado. Usuário não autenticado.');
-                return;
-            }
-
-            try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/products`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                const items = response.data.data;
-                if (Array.isArray(items)) {
-                    setProdutoCount(items.length);
-                } else {
-                    console.error('Resposta da API não contém um array de itens:', items);
-                    setProdutoCount(0);
-                }
-            } catch (error) {
-                console.error('Erro ao buscar produtos:', error);
-                setProdutoCount(0);
-            }
-        };
-
-        fetchProdutoCount();
-    }, []);
 
     const toggleExpansion = (index) => {
         setExpandedIndices((prevExpandedIndices) => {
@@ -132,6 +67,7 @@ function ListaMercados() {
                                 <div className="card-mercado-text">
                                     <h2 className="card-title">{produto.fantasyName || produto.company.split(' ')[0]}</h2>
                                     <p>Distância: {produto.distKm} km</p>
+                                    <p>{produto.address.streetType} {produto.address.street} {produto.address.number}</p>
                                 </div>
                                 <button className="custo">R$ {produto.value}</button>
                             </div>
