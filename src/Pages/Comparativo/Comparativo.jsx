@@ -39,6 +39,8 @@ function Comparativo() {
                     responseData,
                     selectedProductIds,
                 }));
+
+                fetchLowPrice(selectedProducts, selectedProductIds);
             } else {
                 console.error('responseData está indefinido');
             }
@@ -47,22 +49,12 @@ function Comparativo() {
         }
     }, [location.state, setComparativoData]);
 
-    const fetchLowPrice = async (selectedProductIds, allMarkets) => {
+    const fetchLowPrice = async (selectedProducts, selectedProductIds) => {
+        const marketIds = selectedProducts.map(prod => prod.mktId)
+
         const token = localStorage.getItem('authToken');
         if (!token) {
             console.error('Token não encontrado. Verifique se o usuário está autenticado.');
-            return;
-        }
-
-        if (!Array.isArray(allMarkets)) {
-            console.error('allMarkets não é um array:', allMarkets);
-            return;
-        }
-
-        const marketIds = allMarkets.map(market => market.mktId);
-
-        if (selectedProductIds.length === 0 || marketIds.length === 0) {
-            console.error('Nenhum ID de produto ou mercado disponível para enviar.');
             return;
         }
 

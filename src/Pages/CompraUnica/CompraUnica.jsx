@@ -78,7 +78,7 @@ function CompraUnica() {
                     <ul style={{ listStyle: "none", rowGap: "5%" }}>
                         {marketWithHighestCost.validProducts.map((product, index) => (
                             <li key={index} style={{ fontSize: "12px", paddingTop: "10px" }}>
-                                &#10140; {product.product} - R$ {parseFloat(product.value).toFixed(2)} {/* Exibe o valor unitário do item */}
+                                &#10140; {product.gtin} - {product.product}: R$ {parseFloat(product.value).toFixed(2)} {/* Exibe o valor unitário do item */}
                             </li>
                         ))}
                     </ul>
